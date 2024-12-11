@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "myflower"
+version = "0.1.0"
+description = ""
+authors = ["thoubou <thoubou@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11.9"
+torch = "^2.5.1"
+torchvision = "^0.20.1"
+flwr-datasets = "^0.4.0"
+flwr = {extras = ["simulation"], version = "^1.13.1"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
