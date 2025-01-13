@@ -33,7 +33,7 @@ class MyClientApp(ClientApp):
         client_fn: Optional[ClientFnExt] = None,  # Only for backward compatibility
         mods: Optional[list[Mod]] = None,
     ) -> None:
-        super().__init__()
+        super().__init__(client_fn,mods)
         self.AGG_FUNC["AGG_SUM"]=self.local_sum
         self.AGG_FUNC["AGG_COUNT"] = self.local_count
 

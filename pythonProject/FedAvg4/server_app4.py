@@ -28,18 +28,15 @@ class MyServerApp(ServerApp):
             client_manager: Optional[ClientManager] = None,
             server_fn: Optional[ServerFn] = None,
     ):
-        super().__init__()
+        super().__init__(server,config,strategy,client_manager,server_fn)
 
         @self.main()
         def main(driver: Driver, context: Context) -> None:
             self.my_main(driver,context)
 
     def my_main(self, driver: Driver, context: Context) -> None:
-        """This `ServerApp` construct a histogram from partial-histograms reported by the
-        `ClientApp`s."""
-        # num_rounds = context.run_config["num-server-rounds"]
+
         min_nodes = 2
-        # fraction_sample = context.run_config["fraction-sample"]
         num_rounds = 2
         min_nodes = 10
         fraction_sample = 1
@@ -69,6 +66,7 @@ class MyServerApp(ServerApp):
         sx=math.sqrt(self.aggSum(driver, node_ids, server_round, 'x**2',["SepalLengthCm", "SepalWidthCm"])/count_-mx**2)
         sy = math.sqrt(
             self.aggSum(driver, node_ids, server_round, 'y**2', ["SepalLengthCm", "SepalWidthCm"]) / count_ - my ** 2)
+        print((mxy-mx*my)/(sx*sy))
         return (mxy-mx*my)/(sx*sy)
         # sy = math.sqrt(self.aggSum(driver, node_ids, server_round, 'y^2') / count_ - my ^ 2)
         # self.aggSum(driver, node_ids, server_round, ["SepalLengthCm", "SepalWidthCm"])
