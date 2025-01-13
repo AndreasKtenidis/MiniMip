@@ -2,6 +2,9 @@
 
 import warnings
 
+
+import ast
+
 import numpy as np
 from datasets.packaged_modules.pandas import pandas
 from flwr_datasets import FederatedDataset
@@ -13,6 +16,8 @@ from flwr.common import Context, Message, MetricsRecord, RecordSet
 from flwr.client.typing import ClientFnExt, Mod
 
 from typing import Optional
+
+from pyarrow.dataset import dataset
 
 fds = None  # Cache FederatedDataset
 
@@ -30,6 +35,7 @@ class MyClientApp(ClientApp):
     ) -> None:
         super().__init__()
         self.AGG_FUNC["AGG_SUM"]=self.local_sum
+        self.AGG_FUNC["AGG_COUNT"] = self.local_count
 
         @self.query()
         def query(msg: Message, context: Context):
@@ -41,13 +47,10 @@ class MyClientApp(ClientApp):
 
             # print("--------->",msg.content.configs_records["my_config"])
             print(msg.content.configs_records["my_config"])
-            for my_func, features in msg.content.configs_records["my_config"].items():
-                print(my_func)
-                out = {}
-                for feature in features:
-                    out[feature] = self.AGG_FUNC[my_func](dataset, feature)
-                print(out)
-
+            for agg_function, features in msg.content.configs_records["my_config"].items():
+                print(agg_function)
+                function_string=features.pop(0)
+                out={"result":self.AGG_FUNC[agg_function](function_string,dataset, features)}
             reply_content = RecordSet(metrics_records={"query_results": MetricsRecord(out)})
             return msg.create_reply(reply_content)
 
@@ -63,12 +66,42 @@ class MyClientApp(ClientApp):
             )
         dataset = fds.load_partition(partition_id, "train").with_format("pandas")[:]
         # Use just the specified columns
-        print("->",partition_id,"/",num_partitions)
         return dataset[["SepalLengthCm", "SepalWidthCm"]]
 
-    def local_sum(self,dataset, feature_name):
-        return dataset[feature_name].sum()
+    def local_sum(self,function_string,dataset, features):
+        mapping={'x':"dataset['SepalLengthCm']",'y':"dataset['SepalWidthCm']"}
+        expression = replace_variables_in_order(function_string, mapping)
+        expression="("+expression+").sum()"
+        return eval(expression)
 
+    def local_count(self,function_string,dataset, features):
+        return dataset['SepalLengthCm'].count()+0.0
+
+# Function to replace variables in an AST
+class OrderedVariableReplacer(ast.NodeTransformer):
+    def __init__(self, replacements):
+        self.replacements = replacements
+        self.seen = set()  # Keep track of already replaced variables
+
+    def visit_Name(self, node):
+        # If the variable is in the replacements and not yet replaced
+        if node.id in self.replacements and node.id not in self.seen:
+            self.seen.add(node.id)  # Mark this variable as replaced
+            # Replace with the corresponding value (parsed into AST)
+            return ast.parse(str(self.replacements[node.id]), mode='eval').body
+        return node  # Return unchanged if not in replacements or already replaced
+
+
+def replace_variables_in_order(expression, replacements):
+    # Parse the expression into an AST
+    parsed_expr = ast.parse(expression, mode='eval')
+
+    # Replace variables using the OrderedVariableReplacer
+    replacer = OrderedVariableReplacer(replacements)
+    new_expr_ast = replacer.visit(parsed_expr)
+
+    # Compile the modified AST back into a string expression
+    return ast.unparse(new_expr_ast)
 
 
 # Flower ClientApp
