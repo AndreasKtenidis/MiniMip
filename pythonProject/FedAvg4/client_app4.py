@@ -15,7 +15,7 @@ from flwr.common import Context, Message, MetricsRecord, RecordSet
 
 from flwr.client.typing import ClientFnExt, Mod
 
-from typing import Optional
+from typing import Optional,List,Dict
 
 from pyarrow.dataset import dataset
 
@@ -24,6 +24,11 @@ fds = None  # Cache FederatedDataset
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
+def list_to_map(lst: List[str])->Dict[str, str]:
+    out = {}
+    for key,value in zip(lst[::2], lst[1::2]):
+        out[key]=value
+    return out
 
 class MyClientApp(ClientApp):
     AGG_FUNC = {}
@@ -36,6 +41,8 @@ class MyClientApp(ClientApp):
         super().__init__(client_fn,mods)
         self.AGG_FUNC["AGG_SUM"]=self.local_sum
         self.AGG_FUNC["AGG_COUNT"] = self.local_count
+        self.AGG_FUNC["SUM"] = self.local_sum
+        self.AGG_FUNC["COUNT"] = self.local_count
 
         @self.query()
         def query(msg: Message, context: Context):
@@ -47,11 +54,30 @@ class MyClientApp(ClientApp):
 
             # print("--------->",msg.content.configs_records["my_config"])
             print(msg.content.configs_records["my_config"])
-            for agg_function, features in msg.content.configs_records["my_config"].items():
-                print(agg_function)
-                function_string=features.pop(0)
-                out={"result":self.AGG_FUNC[agg_function](function_string,dataset, features)}
-            reply_content = RecordSet(metrics_records={"query_results": MetricsRecord(out)})
+            mapping={}
+            function_string=""
+            agg_functions=[]
+            for label, value in msg.content.configs_records["my_config"].items():
+                if label=="MAPPING":
+                    mapping=list_to_map(value)
+                elif label=="COL_FUNC":
+                    function_string=value
+                elif label == "AGG_FUNC":
+                    if value=="AVG":
+                        agg_functions.append("SUM")
+                        agg_functions.append("COUNT")
+                    else:
+                        agg_functions.append(value)
+                    print("do", agg_functions)
+
+
+            out2={}
+            for agg_func in agg_functions:
+                print("why?",agg_func)
+                out2[agg_func]=self.AGG_FUNC[agg_func](function_string,dataset, value)
+            print("?????????", out2)
+
+            reply_content = RecordSet(metrics_records={"query_results": MetricsRecord(out2)})
             return msg.create_reply(reply_content)
 
 

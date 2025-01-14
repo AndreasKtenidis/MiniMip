@@ -33,7 +33,7 @@ class MyServerApp(ServerApp,ClientInteface):
             client_manager: Optional[ClientManager] = None,
             server_fn: Optional[ServerFn] = None,
     ):
-        super().__init__(self,server,config,strategy,client_manager,server_fn)
+        super().__init__(server,config,strategy,client_manager,server_fn)
         @self.main()
         def main(driver: Driver, context: Context) -> None:
             self.my_main(driver,context)
@@ -53,7 +53,10 @@ class MyServerApp(ServerApp,ClientInteface):
         log(INFO, "Starting round %s/%s", server_round + 1, num_rounds)
 
         # Loop and wait until enough nodes are available.
-        all_node_ids = []
+        # Loop and wait until enough nodes are available.
+        all_node_ids = driver.get_node_ids()
+
+        node_ids=[]
         while len(all_node_ids) < min_nodes:
             all_node_ids = driver.get_node_ids()
             if len(all_node_ids) >= min_nodes:
@@ -66,77 +69,70 @@ class MyServerApp(ServerApp,ClientInteface):
 
         log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
 
-        count_ = self.aggCount(driver, node_ids, server_round)
-        mx=self.aggSum(driver, node_ids, server_round,'x', ["SepalLengthCm", "SepalWidthCm"])/count_
-        my = self.aggSum(driver, node_ids, server_round, 'y', ["SepalLengthCm", "SepalWidthCm"])/count_
-        mxy= self.aggSum(driver, node_ids, server_round, 'x*y', ["SepalLengthCm", "SepalWidthCm"])/count_
-        sx=math.sqrt(self.aggSum(driver, node_ids, server_round, 'x**2',["SepalLengthCm", "SepalWidthCm"])/count_-mx**2)
-        sy = math.sqrt(
-            self.aggSum(driver, node_ids, server_round, 'y**2', ["SepalLengthCm", "SepalWidthCm"]) / count_ - my ** 2)
-        return (mxy-mx*my)/(sx*sy)
+
+
+
+
+        my_mapping={'x':'SepalLengthCm','y':'SepalWidthCm'}
+        metadata={'driver':driver,'node_ids':node_ids}
+
+        mx=self.agg_avg(metadata, 'x', 'iris',my_mapping)
+        print(mx)
+        # my = self.agg_avg( node_ids, 'y', 'iris',mapping)
+        # mxy= self.agg_avg( node_ids, 'x*y', 'iris',mapping)
+        # sx=math.sqrt(self.agg_avg( node_ids, 'x**2','iris',mapping)-mx**2)
+        # sy = math.sqrt(
+        #     self.agg_avg( node_ids, 'y**2', 'iris',mapping) - my ** 2)
+        # return (mxy-mx*my)/(sx*sy)
         # sy = math.sqrt(self.aggSum(driver, node_ids, server_round, 'y^2') / count_ - my ^ 2)
         # self.aggSum(driver, node_ids, server_round, ["SepalLengthCm", "SepalWidthCm"])
 
-    def aggSum(self,driver: Driver, node_ids, server_round,function:str, features):
-        recordset = RecordSet()
-
-        configs = ConfigsRecord({"AGG_SUM": [function]+features})
-        recordset.configs_records["my_config"] = configs
-        print(recordset)
-        messages = []
-        for node_id in node_ids:  # one message for each node
-            message = driver.create_message(
-                content=recordset,
-                message_type=MessageType.QUERY,  # target `query` method in ClientApp
-                dst_node_id=node_id,
-                group_id=str(server_round),
-            )
-            messages.append(message)
-
-        # Send messages and wait for all results
-        replies = driver.send_and_receive(messages)
-        log(INFO, "Received %s/%s results", len(replies), len(messages))
-        answer = {"answer":0}
-        for rep in replies:
-            if rep.has_error():
-                continue
-            query_results = rep.content.metrics_records["query_results"]
-            # Sum metrics
-            for _,v in query_results.items():
-                answer["answer"] += v
-        return answer["answer"]
-
-    def aggCount(self,driver: Driver, node_ids, server_round):
-        recordset = RecordSet()
-        print("--->",node_ids)
-
-        configs = ConfigsRecord({"AGG_COUNT": ["*"]})
-        recordset.configs_records["my_config"] = configs
-        print(recordset)
-        messages = []
-        for node_id in node_ids:  # one message for each node
-            message = driver.create_message(
-                content=recordset,
-                message_type=MessageType.QUERY,  # target `query` method in ClientApp
-                dst_node_id=node_id,
-                group_id=str(server_round),
-            )
-            messages.append(message)
-
-        # Send messages and wait for all results
-        replies = driver.send_and_receive(messages)
-        log(INFO, "Received %s/%s results", len(replies), len(messages))
-        answer = {"answer":0}
-        for rep in replies:
-            if rep.has_error():
-                continue
-            query_results = rep.content.metrics_records["query_results"]
-            # Sum metrics
-            for _,v in query_results.items():
-                answer["answer"] += v
-        return answer["answer"]
-
-    def get_results(self, agg_funcs: List[str], node_ids: List[int], function, dataset: str, mapping: Dict[str:str]) -> \
+    def get_results(self, metadata, agg_funcs: List[str], function, dataset: str, my_mapping: Dict[str, str]) -> \
             Dict[str, List[Number]]:
+        driver = metadata['driver']
+        node_ids = metadata['node_ids']
+        server_round = 0
+        recordset = RecordSet()
+        configs = ConfigsRecord({"AGG_FUNC": agg_funcs,
+                                 "COL_FUNC": [function],
+                                 "DATASET": [dataset],
+                                 "MAPPING": map_to_list(my_mapping)})
+        recordset.configs_records["my_config"] = configs
+        print("----->",recordset)
 
-        pass
+        messages = []
+        for node_id in node_ids:  # one message for each node
+            message = driver.create_message(
+                content=recordset,
+                message_type=MessageType.QUERY,  # target `query` method in ClientApp
+                dst_node_id=node_id,
+                group_id=str(server_round),
+            )
+            messages.append(message)
+
+        replies = driver.send_and_receive(messages)
+
+        # Send messages and wait for all results
+
+        # log(INFO, "Received %s/%s results", len(replies), len(messages))
+        # answer = {"answer": 0}
+        # for rep in replies:
+        #     if rep.has_error():
+        #         continue
+        #     query_results = rep.content.metrics_records["query_results"]
+        #     # Sum metrics
+        #     for _, v in query_results.items():
+        #         answer["answer"] += v
+        #
+        # return {}
+        return {"count": [], "sum": []}
+
+def map_to_list(my_mapping: Dict[str, str])->List[str]:
+    out = []
+    for key,value in my_mapping.items():
+        out.append(key)
+        out.append(value)
+    return out
+
+
+

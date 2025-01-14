@@ -5,22 +5,16 @@ from numbers import Number
 
 class ClientInteface(ABC):
 
-    def agg_sum(self, node_ids: List[int], function, dataset: str,  mapping: Dict[str:str]) -> Number:
-        results = self.get_results(["sum"], node_ids, function, dataset, mapping)
+    def agg_sum(self,metadata,  function, dataset: str,  mapping: Dict[str,str]) -> Number:
+        results = self.get_results(metadata,["sum"], function, dataset, mapping)
         _sum = 0
         for result in results["sum"]:
             _sum += result
         return _sum
 
-    def agg_count(self, node_ids: List[int], dataset: str, mapping: Dict[str:str]) -> int:
-        results = self.get_results(["count"], node_ids, None, dataset, mapping)
-        _count = 0
-        for result in results["count"]:
-            _count += result
-        return _count
 
-    def agg_avg(self, node_ids: List[int], function, dataset: str, mapping: Dict[str:str]) -> Optional[Number]:
-        results = self.get_results(["sum", "count"], node_ids, function, dataset, mapping)
+    def agg_avg(self,metadata, function, dataset: str, mapping: Dict[str,str]) -> Optional[Number]:
+        results = self.get_results(metadata,["sum", "count"], function, dataset, mapping)
         _sum = 0
         _count = 0
         for result in results["count"]:
@@ -33,6 +27,6 @@ class ClientInteface(ABC):
             return _sum / _count
 
     @abstractmethod
-    def get_results(self, agg_funcs: List[str], node_ids: List[int], function, dataset: str,  mapping: Dict[str:str]) -> \
+    def get_results(self,metadata, agg_funcs: List[str], function, dataset: str,  my_mapping: Dict[str,str]) -> \
     Dict[str, List[Number]]:
         pass
