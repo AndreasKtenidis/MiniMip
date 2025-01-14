@@ -70,8 +70,7 @@ class MyClientApp(ClientApp):
                         agg_functions.append(value)
             out={}
             for agg_func in agg_functions:
-                out[agg_func]=self.AGG_FUNC[agg_func](function_string,dataset, value)
-                print("To mouni tis manoulas sou",value)
+                out[agg_func]=self.AGG_FUNC[agg_func](function_string,dataset, mapping)
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS: MetricsRecord(out)})
             return msg.create_reply(reply_content)
 
@@ -90,12 +89,14 @@ class MyClientApp(ClientApp):
         return dataset[["SepalLengthCm", "SepalWidthCm"]]
 
     def local_sum(self,function_string, dataset, features):
+        print("--->",features)
         mapping={'x':"dataset['SepalLengthCm']",'y':"dataset['SepalWidthCm']"}
         expression = replace_variables_in_order(function_string, mapping)
         expression="("+expression+").sum()"
         return eval(expression)
 
     def local_count(self,function_string, dataset, features):
+        print("--->",features)
         return dataset['SepalLengthCm'].count()+0.0
 
 # Function to replace variables in an AST
