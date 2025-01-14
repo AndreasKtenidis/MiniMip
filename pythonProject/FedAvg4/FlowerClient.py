@@ -2,10 +2,8 @@
 
 import warnings
 
+from sympy import symbols, sympify
 
-import ast
-
-import numpy as np
 from datasets.packaged_modules.pandas import pandas
 from flwr_datasets import FederatedDataset
 from flwr_datasets.partitioner import IidPartitioner
@@ -17,10 +15,9 @@ from flwr.client.typing import ClientFnExt, Mod
 
 from typing import Optional,List,Dict
 
-from pyarrow.dataset import dataset
 
-from server_app4 import AGG
-from server_app4 import PARAMS
+from FlowerServer import AGG
+from FlowerServer import PARAMS
 
 fds = None  # Cache FederatedDataset
 
@@ -35,7 +32,7 @@ def list_to_map(lst: List[str])->Dict[str, str]:
 
 class MyClientApp(ClientApp):
 
-    AGG_FUNC = {}
+
 
     def __init__(
         self,
@@ -43,8 +40,8 @@ class MyClientApp(ClientApp):
         mods: Optional[list[Mod]] = None,
     ) -> None:
         super().__init__(client_fn,mods)
-        self.AGG_FUNC[AGG.SUM] = self.local_sum
-        self.AGG_FUNC[AGG.COUNT] = self.local_count
+        self.AGG_FUNC={AGG.SUM:self.local_sum, AGG.COUNT:self.local_count}
+
 
         @self.query()
         def query(msg: Message, context: Context):
@@ -85,7 +82,8 @@ class MyClientApp(ClientApp):
                 partitioners={"train": partitioner},
             )
         dataset = fds.load_partition(partition_id, "train").with_format("pandas")[:]
-        return dataset[["SepalLengthCm", "SepalWidthCm"]]
+        print("---<",dataset.columns)
+        return dataset
 
     def local_sum(self,function_string, dataset, features):
         print("--->",features)
@@ -99,20 +97,13 @@ class MyClientApp(ClientApp):
         return dataset['SepalLengthCm'].count()+0.0
 
 
-
-from sympy import symbols, sympify
-
-
 def replace_variables(expression, mapping):
     """
     Replaces variables in a mathematical expression with new variables based on a mapping.
     """
     expr = sympify(expression)
-    # Convert mapping keys and values to sympy symbols
     symbol_mapping = {symbols(k): symbols(v) for k, v in mapping.items()}
-    # Perform the replacement
     updated_expr = expr.subs(symbol_mapping)
-    # Convert back to string for the result
     return str(updated_expr)
 
 
