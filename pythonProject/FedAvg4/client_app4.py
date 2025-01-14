@@ -85,13 +85,12 @@ class MyClientApp(ClientApp):
                 partitioners={"train": partitioner},
             )
         dataset = fds.load_partition(partition_id, "train").with_format("pandas")[:]
-        # Use just the specified columns
         return dataset[["SepalLengthCm", "SepalWidthCm"]]
 
     def local_sum(self,function_string, dataset, features):
         print("--->",features)
         mapping={'x':"dataset['SepalLengthCm']",'y':"dataset['SepalWidthCm']"}
-        expression = replace_variables_in_order(function_string, mapping)
+        expression = replace_variables(function_string, mapping)
         expression="("+expression+").sum()"
         return eval(expression)
 
@@ -99,31 +98,22 @@ class MyClientApp(ClientApp):
         print("--->",features)
         return dataset['SepalLengthCm'].count()+0.0
 
-# Function to replace variables in an AST
-class OrderedVariableReplacer(ast.NodeTransformer):
-    def __init__(self, replacements):
-        self.replacements = replacements
-        self.seen = set()  # Keep track of already replaced variables
-
-    def visit_Name(self, node):
-        # If the variable is in the replacements and not yet replaced
-        if node.id in self.replacements and node.id not in self.seen:
-            self.seen.add(node.id)  # Mark this variable as replaced
-            # Replace with the corresponding value (parsed into AST)
-            return ast.parse(str(self.replacements[node.id]), mode='eval').body
-        return node  # Return unchanged if not in replacements or already replaced
 
 
-def replace_variables_in_order(expression, replacements):
-    # Parse the expression into an AST
-    parsed_expr = ast.parse(expression, mode='eval')
+from sympy import symbols, sympify
 
-    # Replace variables using the OrderedVariableReplacer
-    replacer = OrderedVariableReplacer(replacements)
-    new_expr_ast = replacer.visit(parsed_expr)
 
-    # Compile the modified AST back into a string expression
-    return ast.unparse(new_expr_ast)
+def replace_variables(expression, mapping):
+    """
+    Replaces variables in a mathematical expression with new variables based on a mapping.
+    """
+    expr = sympify(expression)
+    # Convert mapping keys and values to sympy symbols
+    symbol_mapping = {symbols(k): symbols(v) for k, v in mapping.items()}
+    # Perform the replacement
+    updated_expr = expr.subs(symbol_mapping)
+    # Convert back to string for the result
+    return str(updated_expr)
 
 
 # Flower ClientApp

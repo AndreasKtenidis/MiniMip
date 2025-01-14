@@ -90,8 +90,6 @@ class MyServerApp(ServerApp):
             self.aggAvg(driver, node_ids, server_round, 'y**2', ["SepalLengthCm", "SepalWidthCm"]) - my ** 2)
         print((mxy-mx*my)/(sx*sy))
         return (mxy-mx*my)/(sx*sy)
-        # sy = math.sqrt(self.aggSum(driver, node_ids, server_round, 'y^2') / count_ - my ^ 2)
-        # self.aggSum(driver, node_ids, server_round, ["SepalLengthCm", "SepalWidthCm"])
 
     def aggAvg(self,driver: Driver, node_ids, server_round,function:str, features):
         recordset = RecordSet()
@@ -126,8 +124,6 @@ class MyServerApp(ServerApp):
             # Sum metrics
             for k,v in query_results.items():
                 answer[k] += v
-        print("!!!!!!!!!!!!!!!",answer)
-        # return answer["answer"]
         return answer[AGG.SUM]/answer[AGG.COUNT]
 
 app = MyServerApp()
