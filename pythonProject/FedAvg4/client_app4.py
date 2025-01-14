@@ -19,6 +19,8 @@ from typing import Optional,List,Dict
 
 from pyarrow.dataset import dataset
 
+from server_app4 import AGG
+
 fds = None  # Cache FederatedDataset
 
 warnings.filterwarnings("ignore", category=UserWarning)
@@ -31,6 +33,7 @@ def list_to_map(lst: List[str])->Dict[str, str]:
     return out
 
 class MyClientApp(ClientApp):
+
     AGG_FUNC = {}
 
     def __init__(
@@ -41,8 +44,8 @@ class MyClientApp(ClientApp):
         super().__init__(client_fn,mods)
         self.AGG_FUNC["AGG_SUM"]=self.local_sum
         self.AGG_FUNC["AGG_COUNT"] = self.local_count
-        self.AGG_FUNC["SUM"] = self.local_sum
-        self.AGG_FUNC["COUNT"] = self.local_count
+        self.AGG_FUNC[AGG.SUM] = self.local_sum
+        self.AGG_FUNC[AGG.COUNT] = self.local_count
 
         @self.query()
         def query(msg: Message, context: Context):
@@ -63,9 +66,9 @@ class MyClientApp(ClientApp):
                 elif label=="COL_FUNC":
                     function_string=value
                 elif label == "AGG_FUNC":
-                    if value=="AVG":
-                        agg_functions.append("SUM")
-                        agg_functions.append("COUNT")
+                    if value==AGG.AVG:
+                        agg_functions.append(AGG.SUM)
+                        agg_functions.append(AGG.COUNT)
                     else:
                         agg_functions.append(value)
                     print("do", agg_functions)

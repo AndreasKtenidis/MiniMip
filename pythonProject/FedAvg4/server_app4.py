@@ -16,12 +16,21 @@ from flwr.server.strategy import Strategy
 from flwr. server.client_manager import ClientManager
 from flwr. server.typing import ServerFn
 
+
+
 def map_to_list(my_mapping: Dict[str, str])->List[str]:
     out = []
     for key,value in my_mapping.items():
         out.append(key)
         out.append(value)
     return out
+
+
+
+class AGG:
+    AVG = "AVG"
+    SUM = "SUM"
+    COUNT = "COUNT"
 
 class MyServerApp(ServerApp):
     """A custom application that extends ServerApp."""
@@ -82,7 +91,7 @@ class MyServerApp(ServerApp):
 
 
         my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
-        configs = ConfigsRecord({"AGG_FUNC": "AVG",
+        configs = ConfigsRecord({"AGG_FUNC": AGG.AVG,
                                  "MAPPING":map_to_list(my_mapping),
                                  "COL_FUNC":function
                                  })
@@ -102,7 +111,7 @@ class MyServerApp(ServerApp):
         # Send messages and wait for all results
         replies = driver.send_and_receive(messages)
         log(INFO, "Received %s/%s results", len(replies), len(messages))
-        answer = {"SUM":0,"COUNT":0}
+        answer = {AGG.SUM:0, AGG.COUNT:0}
         for rep in replies:
             if rep.has_error():
                 continue
@@ -112,6 +121,6 @@ class MyServerApp(ServerApp):
                 answer[k] += v
         print("!!!!!!!!!!!!!!!",answer)
         # return answer["answer"]
-        return answer["SUM"]/answer["COUNT"]
+        return answer[AGG.SUM]/answer[AGG.COUNT]
 
 app = MyServerApp()
