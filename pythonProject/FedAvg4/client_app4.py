@@ -20,6 +20,7 @@ from typing import Optional,List,Dict
 from pyarrow.dataset import dataset
 
 from server_app4 import AGG
+from server_app4 import PARAMS
 
 fds = None  # Cache FederatedDataset
 
@@ -42,8 +43,6 @@ class MyClientApp(ClientApp):
         mods: Optional[list[Mod]] = None,
     ) -> None:
         super().__init__(client_fn,mods)
-        self.AGG_FUNC["AGG_SUM"]=self.local_sum
-        self.AGG_FUNC["AGG_COUNT"] = self.local_count
         self.AGG_FUNC[AGG.SUM] = self.local_sum
         self.AGG_FUNC[AGG.COUNT] = self.local_count
 
@@ -54,33 +53,26 @@ class MyClientApp(ClientApp):
             num_partitions = context.node_config["num-partitions"]
 
             dataset = self.get_clientapp_dataset(partition_id, num_partitions)
-
-            # print("--------->",msg.content.configs_records["my_config"])
             print(msg.content.configs_records["my_config"])
             mapping={}
             function_string=""
             agg_functions=[]
             for label, value in msg.content.configs_records["my_config"].items():
-                if label=="MAPPING":
+                if label==PARAMS.MAPPING:
                     mapping=list_to_map(value)
-                elif label=="COL_FUNC":
+                elif label==PARAMS.COL_FUNC:
                     function_string=value
-                elif label == "AGG_FUNC":
+                elif label == PARAMS.AGG_FUNC:
                     if value==AGG.AVG:
                         agg_functions.append(AGG.SUM)
                         agg_functions.append(AGG.COUNT)
                     else:
                         agg_functions.append(value)
-                    print("do", agg_functions)
-
-
-            out2={}
+            out={}
             for agg_func in agg_functions:
-                print("why?",agg_func)
-                out2[agg_func]=self.AGG_FUNC[agg_func](function_string,dataset, value)
-            print("?????????", out2)
-
-            reply_content = RecordSet(metrics_records={"query_results": MetricsRecord(out2)})
+                out[agg_func]=self.AGG_FUNC[agg_func](function_string,dataset, value)
+                print("To mouni tis manoulas sou",value)
+            reply_content = RecordSet(metrics_records={PARAMS.RESULTS: MetricsRecord(out)})
             return msg.create_reply(reply_content)
 
 
@@ -97,13 +89,13 @@ class MyClientApp(ClientApp):
         # Use just the specified columns
         return dataset[["SepalLengthCm", "SepalWidthCm"]]
 
-    def local_sum(self,function_string,dataset, features):
+    def local_sum(self,function_string, dataset, features):
         mapping={'x':"dataset['SepalLengthCm']",'y':"dataset['SepalWidthCm']"}
         expression = replace_variables_in_order(function_string, mapping)
         expression="("+expression+").sum()"
         return eval(expression)
 
-    def local_count(self,function_string,dataset, features):
+    def local_count(self,function_string, dataset, features):
         return dataset['SepalLengthCm'].count()+0.0
 
 # Function to replace variables in an AST

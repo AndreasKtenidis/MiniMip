@@ -32,6 +32,13 @@ class AGG:
     SUM = "SUM"
     COUNT = "COUNT"
 
+
+class PARAMS:
+    AGG_FUNC = "AGG_FUNC"
+    MAPPING = "MAPPING"
+    COL_FUNC = "COL_FUNC"
+    RESULTS = "RESULTS"
+
 class MyServerApp(ServerApp):
     """A custom application that extends ServerApp."""
 
@@ -91,9 +98,9 @@ class MyServerApp(ServerApp):
 
 
         my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
-        configs = ConfigsRecord({"AGG_FUNC": AGG.AVG,
-                                 "MAPPING":map_to_list(my_mapping),
-                                 "COL_FUNC":function
+        configs = ConfigsRecord({PARAMS.AGG_FUNC : AGG.AVG,
+                                 PARAMS.MAPPING:map_to_list(my_mapping),
+                                 PARAMS.COL_FUNC:function
                                  })
         recordset.configs_records["my_config"] = configs
 
@@ -115,7 +122,7 @@ class MyServerApp(ServerApp):
         for rep in replies:
             if rep.has_error():
                 continue
-            query_results = rep.content.metrics_records["query_results"]
+            query_results = rep.content.metrics_records[PARAMS.RESULTS]
             # Sum metrics
             for k,v in query_results.items():
                 answer[k] += v
