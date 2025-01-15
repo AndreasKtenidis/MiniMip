@@ -27,18 +27,15 @@ class Dataset:
         return self.dataset
 
     def local_sum(self, function_string, mapping):
+        d_mapping={}
         for k in mapping.keys():
-            mapping[k]="self.dataset['"+mapping[k]+"']"
-        expression = replace_variables(function_string, mapping)
+            d_mapping[k]="self.dataset['"+mapping[k]+"']"
+        expression = replace_variables(function_string, d_mapping)
         expression = "(" + expression + ").sum()"
         return eval(expression)
 
     def local_count(self, function_string, mapping):
-        for k in mapping.keys():
-            mapping[k] = "self.dataset['" + mapping[k] + "']"
-        expression = replace_variables(function_string, mapping)
-        expression = "(" + expression + ").count()"
-        return eval(expression)
+        return self.dataset[get_variable(mapping)].count()+0.0
 
 def replace_variables(expression, mapping):
     """
@@ -49,10 +46,14 @@ def replace_variables(expression, mapping):
     updated_expr = expr.subs(symbol_mapping)
     return str(updated_expr)
 
+def get_variable(mapping):
+    for value in mapping.values():
+        return value
+
 # Example usage:
 dataset_obj = Dataset(num_partitions=10,partition_id=2)  # Initialize with desired number of partitions
 data = dataset_obj.get_data()
 mapping={'x':'SepalLengthCm','y':'SepalWidthCm'}
 dataset_obj.local_sum('x+y',mapping)
 
-print(data)
+print("????",dataset_obj.local_count('x+y', mapping))
