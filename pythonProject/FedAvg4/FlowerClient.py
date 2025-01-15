@@ -18,6 +18,7 @@ from typing import Optional,List,Dict
 
 from FlowerServer import AGG
 from FlowerServer import PARAMS
+from PandasDataset import Dataset
 
 fds = None  # Cache FederatedDataset
 
@@ -67,34 +68,37 @@ class MyClientApp(ClientApp):
                         agg_functions.append(value)
             out={}
             for agg_func in agg_functions:
-                out[agg_func]=self.AGG_FUNC[agg_func](function_string,dataset, mapping)
+                out[agg_func]=self.AGG_FUNC[agg_func](dataset,function_string, mapping)
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS: MetricsRecord(out)})
             return msg.create_reply(reply_content)
 
 
     def get_clientapp_dataset(self,partition_id: int, num_partitions: int):
-        # Only initialize `FederatedDataset` once
-        global fds
-        if fds is None:
-            partitioner = IidPartitioner(num_partitions=num_partitions)
-            fds = FederatedDataset(
-                dataset="scikit-learn/iris",
-                partitioners={"train": partitioner},
-            )
-        dataset = fds.load_partition(partition_id, "train").with_format("pandas")[:]
-        print("---<",dataset.columns)
-        return dataset
+        return Dataset(num_partitions=10,partition_id=2)
+        # # Only initialize `FederatedDataset` once
+        # global fds
+        # if fds is None:
+        #     partitioner = IidPartitioner(num_partitions=num_partitions)
+        #     fds = FederatedDataset(
+        #         dataset="scikit-learn/iris",
+        #         partitioners={"train": partitioner},
+        #     )
+        # dataset = fds.load_partition(partition_id, "train").with_format("pandas")[:]
+        # print("---<",dataset.columns)
+        # return dataset
 
-    def local_sum(self,function_string, dataset, features):
-        print("--->",features)
-        mapping={'x':"dataset['SepalLengthCm']",'y':"dataset['SepalWidthCm']"}
-        expression = replace_variables(function_string, mapping)
-        expression="("+expression+").sum()"
-        return eval(expression)
+    def local_sum(self,dataset,function_string,  features):
+        return dataset.local_sum(function_string, features)
+        # print("--->",features)
+        # mapping={'x':"dataset['SepalLengthCm']",'y':"dataset['SepalWidthCm']"}
+        # expression = replace_variables(function_string, mapping)
+        # expression="("+expression+").sum()"
+        # return eval(expression)
 
-    def local_count(self,function_string, dataset, features):
-        print("--->",features)
-        return dataset['SepalLengthCm'].count()+0.0
+    def local_count(self,dataset,function_string,  features):
+        return dataset.local_count(function_string,  features)
+        # print("--->",features)
+        # return dataset['SepalLengthCm'].count()+0.0
 
 
 def replace_variables(expression, mapping):
@@ -109,5 +113,3 @@ def replace_variables(expression, mapping):
 
 # Flower ClientApp
 app = MyClientApp()
-
-

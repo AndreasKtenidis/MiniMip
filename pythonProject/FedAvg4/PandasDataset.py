@@ -2,8 +2,6 @@ from flwr_datasets.partitioner import IidPartitioner
 from flwr_datasets import FederatedDataset
 from sympy import symbols, sympify
 
-global fds
-fds = None
 
 
 class Dataset:
@@ -50,10 +48,10 @@ def get_variable(mapping):
     for value in mapping.values():
         return value
 
-# Example usage:
-dataset_obj = Dataset(num_partitions=10,partition_id=2)  # Initialize with desired number of partitions
-data = dataset_obj.get_data()
-mapping={'x':'SepalLengthCm','y':'SepalWidthCm'}
-dataset_obj.local_sum('x+y',mapping)
-
-print("????",dataset_obj.local_count('x+y', mapping))
+# # Example usage:
+# dataset_obj = Dataset(num_partitions=10,partition_id=2)  # Initialize with desired number of partitions
+# data = dataset_obj.get_data()
+# mapping={'x':'SepalLengthCm','y':'SepalWidthCm'}
+# dataset_obj.local_sum('x+y',mapping)
+#
+# print("????",dataset_obj.local_count('x+y', mapping))
