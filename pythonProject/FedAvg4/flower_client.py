@@ -4,21 +4,14 @@ import warnings
 
 from sympy import symbols, sympify
 
-from datasets.packaged_modules.pandas import pandas
-from flwr_datasets import FederatedDataset
-from flwr_datasets.partitioner import IidPartitioner
-
 from flwr.client import ClientApp
 from flwr.common import Context, Message, MetricsRecord, RecordSet
-
 from flwr.client.typing import ClientFnExt, Mod
 
 from typing import Optional,List,Dict
 
-
-from FlowerServer import AGG
-from FlowerServer import PARAMS
-from PandasDataset import Dataset
+from flower_server import AGG,PARAMS
+from pandas_dataset import PandasDataset
 
 fds = None  # Cache FederatedDataset
 
@@ -74,7 +67,7 @@ class MyClientApp(ClientApp):
 
 
     def get_clientapp_dataset(self,partition_id: int, num_partitions: int):
-        return Dataset(num_partitions=10,partition_id=2)
+        return PandasDataset(num_partitions=10, partition_id=2)
         # # Only initialize `FederatedDataset` once
         # global fds
         # if fds is None:
@@ -89,16 +82,9 @@ class MyClientApp(ClientApp):
 
     def local_sum(self,dataset,function_string,  features):
         return dataset.local_sum(function_string, features)
-        # print("--->",features)
-        # mapping={'x':"dataset['SepalLengthCm']",'y':"dataset['SepalWidthCm']"}
-        # expression = replace_variables(function_string, mapping)
-        # expression="("+expression+").sum()"
-        # return eval(expression)
 
     def local_count(self,dataset,function_string,  features):
         return dataset.local_count(function_string,  features)
-        # print("--->",features)
-        # return dataset['SepalLengthCm'].count()+0.0
 
 
 def replace_variables(expression, mapping):

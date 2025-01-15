@@ -2,23 +2,24 @@ from flwr_datasets.partitioner import IidPartitioner
 from flwr_datasets import FederatedDataset
 from sympy import symbols, sympify
 
+from dataset import Dataset
 
 
-class Dataset:
+class PandasDataset(Dataset):
     # Static attribute to store the global fds object
     fds = None
 
     def __init__(self, num_partitions,partition_id):
         # Initialize the dataset only once
-        if Dataset.fds is None:
+        if PandasDataset.fds is None:
             partitioner = IidPartitioner(num_partitions=num_partitions)
-            Dataset.fds = FederatedDataset(
+            PandasDataset.fds = FederatedDataset(
                 dataset="scikit-learn/iris",
                 partitioners={"train": partitioner}
             )
 
         # Load a specific partition and format it as pandas DataFrame
-        self.dataset = Dataset.fds.load_partition(partition_id, "train").with_format("pandas")[:]
+        self.dataset = PandasDataset.fds.load_partition(partition_id, "train").with_format("pandas")[:]
 
     def get_data(self):
         """Returns the dataset loaded into pandas format."""
