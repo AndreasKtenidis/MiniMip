@@ -81,23 +81,21 @@ class MyServerApp(ServerApp):
 
         log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
 
-
-        mx=self.aggAvg(driver, node_ids, server_round,'x', ["SepalLengthCm", "SepalWidthCm"])
-        my = self.aggAvg(driver, node_ids, server_round, 'y', ["SepalLengthCm", "SepalWidthCm"])
-        mxy= self.aggAvg(driver, node_ids, server_round, 'x*y', ["SepalLengthCm", "SepalWidthCm"])
-        sx=math.sqrt(self.aggAvg(driver, node_ids, server_round, 'x**2',["SepalLengthCm", "SepalWidthCm"])-mx**2)
+        my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
+        mx=self.AGG(driver, node_ids, server_round, 'x', my_mapping)
+        my = self.AGG(driver, node_ids, server_round, 'y', my_mapping)
+        mxy= self.AGG(driver, node_ids, server_round, 'x*y', my_mapping)
+        sx=math.sqrt(self.AGG(driver, node_ids, server_round, 'x**2', my_mapping) - mx ** 2)
         sy = math.sqrt(
-            self.aggAvg(driver, node_ids, server_round, 'y**2', ["SepalLengthCm", "SepalWidthCm"]) - my ** 2)
+            self.AGG(driver, node_ids, server_round, 'y**2', my_mapping) - my ** 2)
         print((mxy-mx*my)/(sx*sy))
         return (mxy-mx*my)/(sx*sy)
 
-    def aggAvg(self,driver: Driver, node_ids, server_round,function:str, features):
+    def AGG(self, driver: Driver, node_ids, server_round, function:str, mapping:Dict[str,str]):
         recordset = RecordSet()
 
-
-        my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
         configs = ConfigsRecord({PARAMS.AGG_FUNC : AGG.AVG,
-                                 PARAMS.MAPPING:map_to_list(my_mapping),
+                                 PARAMS.MAPPING:map_to_list(mapping),
                                  PARAMS.COL_FUNC:function
                                  })
         recordset.configs_records["my_config"] = configs

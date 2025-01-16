@@ -10,8 +10,8 @@ from flwr.client.typing import ClientFnExt, Mod
 
 from typing import Optional,List,Dict
 
-from flower_server import AGG,PARAMS
-from pandas_dataset import PandasDataset
+from server_flower import AGG,PARAMS
+from dataset_pandas import PandasDataset
 
 fds = None  # Cache FederatedDataset
 

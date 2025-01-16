@@ -1,6 +1,6 @@
 import torch
 from flwr.simulation import run_simulation
-import flower_server,flower_client
+import server_flower,client_flower
 
 
 
@@ -14,8 +14,8 @@ backend_config = {"client_resources": None}
 if DEVICE.type == "cuda":
     backend_config = {"client_resources": {"num_gpus": 1}}
 
-client = flower_client.app
-server = flower_server.app
+client = client_flower.app
+server = server_flower.app
 
 # Run simulation
 run_simulation(
