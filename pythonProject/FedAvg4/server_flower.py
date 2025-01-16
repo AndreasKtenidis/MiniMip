@@ -2,6 +2,7 @@
 
 import random
 import time
+
 from logging import INFO
 from typing import Optional,Dict,List
 import math
@@ -16,6 +17,7 @@ from flwr.server.strategy import Strategy
 from flwr. server.client_manager import ClientManager
 from flwr. server.typing import ServerFn
 
+from server_abstract import AGG, PARAMS
 
 
 def map_to_list(my_mapping: Dict[str, str])->List[str]:
@@ -27,17 +29,7 @@ def map_to_list(my_mapping: Dict[str, str])->List[str]:
 
 
 
-class AGG:
-    AVG = "AVG"
-    SUM = "SUM"
-    COUNT = "COUNT"
 
-
-class PARAMS:
-    AGG_FUNC = "AGG_FUNC"
-    MAPPING = "MAPPING"
-    COL_FUNC = "COL_FUNC"
-    RESULTS = "RESULTS"
 
 class MyServerApp(ServerApp):
     """A custom application that extends ServerApp."""
@@ -82,46 +74,57 @@ class MyServerApp(ServerApp):
         log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
 
         my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
-        mx=self.AGG(driver, node_ids, server_round, 'x', my_mapping)
-        my = self.AGG(driver, node_ids, server_round, 'y', my_mapping)
-        mxy= self.AGG(driver, node_ids, server_round, 'x*y', my_mapping)
-        sx=math.sqrt(self.AGG(driver, node_ids, server_round, 'x**2', my_mapping) - mx ** 2)
-        sy = math.sqrt(
-            self.AGG(driver, node_ids, server_round, 'y**2', my_mapping) - my ** 2)
-        print((mxy-mx*my)/(sx*sy))
-        return (mxy-mx*my)/(sx*sy)
 
-    def AGG(self, driver: Driver, node_ids, server_round, function:str, mapping:Dict[str,str]):
+        executor = FlowerExecutor(driver, node_ids, server_round)
+        mx = executor.AVG('x', my_mapping)
+        my = executor.AVG('y', my_mapping)
+        mxy = executor.AVG('x*y', my_mapping)
+        sx = math.sqrt(executor.AVG('x**2', my_mapping) - mx ** 2)
+        sy = math.sqrt(
+            executor.AVG('y**2', my_mapping) - my ** 2)
+        print("!!!!!!!!!!!",(mxy - mx * my) / (sx * sy))
+
+
+
+
+
+class FlowerExecutor:
+    def __init__(self, driver, node_ids, server_round):
+        self.driver = driver
+        self.node_ids = node_ids
+        self.server_round = server_round
+
+    def AVG(self, function:str, mapping:Dict[str,str]):
         recordset = RecordSet()
 
-        configs = ConfigsRecord({PARAMS.AGG_FUNC : AGG.AVG,
-                                 PARAMS.MAPPING:map_to_list(mapping),
-                                 PARAMS.COL_FUNC:function
+        configs = ConfigsRecord({PARAMS.AGG_FUNC.__str__() : AGG.AVG.__str__(),
+                                 PARAMS.MAPPING.__str__():map_to_list(mapping),
+                                 PARAMS.COL_FUNC.__str__():function
                                  })
         recordset.configs_records["my_config"] = configs
 
         print(recordset)
         messages = []
-        for node_id in node_ids:  # one message for each node
-            message = driver.create_message(
+        for node_id in self.node_ids:  # one message for each node
+            message = self.driver.create_message(
                 content=recordset,
                 message_type=MessageType.QUERY,  # target `query` method in ClientApp
                 dst_node_id=node_id,
-                group_id=str(server_round),
+                group_id=str(self.server_round),
             )
             messages.append(message)
 
         # Send messages and wait for all results
-        replies = driver.send_and_receive(messages)
+        replies = self.driver.send_and_receive(messages)
         log(INFO, "Received %s/%s results", len(replies), len(messages))
-        answer = {AGG.SUM:0, AGG.COUNT:0}
+        answer = {AGG.SUM.__str__():0, AGG.COUNT.__str__():0}
         for rep in replies:
             if rep.has_error():
                 continue
-            query_results = rep.content.metrics_records[PARAMS.RESULTS]
+            query_results = rep.content.metrics_records[PARAMS.RESULTS.__str__()]
             # Sum metrics
             for k,v in query_results.items():
                 answer[k] += v
-        return answer[AGG.SUM]/answer[AGG.COUNT]
+        return answer[AGG.SUM.__str__()]/answer[AGG.COUNT.__str__()]
 
 app = MyServerApp()

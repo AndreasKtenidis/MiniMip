@@ -10,7 +10,7 @@ from flwr.client.typing import ClientFnExt, Mod
 
 from typing import Optional,List,Dict
 
-from server_flower import AGG,PARAMS
+from server_flower import PARAMS,AGG
 from dataset_pandas import PandasDataset
 
 fds = None  # Cache FederatedDataset
@@ -34,7 +34,7 @@ class MyClientApp(ClientApp):
         mods: Optional[list[Mod]] = None,
     ) -> None:
         super().__init__(client_fn,mods)
-        self.AGG_FUNC={AGG.SUM:self.local_sum, AGG.COUNT:self.local_count}
+        self.AGG_FUNC={AGG.SUM.__str__():self.local_sum, AGG.COUNT.__str__():self.local_count}
 
 
         @self.query()
@@ -49,20 +49,20 @@ class MyClientApp(ClientApp):
             function_string=""
             agg_functions=[]
             for label, value in msg.content.configs_records["my_config"].items():
-                if label==PARAMS.MAPPING:
+                if label==PARAMS.MAPPING.__str__():
                     mapping=list_to_map(value)
-                elif label==PARAMS.COL_FUNC:
+                elif label==PARAMS.COL_FUNC.__str__():
                     function_string=value
-                elif label == PARAMS.AGG_FUNC:
-                    if value==AGG.AVG:
-                        agg_functions.append(AGG.SUM)
-                        agg_functions.append(AGG.COUNT)
+                elif label == PARAMS.AGG_FUNC.__str__():
+                    if value==AGG.AVG.__str__():
+                        agg_functions.append(AGG.SUM.__str__())
+                        agg_functions.append(AGG.COUNT.__str__())
                     else:
                         agg_functions.append(value)
             out={}
             for agg_func in agg_functions:
                 out[agg_func]=self.AGG_FUNC[agg_func](dataset,function_string, mapping)
-            reply_content = RecordSet(metrics_records={PARAMS.RESULTS: MetricsRecord(out)})
+            reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
 
 
