@@ -68,17 +68,6 @@ class MyClientApp(ClientApp):
 
     def get_clientapp_dataset(self,partition_id: int, num_partitions: int):
         return PandasDataset(num_partitions=10, partition_id=2)
-        # # Only initialize `FederatedDataset` once
-        # global fds
-        # if fds is None:
-        #     partitioner = IidPartitioner(num_partitions=num_partitions)
-        #     fds = FederatedDataset(
-        #         dataset="scikit-learn/iris",
-        #         partitioners={"train": partitioner},
-        #     )
-        # dataset = fds.load_partition(partition_id, "train").with_format("pandas")[:]
-        # print("---<",dataset.columns)
-        # return dataset
 
     def local_sum(self,dataset,function_string,  features):
         return dataset.local_sum(function_string, features)

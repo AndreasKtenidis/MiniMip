@@ -17,6 +17,7 @@ from flwr.server.strategy import Strategy
 from flwr. server.client_manager import ClientManager
 from flwr. server.typing import ServerFn
 
+
 from server_abstract import AGG, PARAMS
 
 
@@ -75,30 +76,26 @@ class MyServerApp(ServerApp):
 
         my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
 
-        executor = FlowerExecutor(driver, node_ids, server_round)
-        mx = executor.AVG('x', my_mapping)
-        my = executor.AVG('y', my_mapping)
-        mxy = executor.AVG('x*y', my_mapping)
-        sx = math.sqrt(executor.AVG('x**2', my_mapping) - mx ** 2)
-        sy = math.sqrt(
-            executor.AVG('y**2', my_mapping) - my ** 2)
-        print("!!!!!!!!!!!",(mxy - mx * my) / (sx * sy))
+        executor = FlowerExecutor(driver, node_ids, server_round,my_mapping)
+        from abstractions import Complex_Operation
+        print("!!!!!!!!!!!", Complex_Operation(executor).value())
 
 
 
 
 
 class FlowerExecutor:
-    def __init__(self, driver, node_ids, server_round):
+    def __init__(self, driver, node_ids, server_round,mapping:Dict[str,str]):
         self.driver = driver
         self.node_ids = node_ids
         self.server_round = server_round
+        self.mapping = mapping
 
-    def AVG(self, function:str, mapping:Dict[str,str]):
+    def AVG(self, function:str):
         recordset = RecordSet()
 
         configs = ConfigsRecord({PARAMS.AGG_FUNC.__str__() : AGG.AVG.__str__(),
-                                 PARAMS.MAPPING.__str__():map_to_list(mapping),
+                                 PARAMS.MAPPING.__str__():map_to_list(self.mapping),
                                  PARAMS.COL_FUNC.__str__():function
                                  })
         recordset.configs_records["my_config"] = configs
