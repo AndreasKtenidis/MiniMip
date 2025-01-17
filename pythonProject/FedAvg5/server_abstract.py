@@ -58,11 +58,6 @@ class Assignments:
     def get_message(self):
         pass
 
-class ServerAbstract:
-    def __init__(self, dataset:str):
-        self.dataset = dataset
-        self.aggregations = Assignments(dataset)
-
 class Executor(ABC):
 
     @abstractmethod
