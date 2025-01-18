@@ -1,6 +1,7 @@
 """pandas_example: A Flower / Pandas app."""
 
 import warnings
+from abc import ABC
 
 from sympy import symbols, sympify
 
@@ -12,6 +13,8 @@ from typing import Optional,List,Dict
 
 from server_flower import PARAMS,AGG
 from dataset_pandas import PandasDataset
+
+from federator import NumpyClient
 
 fds = None  # Cache FederatedDataset
 
@@ -25,8 +28,19 @@ def list_to_map(lst: List[str])->Dict[str, str]:
     return out
 
 
+def local_count(dataset, function_string, features):
+    return dataset.local_count(function_string,  features)
 
-class MyClientApp(ClientApp):
+
+def local_sum(dataset, function_string, features):
+    return dataset.local_sum(function_string, features)
+
+
+def get_clientapp_dataset(partition_id: int, num_partitions: int):
+    return PandasDataset(partition_id=partition_id,num_partitions=num_partitions)
+
+
+class MyClientApp(ClientApp,  ABC):
 
 
 
@@ -36,7 +50,7 @@ class MyClientApp(ClientApp):
         mods: Optional[list[Mod]] = None,
     ) -> None:
         super().__init__(client_fn,mods)
-        self.AGG_FUNC={AGG.SUM.__str__():self.local_sum, AGG.COUNT.__str__():self.local_count}
+        self.AGG_FUNC={AGG.SUM.__str__(): local_sum, AGG.COUNT.__str__(): local_count}
 
 
         @self.query()
@@ -45,7 +59,7 @@ class MyClientApp(ClientApp):
             partition_id = context.node_config["partition-id"]
             num_partitions = context.node_config["num-partitions"]
 
-            dataset = self.get_clientapp_dataset(partition_id, num_partitions)
+            dataset = get_clientapp_dataset(partition_id, num_partitions)
             print(msg.content.configs_records["my_config"])
             mapping={}
             function_string=""
@@ -64,19 +78,8 @@ class MyClientApp(ClientApp):
             out={}
             for agg_func in agg_functions:
                 out[agg_func]=self.AGG_FUNC[agg_func](dataset,function_string, mapping)
-            print('Pepy',out)
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
-
-
-    def get_clientapp_dataset(self,partition_id: int, num_partitions: int):
-        return PandasDataset(num_partitions=10, partition_id=2)
-
-    def local_sum(self,dataset,function_string,  features):
-        return dataset.local_sum(function_string, features)
-
-    def local_count(self,dataset,function_string,  features):
-        return dataset.local_count(function_string,  features)
 
 
 def replace_variables(expression, mapping):

@@ -45,8 +45,6 @@ class MyServerApp(ServerApp):
             self.my_main(driver,context)
 
     def my_main(self, driver: Driver, context: Context) -> None:
-
-        min_nodes = 2
         num_rounds = 2
         min_nodes = 10
         fraction_sample = 1
@@ -56,7 +54,20 @@ class MyServerApp(ServerApp):
         log(INFO, "Starting round %s/%s", server_round + 1, num_rounds)
 
         # Loop and wait until enough nodes are available.
+
+        node_ids, all_node_ids = self.get_available_nodes(driver,min_nodes,fraction_sample)
+
+        log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
+
+        my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
+
+        executor = FlowerExecutor(driver, node_ids, server_round,my_mapping)
+        print("!!!!!!!!!!!", Complex_Operation(executor).value())
+
+    @staticmethod
+    def get_available_nodes(driver, min_nodes, fraction_sample):
         all_node_ids = []
+        node_ids=[]
         while len(all_node_ids) < min_nodes:
             all_node_ids = driver.get_node_ids()
             if len(all_node_ids) >= min_nodes:
@@ -66,15 +77,7 @@ class MyServerApp(ServerApp):
                 break
             log(INFO, "Waiting for nodes to connect...")
             time.sleep(2)
-
-        log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
-
-        my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
-
-        executor = FlowerExecutor(driver, node_ids, server_round,my_mapping)
-        print("!!!!!!!!!!!", Complex_Operation(executor).value())
-
-
+        return node_ids,all_node_ids
 
 
 

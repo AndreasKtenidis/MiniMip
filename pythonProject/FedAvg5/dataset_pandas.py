@@ -9,7 +9,7 @@ class PandasDataset(Dataset):
     # Static attribute to store the global fds object
     fds = None
 
-    def __init__(self, num_partitions,partition_id):
+    def __init__(self, partition_id, num_partitions):
         # Initialize the dataset only once
         if PandasDataset.fds is None:
             partitioner = IidPartitioner(num_partitions=num_partitions)

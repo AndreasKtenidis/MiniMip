@@ -43,7 +43,7 @@ class MyClientApp(ClientApp):
             partition_id = context.node_config["partition-id"]
             num_partitions = context.node_config["num-partitions"]
 
-            dataset = self.get_clientapp_dataset(partition_id, num_partitions)
+            dataset = self.get_clientapp_dataset(partition_id,num_partitions)
             print(msg.content.configs_records["my_config"])
             mapping={}
             function_string=""
@@ -65,14 +65,16 @@ class MyClientApp(ClientApp):
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
 
+    @staticmethod
+    def get_clientapp_dataset(partition_id: int, num_partitions: int):
+        return PandasDataset(partition_id=partition_id,num_partitions=num_partitions)
 
-    def get_clientapp_dataset(self,partition_id: int, num_partitions: int):
-        return PandasDataset(num_partitions=10, partition_id=2)
-
-    def local_sum(self,dataset,function_string,  features):
+    @staticmethod
+    def local_sum(dataset, function_string, features):
         return dataset.local_sum(function_string, features)
 
-    def local_count(self,dataset,function_string,  features):
+    @staticmethod
+    def local_count(dataset, function_string, features):
         return dataset.local_count(function_string,  features)
 
 
