@@ -7,7 +7,7 @@ from logging import INFO
 from typing import Optional,Dict,List
 import math
 
-from flwr.common import Context, MessageType, RecordSet, Message, ParametersRecord, ConfigsRecord
+from flwr.common import Context, MessageType, RecordSet, Message, ParametersRecord, ConfigsRecord, MetricsRecord
 from flwr.common.logger import log
 from flwr.server import Driver, ServerApp
 
@@ -116,6 +116,7 @@ class FlowerExecutor(Executor):
             # Sum metrics
             for k,v in query_results.items():
                 answer[k] += v
+            rep.create_reply(RecordSet(metrics_records={"None":MetricsRecord({"!!!":5.0})}))
         return answer[AGG.SUM.__str__()]/answer[AGG.COUNT.__str__()]
 
 app = MyServerApp()

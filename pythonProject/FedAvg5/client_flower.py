@@ -24,6 +24,8 @@ def list_to_map(lst: List[str])->Dict[str, str]:
         out[key]=value
     return out
 
+
+
 class MyClientApp(ClientApp):
 
 
@@ -62,6 +64,7 @@ class MyClientApp(ClientApp):
             out={}
             for agg_func in agg_functions:
                 out[agg_func]=self.AGG_FUNC[agg_func](dataset,function_string, mapping)
+            print('Pepy',out)
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
 
