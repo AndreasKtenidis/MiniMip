@@ -91,6 +91,27 @@ class FlowerExecutor(Executor):
     def AVG(self, function:str):
         recordset = RecordSet()
 
+        configs = ConfigsRecord({PARAMS.AGG_FUNC.__str__(): AGG.AVG.__str__(),
+                                 PARAMS.MAPPING.__str__(): map_to_list(self.mapping),
+                                 PARAMS.COL_FUNC.__str__(): function
+                                 })
+        recordset.configs_records["skata"] = configs
+
+        print(recordset)
+        messages = []
+        for node_id in self.node_ids:  # one message for each node
+            message = self.driver.create_message(
+                content=recordset,
+                message_type=MessageType.QUERY,  # target `query` method in ClientApp
+                dst_node_id=node_id,
+                group_id=str(self.server_round),
+            )
+            messages.append(message)
+
+        self.driver.push_messages(messages)
+        # -------------------------------------------------------
+        recordset = RecordSet()
+
         configs = ConfigsRecord({PARAMS.AGG_FUNC.__str__() : AGG.AVG.__str__(),
                                  PARAMS.MAPPING.__str__():map_to_list(self.mapping),
                                  PARAMS.COL_FUNC.__str__():function
