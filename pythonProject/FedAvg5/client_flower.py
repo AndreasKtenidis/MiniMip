@@ -55,6 +55,10 @@ class MyClientApp(ClientApp,  ABC):
 
         @self.query()
         def query(msg: Message, context: Context):
+            if "Statics_Start" in msg.content.configs_records:
+                return msg.create_reply(RecordSet(metrics_records={}))
+
+
             # Read the node_config to fetch data partition associated to this node
             partition_id = context.node_config["partition-id"]
             num_partitions = context.node_config["num-partitions"]

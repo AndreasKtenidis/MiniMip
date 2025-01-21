@@ -95,7 +95,7 @@ class FlowerExecutor(Executor):
                                  PARAMS.MAPPING.__str__(): map_to_list(self.mapping),
                                  PARAMS.COL_FUNC.__str__(): function
                                  })
-        recordset.configs_records["skata"] = configs
+        recordset.configs_records["Statics_Start"] = configs
 
         print(recordset)
         messages = []
