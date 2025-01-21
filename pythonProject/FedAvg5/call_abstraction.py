@@ -17,14 +17,14 @@ class Correlation:
         return self.aggregator.sum(self.x*self.y)
 
 class LocalClient(NumpyClient):
-    def global_sum(self, message, vector) -> float:
+    def global_sum(self,  vector) -> float:
         return vector
 
-    def global_count(self, message, vector) -> int:
+    def global_count(self, vector) -> int:
         return vector
 
 
-f= Correlation(NumpyFedAggregator(LocalClient(),None))
+f= Correlation(NumpyFedAggregator(LocalClient()))
 print(f())
 
 

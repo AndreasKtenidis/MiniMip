@@ -14,7 +14,9 @@ from typing import Optional,List,Dict
 from server_flower import PARAMS,AGG
 from dataset_pandas import PandasDataset
 
-from federator import NumpyClient
+import numpy as np
+
+from federator import NumpyClient, NumpyFedAggregator
 
 fds = None  # Cache FederatedDataset
 
@@ -40,7 +42,9 @@ def get_clientapp_dataset(partition_id: int, num_partitions: int):
     return PandasDataset(partition_id=partition_id,num_partitions=num_partitions)
 
 
-class MyClientApp(ClientApp,  ABC):
+class MyClientApp(ClientApp,  NumpyClient):
+
+
 
 
 
@@ -50,40 +54,60 @@ class MyClientApp(ClientApp,  ABC):
         mods: Optional[list[Mod]] = None,
     ) -> None:
         super().__init__(client_fn,mods)
+        self.aggregator = NumpyFedAggregator(self)
         self.AGG_FUNC={AGG.SUM.__str__(): local_sum, AGG.COUNT.__str__(): local_count}
 
 
         @self.query()
         def query(msg: Message, context: Context):
             if "Statics_Start" in msg.content.configs_records:
-                return msg.create_reply(RecordSet(metrics_records={}))
+                return self.algorithm_start(msg, context)
+            else:
+                return self.algorithm_step( msg, context)
 
 
-            # Read the node_config to fetch data partition associated to this node
-            partition_id = context.node_config["partition-id"]
-            num_partitions = context.node_config["num-partitions"]
+    def global_sum(self, local_sum) -> float:
+        pass
 
-            dataset = get_clientapp_dataset(partition_id, num_partitions)
-            print(msg.content.configs_records["my_config"])
-            mapping={}
-            function_string=""
-            agg_functions=[]
-            for label, value in msg.content.configs_records["my_config"].items():
-                if label==PARAMS.MAPPING.__str__():
-                    mapping=list_to_map(value)
-                elif label==PARAMS.COL_FUNC.__str__():
-                    function_string=value
-                elif label == PARAMS.AGG_FUNC.__str__():
-                    if value==AGG.AVG.__str__():
-                        agg_functions.append(AGG.SUM.__str__())
-                        agg_functions.append(AGG.COUNT.__str__())
-                    else:
-                        agg_functions.append(value)
-            out={}
-            for agg_func in agg_functions:
-                out[agg_func]=self.AGG_FUNC[agg_func](dataset,function_string, mapping)
-            reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
-            return msg.create_reply(reply_content)
+    def global_count(self, local_count) -> int:
+        pass
+
+
+    def algorithm_start(self,msg: Message, context: Context):
+        x = np.random.random(10)
+        y = np.random.random(10)
+        # aggregator = aggregator
+
+
+
+        return msg.create_reply(RecordSet(metrics_records={}))
+
+    def algorithm_step(self, msg: Message, context: Context):
+        # Read the node_config to fetch data partition associated to this node
+        partition_id = context.node_config["partition-id"]
+        num_partitions = context.node_config["num-partitions"]
+
+        dataset = get_clientapp_dataset(partition_id, num_partitions)
+        print(msg.content.configs_records["my_config"])
+        mapping = {}
+        function_string = ""
+        agg_functions = []
+        for label, value in msg.content.configs_records["my_config"].items():
+            if label == PARAMS.MAPPING.__str__():
+                mapping = list_to_map(value)
+            elif label == PARAMS.COL_FUNC.__str__():
+                function_string = value
+            elif label == PARAMS.AGG_FUNC.__str__():
+                if value == AGG.AVG.__str__():
+                    agg_functions.append(AGG.SUM.__str__())
+                    agg_functions.append(AGG.COUNT.__str__())
+                else:
+                    agg_functions.append(value)
+        out = {}
+        for agg_func in agg_functions:
+            out[agg_func] = self.AGG_FUNC[agg_func](dataset, function_string, mapping)
+        reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
+        return msg.create_reply(reply_content)
 
 
 def replace_variables(expression, mapping):
