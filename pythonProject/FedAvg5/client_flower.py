@@ -60,10 +60,36 @@ class MyClientApp(ClientApp,  NumpyClient):
 
         @self.query()
         def query(msg: Message, context: Context):
-            if "Statics_Start" in msg.content.configs_records:
-                return self.algorithm_start(msg, context)
-            else:
-                return self.algorithm_step( msg, context)
+            x = np.random.random(10)
+            y = np.random.random(10)
+            # Read the node_config to fetch data partition associated to this node
+            partition_id = context.node_config["partition-id"]
+            num_partitions = context.node_config["num-partitions"]
+            dataset = get_clientapp_dataset(partition_id, num_partitions)
+            print(dataset.get_data())
+
+            print(msg.content.configs_records["my_config"])
+            mapping = {}
+            function_string = ""
+            # agg_functions = []
+            # for label, value in msg.content.configs_records["my_config"].items():
+            #     if label == PARAMS.MAPPING.__str__():
+            #         mapping = list_to_map(value)
+            #     elif label == PARAMS.COL_FUNC.__str__():
+            #         function_string = value
+            #     elif label == PARAMS.AGG_FUNC.__str__():
+            #         if value == AGG.AVG.__str__():
+            #             agg_functions.append(AGG.SUM.__str__())
+            #             agg_functions.append(AGG.COUNT.__str__())
+            #         else:
+            #             agg_functions.append(value)
+            out = {}
+            # for agg_func in agg_functions:
+            #     out[agg_func] = self.AGG_FUNC[agg_func](dataset, function_string, mapping)
+
+            self.aggregator.sum(x+y)
+            reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
+            return msg.create_reply(reply_content)
 
 
     def global_sum(self, local_sum) -> float:
@@ -71,43 +97,6 @@ class MyClientApp(ClientApp,  NumpyClient):
 
     def global_count(self, local_count) -> int:
         pass
-
-
-    def algorithm_start(self,msg: Message, context: Context):
-        x = np.random.random(10)
-        y = np.random.random(10)
-        # aggregator = aggregator
-
-
-
-        return msg.create_reply(RecordSet(metrics_records={}))
-
-    def algorithm_step(self, msg: Message, context: Context):
-        # Read the node_config to fetch data partition associated to this node
-        partition_id = context.node_config["partition-id"]
-        num_partitions = context.node_config["num-partitions"]
-
-        dataset = get_clientapp_dataset(partition_id, num_partitions)
-        print(msg.content.configs_records["my_config"])
-        mapping = {}
-        function_string = ""
-        agg_functions = []
-        for label, value in msg.content.configs_records["my_config"].items():
-            if label == PARAMS.MAPPING.__str__():
-                mapping = list_to_map(value)
-            elif label == PARAMS.COL_FUNC.__str__():
-                function_string = value
-            elif label == PARAMS.AGG_FUNC.__str__():
-                if value == AGG.AVG.__str__():
-                    agg_functions.append(AGG.SUM.__str__())
-                    agg_functions.append(AGG.COUNT.__str__())
-                else:
-                    agg_functions.append(value)
-        out = {}
-        for agg_func in agg_functions:
-            out[agg_func] = self.AGG_FUNC[agg_func](dataset, function_string, mapping)
-        reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
-        return msg.create_reply(reply_content)
 
 
 def replace_variables(expression, mapping):

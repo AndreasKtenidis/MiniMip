@@ -6,3 +6,5 @@ pythonProject/ML1/__pycache__/flowerClient.cpython-311.pyc
 pythonProject/ML1/__pycache__/flowerClient.cpython-311.pyc
 *.pyc
 *.pyc
+pythonProject/FedAvg5/database.db
+*.db

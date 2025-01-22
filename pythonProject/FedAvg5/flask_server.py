@@ -76,6 +76,7 @@ def get_operations():
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM operations')
     users = cursor.fetchall()
+    connection.commit()
     connection.close()
     return jsonify([dict(row) for row in users]), 200
 
@@ -90,7 +91,6 @@ def add_aggregation():
     value = data.get('value')
     if not data or not client_id or not round or not agg_func or not value :
         return jsonify({"error": "Filed is missing"}), 400
-
     connection = get_db_connection()
     cursor = connection.cursor()
     cursor.execute('INSERT INTO aggregation_step (operation_id,round,client_id,agg_func,value) VALUES (?,?,?,?,?)', (operation_id,round,client_id,agg_func,value))
@@ -104,6 +104,7 @@ def get_aggregations():
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM aggregation_step')
     users = cursor.fetchall()
+    connection.commit()
     connection.close()
     return jsonify([dict(row) for row in users]), 200
 
@@ -122,7 +123,8 @@ def get_aggregation():
     if result:
         _clients = result[0]
     else:
-        print("No results found.")
+        connection.commit()
+        connection.close()
         return jsonify(None), 300
     _sum=None
     _count=None
@@ -142,10 +144,11 @@ def get_aggregation():
         result = cursor.fetchone()
         if result:
             _count = result[0]
+    connection.commit()
     connection.close()
     if agg_func == 'count':
         return jsonify(_count), 200
-    elif agg_func == 'avg' and _count!= None:
+    elif agg_func == 'avg' and _count is not None:
         return jsonify(_sum/_count), 200
     elif agg_func == 'sum':
         return jsonify(_sum ), 200
