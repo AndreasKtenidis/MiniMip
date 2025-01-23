@@ -61,8 +61,26 @@ class MyServerApp(ServerApp):
 
         my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
 
-        executor = FlowerExecutor(driver, node_ids, server_round,my_mapping)
-        print("!!!!!!!!!!!", Complex_Operation(executor).value())
+        recordset = RecordSet()
+
+        configs = ConfigsRecord({PARAMS.AGG_FUNC.__str__(): AGG.AVG.__str__(),
+                                 PARAMS.MAPPING.__str__(): map_to_list(my_mapping),
+                                 PARAMS.COL_FUNC.__str__(): "x**2"
+                                 })
+        recordset.configs_records["Statics_Start"] = configs
+
+        print(recordset)
+        messages = []
+        for node_id in node_ids:  # one message for each node
+            message = driver.create_message(
+                content=recordset,
+                message_type=MessageType.QUERY,  # target `query` method in ClientApp
+                dst_node_id=node_id,
+                group_id=str(0),
+            )
+            messages.append(message)
+
+        driver.send_and_receive(messages)
 
     @staticmethod
     def get_available_nodes(driver, min_nodes, fraction_sample):
@@ -89,26 +107,7 @@ class FlowerExecutor(Executor):
         self.mapping = mapping
 
     def AVG(self, function:str):
-        recordset = RecordSet()
 
-        configs = ConfigsRecord({PARAMS.AGG_FUNC.__str__(): AGG.AVG.__str__(),
-                                 PARAMS.MAPPING.__str__(): map_to_list(self.mapping),
-                                 PARAMS.COL_FUNC.__str__(): function
-                                 })
-        recordset.configs_records["Statics_Start"] = configs
-
-        print(recordset)
-        messages = []
-        for node_id in self.node_ids:  # one message for each node
-            message = self.driver.create_message(
-                content=recordset,
-                message_type=MessageType.QUERY,  # target `query` method in ClientApp
-                dst_node_id=node_id,
-                group_id=str(self.server_round),
-            )
-            messages.append(message)
-
-        self.driver.push_messages(messages)
         # -------------------------------------------------------
         recordset = RecordSet()
 

@@ -19,21 +19,7 @@ def get_db_connection():
 def initialize_database():
     if not os.path.exists(DATABASE):  # Check if the database file exists
         connection = get_db_connection()
-        cursor = connection.cursor()
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                email TEXT NOT NULL
-            )
-        ''')
-        cursor = connection.cursor()
-        cursor.execute('''
-                    CREATE TABLE IF NOT EXISTS operations (
-                        operation_id INTEGER PRIMARY KEY,
-                        clients INTEGER
-                    )
-                ''')
+
         cursor = connection.cursor()
         cursor.execute('''
                     CREATE TABLE IF NOT EXISTS aggregation_step (
@@ -42,43 +28,15 @@ def initialize_database():
                     client_id TEXT NOT NULL,                    
                     agg_func TEXT NOT NULL,
                     value REAL NOT NULL,
-                    PRIMARY KEY (operation_id,client_id, round, agg_func),
-                    FOREIGN KEY (operation_id) REFERENCES operations(operation_id)
+                    PRIMARY KEY (operation_id,client_id, round, agg_func)
                     )
                 ''')
-
         connection.commit()
         connection.close()
         print("Database initialized!")
 
 # Automatically initialize the database when the app starts
 initialize_database()
-
-@app.route('/add-operation', methods=['POST'])
-def add_operation():
-    data = request.args
-    operation = data.get('operation_id')
-    clients = data.get('clients')
-
-    if not operation :
-        return jsonify({"error": "Operation is required"}), 400
-
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    cursor.execute('INSERT INTO operations (operation_id,clients) VALUES (?,?)', (operation,clients))
-    connection.commit()
-    connection.close()
-    return jsonify({"message": "User added successfully!"}), 201
-
-@app.route('/operations', methods=['GET'])
-def get_operations():
-    connection = get_db_connection()
-    cursor = connection.cursor()
-    cursor.execute('SELECT * FROM operations')
-    users = cursor.fetchall()
-    connection.commit()
-    connection.close()
-    return jsonify([dict(row) for row in users]), 200
 
 # "client_id": i, "agg_func": "sum", "value":5, "round":0, "agg_id":12431257
 @app.route('/add-aggregation', methods=['POST'])
@@ -114,43 +72,35 @@ def get_aggregation():
     operation_id = data.get('operation_id')
     round = data.get('round')
     agg_func = data.get('agg_func')
+    client_count:int= int(data.get('client_count'))
 
     connection = get_db_connection()
     cursor = connection.cursor()
-    result=None
-    cursor.execute('SELECT clients FROM operations WHERE operation_id=?', (operation_id))
-    result = cursor.fetchone()
-    if result:
-        _clients = result[0]
-    else:
-        connection.commit()
-        connection.close()
-        return jsonify(None), 300
     _sum=None
     _count=None
     if agg_func == 'sum' or agg_func == 'avg':
-        cursor.execute('''SELECT sum(value) 
-                                FROM aggregation_step 
+        cursor.execute('''SELECT sum(value)
+                                FROM aggregation_step
                                 WHERE operation_id=? AND round=? AND agg_func='sum'
-                                HAVING count(value)=?''', (operation_id, round, _clients))
+                                HAVING count(value)=?''', (operation_id, round, client_count))
         result = cursor.fetchone()
         if result:
             _sum = result[0]
     if agg_func == 'count' or agg_func == 'avg':
-        cursor.execute('''SELECT sum(value) 
-                                        FROM aggregation_step 
+        cursor.execute('''SELECT sum(value)
+                                        FROM aggregation_step
                                         WHERE operation_id=? AND round=? AND agg_func='count'
-                                        HAVING count(value)=?''', (operation_id, round, _clients))
+                                        HAVING count(value)=?''', (operation_id, round, client_count))
         result = cursor.fetchone()
         if result:
             _count = result[0]
     connection.commit()
     connection.close()
-    if agg_func == 'count':
+    if agg_func == 'count' and _count is not None:
         return jsonify(_count), 200
-    elif agg_func == 'avg' and _count is not None:
+    elif agg_func == 'avg' and _count is not None and _sum is not None:
         return jsonify(_sum/_count), 200
-    elif agg_func == 'sum':
+    elif agg_func == 'sum' and _sum is not None:
         return jsonify(_sum ), 200
     else:
         return jsonify(None), 300

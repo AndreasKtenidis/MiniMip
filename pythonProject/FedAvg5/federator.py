@@ -7,22 +7,19 @@ from pyexpat.errors import messages
 class NumpyClient(ABC):
 
     @abstractmethod
-    def global_sum(self, local_sum)->float:
+    def __global_sum__(self, local_sum)->float:
         pass
 
     @abstractmethod
-    def global_count(self, local_count)->int:
+    def __global_count__(self, local_count)->int:
         pass
 
-class NumpyFedAggregator:
-    def __init__(self, client:NumpyClient):
-        self.client=client
-
     def sum(self, a):
-        return self.client.global_sum(np.sum(a))
+        return self.__global_sum__(np.sum(a))
 
-    def len(self, a):
-        return self.client.global_count(np.count(a))
+    def count(self, a):
+        return self.__global_count__(len(a))
 
     def avg(self, a):
-        return self.sum(a)/self.len(a)
+        return self.sum(a)/self.count(a)
+

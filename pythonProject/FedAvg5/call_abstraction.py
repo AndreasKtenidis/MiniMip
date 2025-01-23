@@ -17,10 +17,10 @@ class Correlation:
         return self.aggregator.sum(self.x*self.y)
 
 class LocalClient(NumpyClient):
-    def global_sum(self,  vector) -> float:
+    def __global_sum__(self, vector) -> float:
         return vector
 
-    def global_count(self, vector) -> int:
+    def __global_count__(self, vector) -> int:
         return vector
 
 
