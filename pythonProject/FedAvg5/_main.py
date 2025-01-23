@@ -1,8 +1,8 @@
 import torch
 from flwr.simulation import run_simulation
-import server_flower,client_flower
 
-
+from client_flower import MyClientApp
+from server_flower import MyServerApp
 
 NUM_PARTITIONS = 5
 DEVICE = torch.device("cpu")  # Try "cuda" to train on GPU
@@ -14,15 +14,12 @@ backend_config = {"client_resources": None}
 if DEVICE.type == "cuda":
     backend_config = {"client_resources": {"num_gpus": 1}}
 
-client = client_flower.app
-server = server_flower.app
+
 
 # Run simulation
 run_simulation(
-    server_app=server,
-    client_app=client,
+    server_app=MyServerApp(),
+    client_app=MyClientApp(),
     num_supernodes=NUM_PARTITIONS,
     backend_config=backend_config,
 )
-
-print(server)

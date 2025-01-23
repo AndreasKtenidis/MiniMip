@@ -1,7 +1,6 @@
 """pandas_example: A Flower / Pandas app."""
 
 import warnings
-from abc import ABC
 
 from sympy import symbols, sympify
 
@@ -10,8 +9,7 @@ from flwr.common import Context, Message, MetricsRecord, RecordSet
 from flwr.client.typing import ClientFnExt, Mod
 import time
 from typing import Optional,List,Dict
-import random
-from flask_communicator import Flask_Communicator
+from flask_communicator import FlaskCommunicator
 from server_flower import PARAMS,AGG
 from dataset_pandas import PandasDataset
 
@@ -79,7 +77,7 @@ class MyClientApp(ClientApp):
 class FlowerNumpyClient(NumpyClient):
     def __init__(self, node_id:int, client_count, operation_id:int):
         super().__init__()
-        self.communicator = Flask_Communicator()
+        self.communicator = FlaskCommunicator()
         self.node_id = node_id
         self.operation_id = operation_id
         self.agg_round=0

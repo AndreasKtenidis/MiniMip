@@ -5,9 +5,9 @@ import time
 
 from logging import INFO
 from typing import Optional,Dict,List
-import math
 
-from flwr.common import Context, MessageType, RecordSet, Message, ParametersRecord, ConfigsRecord, MetricsRecord
+
+from flwr.common import Context, MessageType, RecordSet,  ConfigsRecord
 from flwr.common.logger import log
 from flwr.server import Driver, ServerApp
 
@@ -17,8 +17,7 @@ from flwr.server.strategy import Strategy
 from flwr. server.client_manager import ClientManager
 from flwr. server.typing import ServerFn
 
-from abstractions import Complex_Operation
-from server_abstract import AGG, PARAMS,Executor
+from server_abstract import AGG, PARAMS
 
 def map_to_list(my_mapping: Dict[str, str])->List[str]:
     out = []
@@ -51,8 +50,6 @@ class MyServerApp(ServerApp):
         fraction_sample = 1
 
         server_round = 0
-        log(INFO, "")  # Add newline for log readability
-        log(INFO, "Starting round %s/%s", server_round + 1, num_rounds)
 
         # Loop and wait until enough nodes are available.
 
@@ -94,7 +91,6 @@ class MyServerApp(ServerApp):
                 num_to_sample = int(len(all_node_ids) * fraction_sample)
                 node_ids = random.sample(all_node_ids, num_to_sample)
                 break
-            log(INFO, "Waiting for nodes to connect...")
             time.sleep(2)
         return node_ids,all_node_ids
 

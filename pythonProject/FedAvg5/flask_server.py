@@ -44,15 +44,15 @@ def add_aggregation():
     data = request.args
     operation_id =data.get('operation_id')
     client_id = data.get('client_id')
-    round = data.get('round')
+    exec_round = data.get('round')
     agg_func = data.get('agg_func')
     value = data.get('value')
-    print("Adding Data from client: ",client_id,"round: ",round,"agg_func: ",agg_func,"value: ",value,"")
-    if not data or not client_id or not round or not agg_func or not value :
+    print("Adding Data from client: ",client_id,"round: ",exec_round,"agg_func: ",agg_func,"value: ",value,"")
+    if not data or not client_id or not exec_round or not agg_func or not value :
         return jsonify({"error": "Filed is missing"}), 400
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute('INSERT INTO aggregation_step (operation_id,round,client_id,agg_func,value) VALUES (?,?,?,?,?)', (operation_id,round,client_id,agg_func,value))
+    cursor.execute('INSERT INTO aggregation_step (operation_id,round,client_id,agg_func,value) VALUES (?,?,?,?,?)', (operation_id,exec_round,client_id,agg_func,value))
     connection.commit()
     connection.close()
     return jsonify({"message": "User added successfully!"}), 201
@@ -71,7 +71,7 @@ def get_aggregations():
 def get_aggregation():
     data = request.args
     operation_id = data.get('operation_id')
-    round = data.get('round')
+    exec_round = data.get('round')
     agg_func = data.get('agg_func')
     client_count:int= int(data.get('client_count'))
 
@@ -84,7 +84,7 @@ def get_aggregation():
         cursor.execute('''SELECT sum(value)
                                 FROM aggregation_step
                                 WHERE operation_id=? AND round=? AND agg_func='sum'
-                                HAVING count(value)=?''', (operation_id, round, client_count))
+                                HAVING count(value)=?''', (operation_id, exec_round, client_count))
         result = cursor.fetchone()
         if result:
             _sum = result[0]
@@ -92,7 +92,7 @@ def get_aggregation():
         cursor.execute('''SELECT sum(value)
                                         FROM aggregation_step
                                         WHERE operation_id=? AND round=? AND agg_func='count'
-                                        HAVING count(value)=?''', (operation_id, round, client_count))
+                                        HAVING count(value)=?''', (operation_id, exec_round, client_count))
         result = cursor.fetchone()
         if result:
             _count = result[0]
