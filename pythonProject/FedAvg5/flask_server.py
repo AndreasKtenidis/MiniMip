@@ -47,6 +47,7 @@ def add_aggregation():
     round = data.get('round')
     agg_func = data.get('agg_func')
     value = data.get('value')
+    print("Adding Data from client: ",client_id,"round: ",round,"agg_func: ",agg_func,"value: ",value,"")
     if not data or not client_id or not round or not agg_func or not value :
         return jsonify({"error": "Filed is missing"}), 400
     connection = get_db_connection()
@@ -78,6 +79,7 @@ def get_aggregation():
     cursor = connection.cursor()
     _sum=None
     _count=None
+    print(client_count)
     if agg_func == 'sum' or agg_func == 'avg':
         cursor.execute('''SELECT sum(value)
                                 FROM aggregation_step
@@ -96,6 +98,8 @@ def get_aggregation():
             _count = result[0]
     connection.commit()
     connection.close()
+    print("Count",_count)
+    print("Sum",_sum)
     if agg_func == 'count' and _count is not None:
         return jsonify(_count), 200
     elif agg_func == 'avg' and _count is not None and _sum is not None:

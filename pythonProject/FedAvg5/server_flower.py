@@ -99,47 +99,4 @@ class MyServerApp(ServerApp):
 
 
 
-class FlowerExecutor(Executor):
-    def __init__(self, driver, node_ids, server_round,mapping:Dict[str,str]):
-        self.driver = driver
-        self.node_ids = node_ids
-        self.server_round = server_round
-        self.mapping = mapping
-
-    def AVG(self, function:str):
-
-        # -------------------------------------------------------
-        recordset = RecordSet()
-
-        configs = ConfigsRecord({PARAMS.AGG_FUNC.__str__() : AGG.AVG.__str__(),
-                                 PARAMS.MAPPING.__str__():map_to_list(self.mapping),
-                                 PARAMS.COL_FUNC.__str__():function
-                                 })
-        recordset.configs_records["my_config"] = configs
-
-        print(recordset)
-        messages = []
-        for node_id in self.node_ids:  # one message for each node
-            message = self.driver.create_message(
-                content=recordset,
-                message_type=MessageType.QUERY,  # target `query` method in ClientApp
-                dst_node_id=node_id,
-                group_id=str(self.server_round),
-            )
-            messages.append(message)
-
-        # Send messages and wait for all results
-        replies = self.driver.send_and_receive(messages)
-        log(INFO, "Received %s/%s results", len(replies), len(messages))
-        answer = {AGG.SUM.__str__():0, AGG.COUNT.__str__():0}
-        for rep in replies:
-            if rep.has_error():
-                continue
-            query_results = rep.content.metrics_records[PARAMS.RESULTS.__str__()]
-            # Sum metrics
-            for k,v in query_results.items():
-                answer[k] += v
-            rep.create_reply(RecordSet(metrics_records={"None":MetricsRecord({"!!!":5.0})}))
-        return answer[AGG.SUM.__str__()]/answer[AGG.COUNT.__str__()]
-
 app = MyServerApp()

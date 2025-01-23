@@ -15,6 +15,9 @@ from flask_communicator import Flask_Communicator
 from server_flower import PARAMS,AGG
 from dataset_pandas import PandasDataset
 
+from flwr.common.logger import log
+from logging import INFO
+
 import numpy as np
 
 from federator import NumpyClient
@@ -50,15 +53,17 @@ class MyClientApp(ClientApp):
         mods: Optional[list[Mod]] = None,
     ) -> None:
         super().__init__(client_fn,mods)
-        self.AGG_FUNC={AGG.SUM.__str__(): local_sum, AGG.COUNT.__str__(): local_count}
 
         @self.query()
         def query(msg: Message, context: Context):
+
             node_id = context.node_id
+            log(INFO, "Calling on ")
+            print(log)
             partition_id = context.node_config["partition-id"]
             num_partitions = context.node_config["num-partitions"]
             #
-            operation_id = random.randint(1, 1000)
+            operation_id = 666
             numpy_client:FlowerNumpyClient = FlowerNumpyClient(node_id,num_partitions,operation_id)
             x = np.random.random(10)
             y = np.random.random(10)
