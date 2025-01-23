@@ -70,7 +70,8 @@ class MyClientApp(ClientApp):
             # Read the node_config to fetch data partition associated to this node
 
             dataset = get_clientapp_dataset(partition_id, num_partitions)
-            numpy_client.count(x**2)
+            print("------>",numpy_client.count(x**2))
+
             out = {}
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
@@ -85,18 +86,17 @@ class FlowerNumpyClient(NumpyClient):
         self.client_count=client_count
 
     def __global_sum__(self, local_sum2) -> float:
-
-
         self.communicator.add_aggregation(self.operation_id,
                                           self.node_id,
                                           self.agg_round,
                                           "sum",
                                           local_sum2)
-        answer = None
-        while (answer is None)  or (answer=='null'):
-            answer = self.communicator.get_aggregation(self.operation_id, self.agg_round, "sum", self.client_count)
-
-        pass
+        while 1 == 1:
+            answer = self.communicator.get_aggregation(self.operation_id, self.agg_round, "count", self.client_count)
+            if answer == 'null' or (answer is None) or answer == '':
+                time.sleep(1)
+            else:
+                return answer
 
     def __global_count__(self, local_count2) -> int:
         self.communicator.add_aggregation(self.operation_id,
@@ -104,15 +104,12 @@ class FlowerNumpyClient(NumpyClient):
                                           self.agg_round,
                                           "count",
                                           local_count2)
-        answer = None
         while 1==1:
             answer = self.communicator.get_aggregation(self.operation_id,self.agg_round,"count",self.client_count)
-            if answer!='null' and (answer is not None) and answer!='':
-                print(answer,'<-------tousatana')
+            if answer=='null' or (answer is None) or answer=='':
+                time.sleep(1)
             else:
-                print(answer+1-1,"Pepy")
-                break
-        pass
+                return answer
 
 def replace_variables(expression, mapping):
     """

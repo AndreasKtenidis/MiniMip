@@ -45,8 +45,9 @@ class MyServerApp(ServerApp):
             self.my_main(driver,context)
 
     def my_main(self, driver: Driver, context: Context) -> None:
+        print(driver.get_node_ids())
         num_rounds = 2
-        min_nodes = 10
+        min_nodes = 5
         fraction_sample = 1
 
         server_round = 0

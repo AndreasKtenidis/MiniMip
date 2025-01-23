@@ -8,3 +8,5 @@ pythonProject/ML1/__pycache__/flowerClient.cpython-311.pyc
 *.pyc
 pythonProject/FedAvg5/database.db
 *.db
+.idea/dataSources.local.xml
+.idea/dataSources.xml

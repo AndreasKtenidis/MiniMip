@@ -4,7 +4,7 @@ import server_flower,client_flower
 
 
 
-NUM_PARTITIONS = 10
+NUM_PARTITIONS = 5
 DEVICE = torch.device("cpu")  # Try "cuda" to train on GPU
 
 
