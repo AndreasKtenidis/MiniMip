@@ -4,7 +4,7 @@
 from flask import Flask, request, jsonify
 import sqlite3
 import os
-
+from constants import Database as meta
 app = Flask(__name__)
 
 DATABASE = "database.db"
@@ -38,15 +38,18 @@ def initialize_database():
 # Automatically initialize the database when the app starts
 initialize_database()
 
-# "client_id": i, "agg_func": "sum", "value":5, "round":0, "agg_id":12431257
+def get_attribute(args, key:meta):
+   return args.get(key.value)
+
+
 @app.route('/add-aggregation', methods=['POST'])
 def add_aggregation():
     data = request.args
-    operation_id =data.get('operation_id')
-    client_id = data.get('client_id')
-    exec_round = data.get('round')
-    agg_func = data.get('agg_func')
-    value = data.get('value')
+    operation_id =get_attribute(data, meta.OPP)
+    client_id = get_attribute(data, meta.CLIENT)
+    exec_round = get_attribute(data, meta.ROUND)
+    agg_func = get_attribute(data, meta.AGG)
+    value = get_attribute(data, meta.VALUE)
     print("Adding Data from client: ",client_id,"round: ",exec_round,"agg_func: ",agg_func,"value: ",value,"")
     if not data or not client_id or not exec_round or not agg_func or not value :
         return jsonify({"error": "Filed is missing"}), 400
@@ -70,10 +73,10 @@ def get_aggregations():
 @app.route('/get_aggregation', methods=['GET'])
 def get_aggregation():
     data = request.args
-    operation_id = data.get('operation_id')
-    exec_round = data.get('round')
-    agg_func = data.get('agg_func')
-    client_count:int= int(data.get('client_count'))
+    operation_id = get_attribute(data, meta.OPP)
+    exec_round = get_attribute(data, meta.ROUND)
+    agg_func = get_attribute(data, meta.AGG)
+    client_count:int= int(get_attribute(data, meta.CLIENT_COUNT))
 
     connection = get_db_connection()
     cursor = connection.cursor()
@@ -134,86 +137,3 @@ if __name__ == '__main__':
 
 
 
-
-
-#
-#
-#
-#
-# @app.route('/records', methods=['GET'])
-# def get_records():
-#     """
-#     Reads all records or a specific record by name.
-#     """
-#     operation_id = request.args.get('operation_id')  # Query parameter to filter by name
-#     round = request.args.get('round')  # Query parameter to filter by name
-#     with open(DATA_FILE, 'r') as f:
-#         aggregations = json.load(f)
-#     if aggregations[operation_id]['client_count']== len(aggregations[operation_id][round]):
-#         answer = 0
-#         for record in aggregations[operation_id][round]:
-#             answer += record['value']
-#         return jsonify({'answer':answer}), 200
-#     return jsonify({}), 200
-#
-#
-# @app.route('/records', methods=['POST'])
-# def add_record():
-#     """
-#     Adds a new record.
-#     """
-#     record = request.get_json()
-#     with open(DATA_FILE, 'r') as f:
-#         aggregations = json.load(f)
-#
-#     # data = {"client_id": "7435844", "agg_func": "sum", "value":5, "round":0, "operation_id":12431253}
-#     operation_id = record.pop("operation_id", None)
-#
-#     if operation_id is None:
-#         return jsonify({"error": "The operation_id and round of execution are not defined"}), 400
-#     elif 'client_count' in record:
-#         if operation_id not in aggregations:
-#             aggregations[operation_id] = {}
-#         aggregations[operation_id]['client_count']=record['client_count']
-#     else:
-#         round = record.pop("round", None)
-#         if operation_id not in aggregations:
-#             aggregations[operation_id] = {}
-#             aggregations[operation_id][round] =[]
-#         elif round not in aggregations[operation_id]:
-#             aggregations[operation_id][round] =[]
-#         # Check if the client id has already been examined for the round
-#         if any(r['client_id'] == record['client_id'] for r in aggregations[operation_id][round]):
-#             return jsonify({"error": "The client has already submitted it's value"}), 400
-#         aggregations[operation_id][round].append(record)
-#     with open(DATA_FILE, 'w') as f:
-#         json.dump(aggregations, f, indent=2)
-#     return jsonify({"message": "Record added", "record": record}), 201
-#
-#
-# #
-# # @app.route('/records', methods=['DELETE'])
-# # def delete_record():
-# #     """
-# #     Deletes a record by name.
-# #     """
-# #     record = request.get_json()
-# #     name = record.get('client_id')
-# #     if not name:
-# #         return jsonify({"error": "Name is required to delete a record"}), 400
-# #
-# #     with open(DATA_FILE, 'r') as f:
-# #         records = json.load(f)
-# #
-# #     new_records = [r for r in records if r['client_id'] != name]
-# #     if len(new_records) == len(records):
-# #         return jsonify({"message": "Record not found"}), 404
-# #
-# #     with open(DATA_FILE, 'w') as f:
-# #         json.dump(new_records, f, indent=2)
-# #
-# #     return jsonify({"message": "Record deleted", "name": name}), 200
-#
-#
-# if __name__ == '__main__':
-#     app.run(debug=True)

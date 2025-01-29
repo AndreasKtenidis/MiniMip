@@ -10,7 +10,7 @@ from flwr.client.typing import ClientFnExt, Mod
 import time
 from typing import Optional,List,Dict
 from flask_communicator import FlaskCommunicator
-from server_flower import PARAMS,AGG
+from constants import PARAMS,AGG
 from dataset_pandas import PandasDataset
 
 from flwr.common.logger import log
@@ -18,7 +18,7 @@ from logging import INFO
 
 import numpy as np
 
-from federator import NumpyClient
+from federator import NumpyAggregatorClient
 
 fds = None  # Cache FederatedDataset
 
@@ -62,7 +62,7 @@ class MyClientApp(ClientApp):
             num_partitions = context.node_config["num-partitions"]
             #
             operation_id = 666
-            numpy_client:FlowerNumpyClient = FlowerNumpyClient(node_id,num_partitions,operation_id)
+            numpy_client:FlowerNumpyAggregatorClient = FlowerNumpyAggregatorClient(node_id, num_partitions, operation_id)
             x = np.random.random(10)
             y = np.random.random(10)
             # Read the node_config to fetch data partition associated to this node
@@ -74,7 +74,7 @@ class MyClientApp(ClientApp):
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
 
-class FlowerNumpyClient(NumpyClient):
+class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
     def __init__(self, node_id:int, client_count, operation_id:int):
         super().__init__()
         self.communicator = FlaskCommunicator()
@@ -109,14 +109,6 @@ class FlowerNumpyClient(NumpyClient):
             else:
                 return answer
 
-def replace_variables(expression, mapping):
-    """
-    Replaces variables in a mathematical expression with new variables based on a mapping.
-    """
-    expr = sympify(expression)
-    symbol_mapping = {symbols(k): symbols(v) for k, v in mapping.items()}
-    updated_expr = expr.subs(symbol_mapping)
-    return str(updated_expr)
 
 
 # Flower ClientApp

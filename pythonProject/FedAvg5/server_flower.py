@@ -17,7 +17,7 @@ from flwr.server.strategy import Strategy
 from flwr. server.client_manager import ClientManager
 from flwr. server.typing import ServerFn
 
-from server_abstract import AGG, PARAMS
+from constants import AGG, PARAMS
 
 def map_to_list(my_mapping: Dict[str, str])->List[str]:
     out = []
@@ -52,9 +52,7 @@ class MyServerApp(ServerApp):
         server_round = 0
 
         # Loop and wait until enough nodes are available.
-
         node_ids, all_node_ids = self.get_available_nodes(driver,min_nodes,fraction_sample)
-
         log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
 
         my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}

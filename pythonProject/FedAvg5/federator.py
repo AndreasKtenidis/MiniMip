@@ -2,7 +2,7 @@ import numpy as np
 from abc import ABC,abstractmethod
 
 
-class NumpyClient(ABC):
+class NumpyAggregatorClient(ABC):
 
     @abstractmethod
     def __global_sum__(self, local_sum)->float:
