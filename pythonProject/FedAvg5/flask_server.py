@@ -9,8 +9,13 @@ app = Flask(__name__)
 
 DATABASE = "database.db"
 
-table_creation= '''
-                    CREATE TABLE IF NOT EXISTS aggregation_step (
+opp_table_creation = ''' CREATE TABLE operations (
+                         operation_id INTEGER PRIMARY KEY AUTOINCREMENT,                        
+                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        )
+'''
+opp_add = 'INSERT INTO operations (created_at) VALUES (CURRENT_TIMESTAMP)'
+table_creation= ''' CREATE TABLE IF NOT EXISTS aggregation_step (
                     operation_id TEXT NOT NULL,
                     round INTEGER NOT NULL,
                     client_id TEXT NOT NULL,                    
@@ -24,6 +29,7 @@ global_aggregation = '''SELECT sum(value)
                                 FROM aggregation_step
                                 WHERE operation_id=? AND round=? AND agg_func=?
                                 HAVING count(value)=?'''
+select_all = '''SELECT * FROM aggregation_step'''
 
 # Function to get a database connection
 def get_db_connection():
@@ -38,6 +44,7 @@ def initialize_database():
 
         cursor = connection.cursor()
         cursor.execute(table_creation)
+        cursor.execute(opp_table_creation)
         connection.commit()
         connection.close()
         print("Database initialized!")
@@ -48,6 +55,19 @@ initialize_database()
 def get_attribute(args, key:Database):
    return args.get(key.value)
 
+
+
+
+@app.route('/add_operation', methods=['GET'])
+def add_operation():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute(opp_add)
+    new_operation_id = cursor.lastrowid
+    connection.commit()
+    cursor.close()
+    connection.close()
+    return jsonify(new_operation_id), 200
 
 @app.route('/add-aggregation', methods=['POST'])
 def add_aggregation():
@@ -71,7 +91,7 @@ def add_aggregation():
 def get_aggregations():
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM aggregation_step')
+    cursor.execute(select_all)
     users = cursor.fetchall()
     connection.commit()
     connection.close()
@@ -117,24 +137,3 @@ def get_aggregation():
 # Main function to run the Flask app
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

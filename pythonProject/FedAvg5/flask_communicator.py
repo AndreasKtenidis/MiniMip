@@ -5,6 +5,13 @@ class FlaskCommunicator:
     def __init__(self):
         pass
 
+    @staticmethod
+    def get_operation():
+        url = "http://localhost:5000/add_operation"
+        response = requests.get(url, params={})
+        if response.status_code == 200:
+            print("Success:", response.text)
+        return int(response.text)
 
     @staticmethod
     def add_aggregation(operation_id, client_id, agg_round, agg_func, value):

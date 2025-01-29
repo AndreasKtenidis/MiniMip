@@ -19,6 +19,9 @@ class Database(Enum):
 
 
 class PARAMS(Enum):
+    FUNCTION = "FUNCTION"
+    DATASET = "DATASET"
+    OPERATION_ID = "OPERATION_ID"
     AGG_FUNC = "AGG_FUNC"
     MAPPING = "MAPPING"
     COL_FUNC = "COL_FUNC"

@@ -17,7 +17,9 @@ from flwr.server.strategy import Strategy
 from flwr. server.client_manager import ClientManager
 from flwr. server.typing import ServerFn
 
-from constants import AGG, PARAMS
+from constants import  PARAMS
+
+from flask_communicator import FlaskCommunicator
 
 def map_to_list(my_mapping: Dict[str, str])->List[str]:
     out = []
@@ -59,10 +61,14 @@ class MyServerApp(ServerApp):
 
         recordset = RecordSet()
 
-        configs = ConfigsRecord({PARAMS.AGG_FUNC.__str__(): AGG.AVG.__str__(),
-                                 PARAMS.MAPPING.__str__(): map_to_list(my_mapping),
-                                 PARAMS.COL_FUNC.__str__(): "x**2"
+
+        operation_id = FlaskCommunicator.get_operation()
+        configs = ConfigsRecord({PARAMS.OPERATION_ID.value: operation_id,
+                                 PARAMS.MAPPING.value: map_to_list(my_mapping),
+                                 PARAMS.DATASET.value: "scikit-learn/iris",
+                                 PARAMS.FUNCTION.value: "test"
                                  })
+
         recordset.configs_records["Statics_Start"] = configs
 
         print(recordset)
@@ -91,7 +97,5 @@ class MyServerApp(ServerApp):
                 break
             time.sleep(2)
         return node_ids,all_node_ids
-
-
 
 app = MyServerApp()
