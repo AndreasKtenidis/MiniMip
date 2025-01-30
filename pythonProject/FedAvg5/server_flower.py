@@ -1,5 +1,5 @@
 """pandas_example: A Flower / Pandas app."""
-
+import json
 import random
 import time
 
@@ -40,7 +40,6 @@ class MyServerApp(ServerApp):
             server_fn: Optional[ServerFn] = None,
     ):
         super().__init__(server,config,strategy,client_manager,server_fn)
-
         @self.main()
         def main(driver: Driver, context: Context) -> None:
             self.my_main(driver,context)
@@ -54,7 +53,7 @@ class MyServerApp(ServerApp):
         server_round = 0
 
         # Loop and wait until enough nodes are available.
-        node_ids, all_node_ids = self.get_available_nodes(driver,min_nodes,fraction_sample)
+        node_ids, all_node_ids = get_available_nodes(driver,min_nodes,fraction_sample)
         log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
 
         my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
@@ -62,14 +61,14 @@ class MyServerApp(ServerApp):
         recordset = RecordSet()
 
 
-        operation_id = FlaskCommunicator.get_operation()
+        operation_id = FlaskCommunicator.get_operation(len(node_ids))
         configs = ConfigsRecord({PARAMS.OPERATION_ID.value: operation_id,
-                                 PARAMS.MAPPING.value: map_to_list(my_mapping),
+                                 PARAMS.MAPPING.value: json.dumps(my_mapping),
                                  PARAMS.DATASET.value: "scikit-learn/iris",
                                  PARAMS.FUNCTION.value: "test"
                                  })
 
-        recordset.configs_records["Statics_Start"] = configs
+        recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
 
         print(recordset)
         messages = []
@@ -84,18 +83,18 @@ class MyServerApp(ServerApp):
 
         driver.send_and_receive(messages)
 
-    @staticmethod
-    def get_available_nodes(driver, min_nodes, fraction_sample):
-        all_node_ids = []
-        node_ids=[]
-        while len(all_node_ids) < min_nodes:
-            all_node_ids = driver.get_node_ids()
-            if len(all_node_ids) >= min_nodes:
-                # Sample nodes
-                num_to_sample = int(len(all_node_ids) * fraction_sample)
-                node_ids = random.sample(all_node_ids, num_to_sample)
-                break
-            time.sleep(2)
-        return node_ids,all_node_ids
+
+def get_available_nodes(driver, min_nodes, fraction_sample):
+    all_node_ids = []
+    node_ids=[]
+    while len(all_node_ids) < min_nodes:
+        all_node_ids = driver.get_node_ids()
+        if len(all_node_ids) >= min_nodes:
+            # Sample nodes
+            num_to_sample = int(len(all_node_ids) * fraction_sample)
+            node_ids = random.sample(all_node_ids, num_to_sample)
+            break
+        time.sleep(2)
+    return node_ids,all_node_ids
 
 app = MyServerApp()

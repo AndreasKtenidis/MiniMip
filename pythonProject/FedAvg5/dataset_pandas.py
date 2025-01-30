@@ -2,10 +2,9 @@ from flwr_datasets.partitioner import IidPartitioner
 from flwr_datasets import FederatedDataset
 from sympy import symbols, sympify
 
-from dataset_abstract import Dataset
 
 
-class PandasDataset(Dataset):
+class PandasDataset():
     # Static attribute to store the global fds object
     fds = None
 
@@ -25,16 +24,7 @@ class PandasDataset(Dataset):
         """Returns the dataset loaded into pandas format."""
         return self.dataset
 
-    def local_sum(self, function_string, mapping):
-        d_mapping={}
-        for k in mapping.keys():
-            d_mapping[k]="self.dataset['"+mapping[k]+"']"
-        expression = replace_variables(function_string, d_mapping)
-        expression = "(" + expression + ").sum()"
-        return eval(expression)
 
-    def local_count(self, function_string, mapping):
-        return self.dataset[get_variable(mapping)].count()+0.0
 
 def replace_variables(expression, mapping):
     """
@@ -48,3 +38,6 @@ def replace_variables(expression, mapping):
 def get_variable(mapping):
     for value in mapping.values():
         return value
+#
+# dataset=PandasDataset(0,3)
+# print(dataset.get_data()['Species'].values)

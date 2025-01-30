@@ -1,5 +1,5 @@
 """pandas_example: A Flower / Pandas app."""
-
+import json
 import warnings
 
 from sympy import symbols, sympify
@@ -12,9 +12,7 @@ from typing import Optional,List,Dict
 from flask_communicator import FlaskCommunicator
 from constants import PARAMS,AGG
 from dataset_pandas import PandasDataset
-
-from flwr.common.logger import log
-from logging import INFO
+import inspect
 
 import numpy as np
 
@@ -32,19 +30,15 @@ def list_to_map(lst: List[str])->Dict[str, str]:
     return out
 
 
-def local_count(dataset, function_string, features):
-    return dataset.local_count(function_string,  features)
 
 
-def local_sum(dataset, function_string, features):
-    return dataset.local_sum(function_string, features)
+
+def test(x,y):
+    pass
 
 
-def get_clientapp_dataset(partition_id: int, num_partitions: int):
-    return PandasDataset(partition_id=partition_id,num_partitions=num_partitions)
 
 class MyClientApp(ClientApp):
-
     def __init__(
         self,
         client_fn: Optional[ClientFnExt] = None,  # Only for backward compatibility
@@ -54,25 +48,50 @@ class MyClientApp(ClientApp):
 
         @self.query()
         def query(msg: Message, context: Context):
-
-            node_id = context.node_id
-            log(INFO, "Calling on ")
-            print(log)
-            partition_id = context.node_config["partition-id"]
-            num_partitions = context.node_config["num-partitions"]
+            print(msg)
+            # Fetching variables from the message and its context
+            partition_id,num_partitions,node_id = get_context(context)
+            operation_id,mapping_string,dataset_name,function_string = get_configs(msg)
+            # Creating the Aggregator
+            aggregator: FlowerNumpyAggregatorClient = FlowerNumpyAggregatorClient(node_id, num_partitions,
+                                                                                  operation_id)
+            # Getting the Dataset and mapping attributes to variables
+            mapping = json.loads(mapping_string)
+            dataset = get_clientapp_dataset(partition_id,num_partitions).get_data()
+            for key,value in mapping.items():
+                mapping[key]=dataset[value].values
             #
-            operation_id = 666
-            numpy_client:FlowerNumpyAggregatorClient = FlowerNumpyAggregatorClient(node_id, num_partitions, operation_id)
+            # Mapping the vars into the corresponding vectors
+
+
+
+
+
             x = np.random.random(10)
             y = np.random.random(10)
             # Read the node_config to fetch data partition associated to this node
 
-            dataset = get_clientapp_dataset(partition_id, num_partitions)
-            print("------>",numpy_client.count(x**2))
+            print("------>",aggregator.count(x**2))
 
             out = {}
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
+
+        @staticmethod
+        def get_context(context: Context):
+            return context.node_config["partition-id"],context.node_config["num-partitions"],context.node_id
+
+        @staticmethod
+        def get_configs(msg: Message):
+            configs = msg.content.configs_records[PARAMS.OPERATION_ID.value]
+            return (configs[PARAMS.OPERATION_ID.value],
+                    configs[PARAMS.MAPPING.value],
+                    configs[PARAMS.DATASET.value],
+                    configs[PARAMS.FUNCTION.value])
+
+        @staticmethod
+        def get_clientapp_dataset(partition_id: int, num_partitions: int):
+            return PandasDataset(partition_id=partition_id, num_partitions=num_partitions)
 
 class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
     def __init__(self, node_id:int, client_count, operation_id:int):
@@ -87,10 +106,10 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
         self.communicator.add_aggregation(self.operation_id,
                                           self.node_id,
                                           self.agg_round,
-                                          "sum",
+                                          AGG.SUM,
                                           local_sum2)
         while 1 == 1:
-            answer = self.communicator.get_aggregation(self.operation_id, self.agg_round, "count", self.client_count)
+            answer = self.communicator.get_aggregation(self.operation_id, self.agg_round, AGG.COUNT, self.client_count)
             if answer == 'null' or (answer is None) or answer == '':
                 time.sleep(1)
             else:
@@ -100,16 +119,19 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
         self.communicator.add_aggregation(self.operation_id,
                                           self.node_id,
                                           self.agg_round,
-                                          "count",
+                                          AGG.COUNT,
                                           local_count2)
         while 1==1:
-            answer = self.communicator.get_aggregation(self.operation_id,self.agg_round,"count",self.client_count)
+            answer = self.communicator.get_aggregation(self.operation_id,self.agg_round,AGG.COUNT,self.client_count)
             if answer=='null' or (answer is None) or answer=='':
                 time.sleep(1)
             else:
                 return answer
 
-
+def get_function_variables(func):
+    """Returns the parameter names of a function as a list of strings."""
+    signature = inspect.signature(func)
+    return list(signature.parameters)
 
 # Flower ClientApp
 app = MyClientApp()

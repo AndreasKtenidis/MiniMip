@@ -6,9 +6,9 @@ class FlaskCommunicator:
         pass
 
     @staticmethod
-    def get_operation():
+    def get_operation(client_count):
         url = "http://localhost:5000/add_operation"
-        response = requests.get(url, params={})
+        response = requests.get(url, params={Database.CLIENT_COUNT.value:client_count})
         if response.status_code == 200:
             print("Success:", response.text)
         return int(response.text)

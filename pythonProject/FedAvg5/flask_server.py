@@ -11,10 +11,11 @@ DATABASE = "database.db"
 
 opp_table_creation = ''' CREATE TABLE operations (
                          operation_id INTEGER PRIMARY KEY AUTOINCREMENT,                        
-                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                         client_count INTEGER
                         )
 '''
-opp_add = 'INSERT INTO operations (created_at) VALUES (CURRENT_TIMESTAMP)'
+opp_add = 'INSERT INTO operations (client_count) VALUES (?)'
 table_creation= ''' CREATE TABLE IF NOT EXISTS aggregation_step (
                     operation_id TEXT NOT NULL,
                     round INTEGER NOT NULL,
@@ -24,6 +25,8 @@ table_creation= ''' CREATE TABLE IF NOT EXISTS aggregation_step (
                     PRIMARY KEY (operation_id,client_id, round, agg_func)
                     )
                 '''
+select_all_operations = '''SELECT * FROM operations'''
+
 local_aggregation = '''INSERT INTO aggregation_step (operation_id,round,client_id,agg_func,value) VALUES (?,?,?,?,?)'''
 global_aggregation = '''SELECT sum(value)
                                 FROM aggregation_step
@@ -41,7 +44,6 @@ def get_db_connection():
 def initialize_database():
     if not os.path.exists(DATABASE):  # Check if the database file exists
         connection = get_db_connection()
-
         cursor = connection.cursor()
         cursor.execute(table_creation)
         cursor.execute(opp_table_creation)
@@ -55,19 +57,29 @@ initialize_database()
 def get_attribute(args, key:Database):
    return args.get(key.value)
 
-
-
-
 @app.route('/add_operation', methods=['GET'])
 def add_operation():
+    data = request.args
+    client_count=get_attribute(data, Database.CLIENT_COUNT)
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute(opp_add)
+    cursor.execute(opp_add,client_count)
     new_operation_id = cursor.lastrowid
     connection.commit()
     cursor.close()
     connection.close()
     return jsonify(new_operation_id), 200
+
+
+@app.route('/get_operations', methods=['GET'])
+def get_operations():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute(select_all_operations)
+    users = cursor.fetchall()
+    connection.commit()
+    connection.close()
+    return jsonify([dict(row) for row in users]), 200
 
 @app.route('/add-aggregation', methods=['POST'])
 def add_aggregation():
@@ -115,7 +127,7 @@ def get_aggregation():
         result = cursor.fetchone()
         if result:
             _sum = result[0]
-    if agg_func == 'count' or agg_func == AGG.AVG.value:
+    if agg_func == AGG.COUNT.value or agg_func == AGG.AVG.value:
         cursor.execute(global_aggregation, (operation_id, exec_round,AGG.COUNT.value, client_count))
         result = cursor.fetchone()
         if result:
