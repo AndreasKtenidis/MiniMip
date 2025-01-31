@@ -35,47 +35,56 @@ class MyClientApp(ClientApp):
 
         @self.query()
         def query(msg: Message, context: Context):
-            print(msg)
             # Fetching variables from the message and its context
-            partition_id,num_partitions,node_id = get_context(context)
-            operation_id,mapping_string,dataset_name,function_string = get_configs(msg)
+            partition_id,num_partitions,node_id = MyClientApp.get_context(context)
+            operation_id,mapping_string,dataset_name,function_string = MyClientApp.get_configs(msg)
+
             # Creating the Aggregator
             aggregator: FlowerNumpyAggregatorClient = FlowerNumpyAggregatorClient(node_id, num_partitions,
                                                                                   operation_id)
             # Getting the Dataset and mapping attributes to variables
             mapping = json.loads(mapping_string)
-            dataset = get_clientapp_dataset(partition_id,num_partitions).get_data()
+            dataset = MyClientApp.get_clientapp_dataset(partition_id,num_partitions).get_data()
             input={}
             for key,value in mapping.items():
                 input[key]=dataset[value].values
-            #
-            # Mapping the vars into the corresponding vectors
+
+            # Getting and executing the function
             func = Avg_Power(aggregator)
-            print("!!!!!!!!!!! Nai", func.compute(input['x']))
+            answer = MyClientApp.map_and_execute(func.compute, input)
 
+            # Printing the answer
+            print(answer)
             out = {}
-
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
 
-        
+    @staticmethod
+    def get_context(context: Context):
+        return context.node_config["partition-id"],context.node_config["num-partitions"],context.node_id
 
+    @staticmethod
+    def get_configs(msg: Message):
+        configs = msg.content.configs_records[PARAMS.OPERATION_ID.value]
+        return (configs[PARAMS.OPERATION_ID.value],
+                configs[PARAMS.MAPPING.value],
+                configs[PARAMS.DATASET.value],
+                configs[PARAMS.FUNCTION.value])
 
-        @staticmethod
-        def get_context(context: Context):
-            return context.node_config["partition-id"],context.node_config["num-partitions"],context.node_id
+    @staticmethod
+    def get_clientapp_dataset(partition_id: int, num_partitions: int):
+        return PandasDataset(partition_id=partition_id, num_partitions=num_partitions)
 
-        @staticmethod
-        def get_configs(msg: Message):
-            configs = msg.content.configs_records[PARAMS.OPERATION_ID.value]
-            return (configs[PARAMS.OPERATION_ID.value],
-                    configs[PARAMS.MAPPING.value],
-                    configs[PARAMS.DATASET.value],
-                    configs[PARAMS.FUNCTION.value])
+    @staticmethod
+    def map_and_execute(func, data_dict):
+        # Get function parameters
+        params = inspect.signature(func).parameters
+        param_names = params.keys()
+        # Extract relevant arguments from the dictionary
+        mapped_args = {param: data_dict[param] for param in param_names if param in data_dict}
+        # Execute the function with the mapped arguments
+        return func(**mapped_args)
 
-        @staticmethod
-        def get_clientapp_dataset(partition_id: int, num_partitions: int):
-            return PandasDataset(partition_id=partition_id, num_partitions=num_partitions)
 
 class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
     def __init__(self, node_id:int, client_count, operation_id:int):
@@ -112,10 +121,7 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
             else:
                 return answer
 
-def get_function_variables(func):
-    """Returns the parameter names of a function as a list of strings."""
-    signature = inspect.signature(func)
-    return list(signature.parameters)
+
 
 # Flower ClientApp
 app = MyClientApp()
