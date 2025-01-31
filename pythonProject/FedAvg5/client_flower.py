@@ -52,7 +52,7 @@ class MyClientApp(ClientApp):
             answer = MyClientApp.map_and_execute(func.compute, local_input)
 
             # Printing the answer
-            out = {'answer':json.dumps(answer)}
+            out = {'answer':float(answer)}
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
 
@@ -84,7 +84,6 @@ class MyClientApp(ClientApp):
 
 
 class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
-
 
     def __init__(self, node_id:int, client_count, operation_id:int):
         super().__init__()
