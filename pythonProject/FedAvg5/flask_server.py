@@ -127,7 +127,7 @@ def get_aggregation():
     _count=None
     print(client_count)
 
-    print("==>",agg_func,AGG.SUM.value,AGG.AVG.value,AGG.COUNT.value)
+
     if agg_func == AGG.SUM.value or agg_func == AGG.AVG.value:
         cursor.execute(global_sum, (operation_id, exec_round, client_count))
 
@@ -135,6 +135,7 @@ def get_aggregation():
         if result:
             _sum = result[0]
     if agg_func == AGG.COUNT.value or agg_func == AGG.AVG.value:
+        print("==>", agg_func, AGG.COUNT.value)
         cursor.execute(global_count, (operation_id, exec_round, client_count))
         print(global_count)
         print(operation_id, exec_round, client_count)

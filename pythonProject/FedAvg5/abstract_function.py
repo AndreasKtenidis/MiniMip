@@ -9,7 +9,7 @@ class AggFunc(ABC):
     def compute(self,*args, **kwargs):
         pass
 
-class Avg_Power(AggFunc):
+class AvgPower(AggFunc):
     def compute(self, x):
         y = x ** 2
-        return self.agg_client.sum(y)
+        return self.agg_client.avg(y)

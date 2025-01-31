@@ -2,22 +2,20 @@
 import json
 import warnings
 
-from sympy import symbols, sympify
-
 from flwr.client import ClientApp
 from flwr.common import Context, Message, MetricsRecord, RecordSet
 from flwr.client.typing import ClientFnExt, Mod
 import time
-from typing import Optional,List,Dict
+from typing import Optional
+
+
 from flask_communicator import FlaskCommunicator
 from constants import PARAMS,AGG
 from dataset_pandas import PandasDataset
 import inspect
 
-import numpy as np
-
 from federator import NumpyAggregatorClient
-from abstract_function import Avg_Power
+from abstract_function import AvgPower
 
 fds = None  # Cache FederatedDataset
 
@@ -45,16 +43,16 @@ class MyClientApp(ClientApp):
             # Getting the Dataset and mapping attributes to variables
             mapping = json.loads(mapping_string)
             dataset = MyClientApp.get_clientapp_dataset(partition_id,num_partitions).get_data()
-            input={}
+            local_input={}
             for key,value in mapping.items():
-                input[key]=dataset[value].values
+                local_input[key]=dataset[value].values
 
             # Getting and executing the function
-            func = Avg_Power(aggregator)
-            answer = MyClientApp.map_and_execute(func.compute, input)
+            func = AvgPower(aggregator)
+            answer = MyClientApp.map_and_execute(func.compute, local_input)
 
             # Printing the answer
-            print(answer)
+            print("!!!!!!!!:",answer)
             out = {}
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
@@ -87,6 +85,8 @@ class MyClientApp(ClientApp):
 
 
 class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
+
+
     def __init__(self, node_id:int, client_count, operation_id:int):
         super().__init__()
         self.communicator = FlaskCommunicator()
@@ -96,26 +96,30 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
         self.client_count=client_count
 
     def __global_sum__(self, local_sum2) -> float:
-        self.communicator.add_aggregation(self.operation_id,
-                                          self.node_id,
-                                          self.agg_round,
-                                          AGG.SUM,
-                                          local_sum2)
+        self.communicator.add_aggregation(self.operation_id, self.node_id, self.agg_round, AGG.SUM, local_sum2)
         while 1 == 1:
-            answer = self.communicator.get_aggregation(self.operation_id, self.agg_round, AGG.SUM.value, self.client_count)
+            answer = self.communicator.get_aggregation(self.operation_id, self.agg_round, AGG.SUM.value,
+                                                       self.client_count)
             if answer == 'null' or (answer is None) or answer == '':
                 time.sleep(1)
             else:
                 return answer
 
     def __global_count__(self, local_count2) -> int:
-        self.communicator.add_aggregation(self.operation_id,
-                                          self.node_id,
-                                          self.agg_round,
-                                          AGG.COUNT.value,
-                                          local_count2)
+        self.communicator.add_aggregation(self.operation_id, self.node_id, self.agg_round, AGG.COUNT.value, local_count2)
         while 1==1:
             answer = self.communicator.get_aggregation(self.operation_id,self.agg_round,AGG.COUNT.value,self.client_count)
+            if answer=='null' or (answer is None) or answer=='':
+                time.sleep(1)
+            else:
+                return answer
+
+    def __global_avg__(self, local_sum, local_count) -> int:
+        self.communicator.add_aggregation(self.operation_id,self.node_id,self.agg_round,AGG.SUM,local_sum)
+        self.communicator.add_aggregation(self.operation_id, self.node_id, self.agg_round, AGG.COUNT.value,
+                                          local_count)
+        while 1==1:
+            answer = self.communicator.get_aggregation(self.operation_id,self.agg_round,AGG.AVG.value,self.client_count)
             if answer=='null' or (answer is None) or answer=='':
                 time.sleep(1)
             else:
