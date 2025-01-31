@@ -24,6 +24,8 @@ class PandasDataset():
         """Returns the dataset loaded into pandas format."""
         return self.dataset
 
+    def get_attribute(self, value):
+        return self.dataset[value].values
 
 
 def replace_variables(expression, mapping):

@@ -21,13 +21,6 @@ from constants import  PARAMS
 
 from flask_communicator import FlaskCommunicator
 
-def map_to_list(my_mapping: Dict[str, str])->List[str]:
-    out = []
-    for key,value in my_mapping.items():
-        out.append(key)
-        out.append(value)
-    return out
-
 class MyServerApp(ServerApp):
     """A custom application that extends ServerApp."""
 
@@ -42,48 +35,45 @@ class MyServerApp(ServerApp):
         super().__init__(server,config,strategy,client_manager,server_fn)
         @self.main()
         def main(driver: Driver, context: Context) -> None:
-            self.my_main(driver,context)
+            print(driver.get_node_ids())
+            num_rounds = 2
+            min_nodes = 5
+            fraction_sample = 1
 
-    def my_main(self, driver: Driver, context: Context) -> None:
-        print(driver.get_node_ids())
-        num_rounds = 2
-        min_nodes = 5
-        fraction_sample = 1
+            server_round = 0
 
-        server_round = 0
+            # Loop and wait until enough nodes are available.
+            node_ids, all_node_ids = get_available_nodes(driver,min_nodes,fraction_sample)
+            log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
 
-        # Loop and wait until enough nodes are available.
-        node_ids, all_node_ids = get_available_nodes(driver,min_nodes,fraction_sample)
-        log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
+            my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
 
-        my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
-
-        recordset = RecordSet()
+            recordset = RecordSet()
 
 
-        operation_id = FlaskCommunicator.get_operation(len(node_ids))
-        configs = ConfigsRecord({PARAMS.OPERATION_ID.value: operation_id,
-                                 PARAMS.MAPPING.value: json.dumps(my_mapping),
-                                 PARAMS.DATASET.value: "scikit-learn/iris",
-                                 PARAMS.FUNCTION.value: "test"
-                                 })
+            operation_id = FlaskCommunicator.get_operation(len(node_ids))
+            configs = ConfigsRecord({PARAMS.OPERATION_ID.value: operation_id,
+                                     PARAMS.MAPPING.value: json.dumps(my_mapping),
+                                     PARAMS.DATASET.value: "scikit-learn/iris",
+                                     PARAMS.FUNCTION.value: "test"
+                                     })
 
-        recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
+            recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
 
-        print(recordset)
-        messages = []
-        for node_id in node_ids:  # one message for each node
-            message = driver.create_message(
-                content=recordset,
-                message_type=MessageType.QUERY,  # target `query` method in ClientApp
-                dst_node_id=node_id,
-                group_id=str(0),
-            )
-            messages.append(message)
+            print(recordset)
+            messages = []
+            for node_id in node_ids:  # one message for each node
+                message = driver.create_message(
+                    content=recordset,
+                    message_type=MessageType.QUERY,  # target `query` method in ClientApp
+                    dst_node_id=node_id,
+                    group_id=str(0),
+                )
+                messages.append(message)
 
-        answers=driver.send_and_receive(messages)
-        for rep in answers:
-            print(rep)
+            answers=driver.send_and_receive(messages)
+            for rep in answers:
+                print(rep)
 
 
 def get_available_nodes(driver, min_nodes, fraction_sample):

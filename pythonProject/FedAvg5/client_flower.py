@@ -42,10 +42,10 @@ class MyClientApp(ClientApp):
                                                                                   operation_id)
             # Getting the Dataset and mapping attributes to variables
             mapping = json.loads(mapping_string)
-            dataset = MyClientApp.get_clientapp_dataset(partition_id,num_partitions).get_data()
+            dataset = MyClientApp.get_clientapp_dataset(partition_id,num_partitions)
             local_input={}
             for key,value in mapping.items():
-                local_input[key]=dataset[value].values
+                local_input[key] = dataset.get_attribute(value)
 
             # Getting and executing the function
             func = AvgPower(aggregator)
