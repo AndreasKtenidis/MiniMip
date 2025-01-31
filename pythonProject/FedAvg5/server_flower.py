@@ -81,7 +81,9 @@ class MyServerApp(ServerApp):
             )
             messages.append(message)
 
-        driver.send_and_receive(messages)
+        answers=driver.send_and_receive(messages)
+        for rep in answers:
+            print(rep)
 
 
 def get_available_nodes(driver, min_nodes, fraction_sample):
