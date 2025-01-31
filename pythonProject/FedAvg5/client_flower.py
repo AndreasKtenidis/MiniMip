@@ -17,24 +17,11 @@ import inspect
 import numpy as np
 
 from federator import NumpyAggregatorClient
+from abstract_function import Avg_Power
 
 fds = None  # Cache FederatedDataset
 
 warnings.filterwarnings("ignore", category=UserWarning)
-
-
-def list_to_map(lst: List[str])->Dict[str, str]:
-    out = {}
-    for key,value in zip(lst[::2], lst[1::2]):
-        out[key]=value
-    return out
-
-
-
-
-
-def test(x,y):
-    pass
 
 
 
@@ -58,24 +45,21 @@ class MyClientApp(ClientApp):
             # Getting the Dataset and mapping attributes to variables
             mapping = json.loads(mapping_string)
             dataset = get_clientapp_dataset(partition_id,num_partitions).get_data()
+            input={}
             for key,value in mapping.items():
-                mapping[key]=dataset[value].values
+                input[key]=dataset[value].values
             #
             # Mapping the vars into the corresponding vectors
-
-
-
-
-
-            x = np.random.random(10)
-            y = np.random.random(10)
-            # Read the node_config to fetch data partition associated to this node
-
-            print("------>",aggregator.count(x**2))
+            func = Avg_Power(aggregator)
+            print("!!!!!!!!!!! Nai", func.compute(input['x']))
 
             out = {}
+
             reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
             return msg.create_reply(reply_content)
+
+        
+
 
         @staticmethod
         def get_context(context: Context):
@@ -109,7 +93,7 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
                                           AGG.SUM,
                                           local_sum2)
         while 1 == 1:
-            answer = self.communicator.get_aggregation(self.operation_id, self.agg_round, AGG.COUNT, self.client_count)
+            answer = self.communicator.get_aggregation(self.operation_id, self.agg_round, AGG.SUM.value, self.client_count)
             if answer == 'null' or (answer is None) or answer == '':
                 time.sleep(1)
             else:
@@ -119,10 +103,10 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
         self.communicator.add_aggregation(self.operation_id,
                                           self.node_id,
                                           self.agg_round,
-                                          AGG.COUNT,
+                                          AGG.COUNT.value,
                                           local_count2)
         while 1==1:
-            answer = self.communicator.get_aggregation(self.operation_id,self.agg_round,AGG.COUNT,self.client_count)
+            answer = self.communicator.get_aggregation(self.operation_id,self.agg_round,AGG.COUNT.value,self.client_count)
             if answer=='null' or (answer is None) or answer=='':
                 time.sleep(1)
             else:

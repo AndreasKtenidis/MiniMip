@@ -17,9 +17,9 @@ opp_table_creation = ''' CREATE TABLE operations (
 '''
 opp_add = 'INSERT INTO operations (client_count) VALUES (?)'
 table_creation= ''' CREATE TABLE IF NOT EXISTS aggregation_step (
-                    operation_id TEXT NOT NULL,
+                    operation_id INTEGER NOT NULL,
                     round INTEGER NOT NULL,
-                    client_id TEXT NOT NULL,                    
+                    client_id INTEGER NOT NULL,                    
                     agg_func TEXT NOT NULL,
                     value REAL NOT NULL,
                     PRIMARY KEY (operation_id,client_id, round, agg_func)
@@ -28,9 +28,13 @@ table_creation= ''' CREATE TABLE IF NOT EXISTS aggregation_step (
 select_all_operations = '''SELECT * FROM operations'''
 
 local_aggregation = '''INSERT INTO aggregation_step (operation_id,round,client_id,agg_func,value) VALUES (?,?,?,?,?)'''
-global_aggregation = '''SELECT sum(value)
+global_count = '''SELECT sum(value)
                                 FROM aggregation_step
-                                WHERE operation_id=? AND round=? AND agg_func=?
+                                WHERE operation_id=? AND round=? AND agg_func='COUNT'
+                                HAVING count(value)=?'''
+global_sum = '''SELECT sum(value)
+                                FROM aggregation_step
+                                WHERE operation_id=? AND round=? AND agg_func='SUM'
                                 HAVING count(value)=?'''
 select_all = '''SELECT * FROM aggregation_step'''
 
@@ -122,13 +126,18 @@ def get_aggregation():
     _sum=None
     _count=None
     print(client_count)
+
+    print("==>",agg_func,AGG.SUM.value,AGG.AVG.value,AGG.COUNT.value)
     if agg_func == AGG.SUM.value or agg_func == AGG.AVG.value:
-        cursor.execute(global_aggregation, (operation_id, exec_round,AGG.SUM.value, client_count))
+        cursor.execute(global_sum, (operation_id, exec_round, client_count))
+
         result = cursor.fetchone()
         if result:
             _sum = result[0]
     if agg_func == AGG.COUNT.value or agg_func == AGG.AVG.value:
-        cursor.execute(global_aggregation, (operation_id, exec_round,AGG.COUNT.value, client_count))
+        cursor.execute(global_count, (operation_id, exec_round, client_count))
+        print(global_count)
+        print(operation_id, exec_round, client_count)
         result = cursor.fetchone()
         if result:
             _count = result[0]

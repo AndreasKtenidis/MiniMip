@@ -13,9 +13,11 @@ class NumpyAggregatorClient(ABC):
         pass
 
     def sum(self, a):
+        print("sum", np.sum(a))
         return self.__global_sum__(np.sum(a))
 
     def count(self, a):
+        print("count", len(a))
         return self.__global_count__(len(a))
 
     def avg(self, a):
