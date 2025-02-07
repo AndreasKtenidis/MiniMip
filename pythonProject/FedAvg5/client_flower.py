@@ -15,7 +15,7 @@ from dataset_pandas import PandasDataset
 import inspect
 
 from federator import NumpyAggregatorClient
-from abstract_function import AvgPower
+from abstract_function import MeanSquare
 
 fds = None  # Cache FederatedDataset
 
@@ -48,7 +48,7 @@ class MyClientApp(ClientApp):
                 local_input[key] = dataset.get_attribute(value)
 
             # Getting and executing the function
-            func = AvgPower(aggregator)
+            func = MeanSquare(aggregator)
             answer = MyClientApp.map_and_execute(func.compute, local_input)
 
             # Printing the answer
