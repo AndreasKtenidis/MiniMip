@@ -101,6 +101,7 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
             if answer == 'null' or (answer is None) or answer == '':
                 time.sleep(1)
             else:
+                self.agg_round+=1
                 return answer
 
     def __global_count__(self, local_count2) -> int:
@@ -110,6 +111,7 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
             if answer=='null' or (answer is None) or answer=='':
                 time.sleep(1)
             else:
+                self.agg_round += 1
                 return answer
 
     def __global_avg__(self, local_sum, local_count) -> int:
@@ -121,9 +123,8 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
             if answer=='null' or (answer is None) or answer=='':
                 time.sleep(1)
             else:
+                self.agg_round += 1
                 return answer
-
-
 
 # Flower ClientApp
 app = MyClientApp()
