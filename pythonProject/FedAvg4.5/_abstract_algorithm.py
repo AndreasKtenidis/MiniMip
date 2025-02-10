@@ -2,13 +2,14 @@ from federator import NumpyAggregatorClient
 from abc import ABC, abstractmethod
 from typing import List, Type
 from _agg_function import AggFunction
+from _storage import StoredElement
 
 class RoundCall(ABC):
     def __init__(self):
         pass
 
     @abstractmethod
-    def compute(self, *values)->tuple[List[AggFunction],int]:
+    def compute(self, *values)->tuple[List[AggFunction],List[StoredElement]]:
         pass
 
 
