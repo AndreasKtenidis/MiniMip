@@ -5,19 +5,27 @@ import warnings
 from flwr.client import ClientApp
 from flwr.common import Context, Message, MetricsRecord, RecordSet
 from flwr.client.typing import ClientFnExt, Mod
-import time
-from typing import Optional
+from typing import Optional, Callable,List
+import inspect
+
+from alg1 import algorithmic_steps
+
+from numpy import ndarray
+
+from _agg_function import AggFunction
 
 from constants import PARAMS,AGG
 from dataset_pandas import PandasDataset
-import inspect
+from _abstract_algorithm import FederatedAlgorithm
 
-from client_server import NumpyAggregatorClient
+from _client_server import NumpyAggregatorClient
 
 
 fds = None  # Cache FederatedDataset
 
 warnings.filterwarnings("ignore", category=UserWarning)
+
+
 
 
 
@@ -35,7 +43,7 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
         def query(msg: Message, context: Context):
             # Fetching variables from the message and its context
             partition_id,num_partitions,node_id = MyClientApp.get_context(context)
-            operation_id,mapping_string,dataset_name,function_string = MyClientApp.get_configs(msg)
+            fed_round,mapping_string,dataset_name,function_string = MyClientApp.get_configs(msg)
 
             # Creating the Aggregator
 
@@ -47,17 +55,31 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
                 local_input[key] = dataset.get_attribute(value)
 
             # Getting and executing the function
-            answer={}
-            # Printing the answer
-            out = {'answer':float(answer)}
-            reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
-            return msg.create_reply(reply_content)
+            alg = FederatedAlgorithm(algorithmic_steps)
+            func:Callable[[NumpyAggregatorClient, ndarray], List[AggFunction]]= alg.get_operation(fed_round)[fed_round]
+            aggregations:List[AggFunction] = MyClientApp.map_and_execute(func,self,local_input)
+
+
+            return MyClientApp.reply(aggregations,msg)
+
 
     def store(self, key: str, value):
+        print('Testing')
         pass
 
     def load(self, x: str):
+        print('Testing')
         pass
+
+    @staticmethod
+    def reply(aggregations:List[AggFunction] ,msg: Message):
+        answer={}
+        for agg_func in aggregations:
+            print(agg_func)
+        # out = {'answer':float(answer)}
+        # reply_content = RecordSet(metrics_records={PARAMS.RESULTS.value: MetricsRecord(out)})
+        # return msg.create_reply(reply_content)
+
 
     @staticmethod
     def get_context(context: Context):
@@ -67,7 +89,7 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
     @staticmethod
     def get_configs(msg: Message):
         configs = msg.content.configs_records[PARAMS.OPERATION_ID.value]
-        return (configs[PARAMS.OPERATION_ID.value],
+        return (configs[PARAMS.ROUND.value],
                 configs[PARAMS.MAPPING.value],
                 configs[PARAMS.DATASET.value],
                 configs[PARAMS.FUNCTION.value])
@@ -76,8 +98,15 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
     def get_clientapp_dataset(partition_id: int, num_partitions: int):
         return PandasDataset(partition_id=partition_id, num_partitions=num_partitions)
 
-
-
+    @staticmethod
+    def map_and_execute(func:Callable[[NumpyAggregatorClient, ndarray], List[AggFunction]],client:NumpyAggregatorClient, data_dict)->List[AggFunction]:
+        # Get function parameters
+        params = inspect.signature(func).parameters
+        param_names = params.keys()
+        # Extract relevant arguments from the dictionary
+        mapped_args = {param: data_dict[param] for param in param_names if param in data_dict}
+        # Execute the function with the mapped arguments
+        return func(client,**mapped_args)
 
 
 # Flower ClientApp

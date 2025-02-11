@@ -1,5 +1,5 @@
 from federator import NumpyAggregatorClient
-from abc import ABC, abstractmethod
+from abc import ABC
 
 
 class AggFunc(ABC):

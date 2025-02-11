@@ -45,20 +45,22 @@ class MyServerApp(ServerApp):
             node_ids, all_node_ids = get_available_nodes(driver,min_nodes,fraction_sample)
             log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
 
-            my_mapping = {'x': 'SepalLengthCm', 'y': 'SepalWidthCm'}
+            my_mapping = {'x': 'SepalLengthCm','y': 'SepalWidthCm'}
 
             recordset = RecordSet()
 
 
             configs = ConfigsRecord({
-                                    PARAMS.OPERATION_ID.value: 1,
+                                     PARAMS.OPERATION_ID.value: 1,
                                      PARAMS.MAPPING.value: json.dumps(my_mapping),
                                      PARAMS.DATASET.value: "scikit-learn/iris",
-                                     PARAMS.FUNCTION.value: "test"
+                                     PARAMS.FUNCTION.value: "test",
+                                     PARAMS.ROUND.value: 0
                                      })
 
             recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
 
+            print(config)
             print(recordset)
             messages = []
             for node_id in node_ids:  # one message for each node

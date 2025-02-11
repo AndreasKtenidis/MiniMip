@@ -26,6 +26,7 @@ class PARAMS(Enum):
     MAPPING = "MAPPING"
     COL_FUNC = "COL_FUNC"
     RESULTS = "RESULTS"
+    ROUND = "ROUND"
 
     def __str__(self):
         return self.name

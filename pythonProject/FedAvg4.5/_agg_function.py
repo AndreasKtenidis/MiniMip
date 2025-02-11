@@ -1,6 +1,5 @@
-from federator import NumpyAggregatorClient
-from abc import ABC, abstractmethod
-from typing import List, Type
+
+from abc import ABC
 from numpy import ndarray
 from constants import AGG
 import numpy as np

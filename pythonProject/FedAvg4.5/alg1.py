@@ -1,15 +1,17 @@
-from typing import List, Union,Any
+from typing import List, Union, Any, Callable
 from _abstract_algorithm import AggFunction
 from _agg_function import SUM,COUNT,AVG
 from _abstract_algorithm import FederatedAlgorithm,  StoredElement
 from numpy import ndarray
-from federator import NumpyAggregatorClient
+from _client_server import NumpyAggregatorClient
 
 
 def func1(client:NumpyAggregatorClient,x:ndarray)-> List[AggFunction]:
     client.store('x',x)
-    return [SUM(x**2)]
+    return [AVG(x**2)]
 
 def func2(client:NumpyAggregatorClient,y:ndarray)-> List[AggFunction]:
     x=client.load('x')
-    return [SUM(x**2-y)]
+    return [AVG(x**2-y)]
+
+algorithmic_steps  = [func1,func2]
