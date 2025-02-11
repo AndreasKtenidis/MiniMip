@@ -25,13 +25,7 @@ fds = None  # Cache FederatedDataset
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-
-
-
-
 class MyClientApp(ClientApp,NumpyAggregatorClient):
-
-
     def __init__(
         self,
         client_fn: Optional[ClientFnExt] = None,  # Only for backward compatibility
@@ -45,8 +39,6 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
             partition_id,num_partitions,node_id = MyClientApp.get_context(context)
             fed_round,mapping_string,dataset_name,function_string = MyClientApp.get_configs(msg)
 
-            # Creating the Aggregator
-
             # Getting the Dataset and mapping attributes to variables
             mapping = json.loads(mapping_string)
             dataset = MyClientApp.get_clientapp_dataset(partition_id,num_partitions)
@@ -59,9 +51,8 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
             func:Callable[[NumpyAggregatorClient, ndarray], List[AggFunction]]= alg.get_operation(fed_round)[fed_round]
             aggregations:List[AggFunction] = MyClientApp.map_and_execute(func,self,local_input)
 
-
+            # Sending result of aggregation round
             return MyClientApp.reply(aggregations,msg)
-
 
     def store(self, key: str, value):
         print('Testing')
@@ -74,12 +65,15 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
     @staticmethod
     def reply(aggregations:List[AggFunction] ,msg: Message):
         answer={}
+        i=0
+        _metrics_records = {}
         for agg_func in aggregations:
-            print(agg_func)
-        # out = {'answer':float(answer)}
-        # reply_content = RecordSet(metrics_records={PARAMS.RESULTS.value: MetricsRecord(out)})
-        # return msg.create_reply(reply_content)
-
+            local_aggregations = agg_func.get_local_aggregations()
+            _metrics_records[str(i)]=MetricsRecord(local_aggregations)
+            i=i+1
+        reply_content = RecordSet(metrics_records=_metrics_records)
+        # reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
+        return msg.create_reply(reply_content)
 
     @staticmethod
     def get_context(context: Context):
@@ -103,8 +97,10 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
         # Get function parameters
         params = inspect.signature(func).parameters
         param_names = params.keys()
+
         # Extract relevant arguments from the dictionary
         mapped_args = {param: data_dict[param] for param in param_names if param in data_dict}
+
         # Execute the function with the mapped arguments
         return func(client,**mapped_args)
 

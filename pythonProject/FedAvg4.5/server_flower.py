@@ -39,43 +39,38 @@ class MyServerApp(ServerApp):
             min_nodes = 5
             fraction_sample = 1
 
-            server_round = 0
-
             # Loop and wait until enough nodes are available.
             node_ids, all_node_ids = get_available_nodes(driver,min_nodes,fraction_sample)
             log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
 
             my_mapping = {'x': 'SepalLengthCm','y': 'SepalWidthCm'}
 
-            recordset = RecordSet()
+            first_round(driver,node_ids,my_mapping)
 
+def first_round(driver: Driver,node_ids,my_mapping:Dict[str,str]):
+    recordset = RecordSet()
+    configs = ConfigsRecord({
+        PARAMS.OPERATION_ID.value: 1,
+        PARAMS.MAPPING.value: json.dumps(my_mapping),
+        PARAMS.DATASET.value: "scikit-learn/iris",
+        PARAMS.FUNCTION.value: "test",
+        PARAMS.ROUND.value: 0
+    })
+    recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
+    messages = []
+    for node_id in node_ids:  # one message for each node
+        message = driver.create_message(
+            content=recordset,
+            message_type=MessageType.QUERY,  # target `query` method in ClientApp
+            dst_node_id=node_id,
+            group_id=str(0),
+        )
+        messages.append(message)
 
-            configs = ConfigsRecord({
-                                     PARAMS.OPERATION_ID.value: 1,
-                                     PARAMS.MAPPING.value: json.dumps(my_mapping),
-                                     PARAMS.DATASET.value: "scikit-learn/iris",
-                                     PARAMS.FUNCTION.value: "test",
-                                     PARAMS.ROUND.value: 0
-                                     })
-
-            recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
-
-            print(config)
-            print(recordset)
-            messages = []
-            for node_id in node_ids:  # one message for each node
-                message = driver.create_message(
-                    content=recordset,
-                    message_type=MessageType.QUERY,  # target `query` method in ClientApp
-                    dst_node_id=node_id,
-                    group_id=str(0),
-                )
-                messages.append(message)
-
-            answers=driver.send_and_receive(messages)
-            for rep in answers:
-                print(rep)
-
+    answers = driver.send_and_receive(messages)
+    for rep in answers:
+        print(rep)
+        # rep.content.metrics_records
 
 def get_available_nodes(driver, min_nodes, fraction_sample):
     all_node_ids = []
