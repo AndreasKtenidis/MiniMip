@@ -18,8 +18,8 @@ class PandasDataset():
                 dataset="scikit-learn/iris",
                 partitioners={"train": partitioner}
             )
-
         # Load a specific partition and format it as pandas DataFrame
+        print('Pandas',partition_id)
         self.dataset = PandasDataset.fds.load_partition(partition_id, "train").with_format("pandas")[:]
 
     def get_data(self):
@@ -28,6 +28,6 @@ class PandasDataset():
     def get_attribute(self, value):
         return self.dataset[value].values
 
-dataset:PandasDataset =  PandasDataset(0,1)
-x:ndarray =dataset.get_attribute("SepalLengthCm")
-print(x)
+# dataset:PandasDataset =  PandasDataset(0,1)
+# x:ndarray =dataset.get_attribute("SepalLengthCm")
+# print(x)

@@ -19,7 +19,6 @@ from flwr. server.typing import ServerFn
 
 from constants import  PARAMS
 
-from flask_communicator import FlaskCommunicator
 
 class MyServerApp(ServerApp):
     """A custom application that extends ServerApp."""
@@ -51,8 +50,8 @@ class MyServerApp(ServerApp):
             recordset = RecordSet()
 
 
-            operation_id = FlaskCommunicator.get_operation(len(node_ids))
-            configs = ConfigsRecord({PARAMS.OPERATION_ID.value: operation_id,
+            configs = ConfigsRecord({
+                                    PARAMS.OPERATION_ID.value: 1,
                                      PARAMS.MAPPING.value: json.dumps(my_mapping),
                                      PARAMS.DATASET.value: "scikit-learn/iris",
                                      PARAMS.FUNCTION.value: "test"
