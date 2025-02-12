@@ -82,7 +82,8 @@ class MyServerApp(ServerApp):
             PARAMS.ROUND.value: next_round
         })
         recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
-        return MyServerApp.send_and_merge(driver,node_ids,recordset)
+        answers =  MyServerApp.send_and_merge(driver,node_ids,recordset)
+        print('!!!!!!!!',answers)
 
 
     @staticmethod
@@ -93,7 +94,7 @@ class MyServerApp(ServerApp):
                 content=recordset,
                 message_type=MessageType.QUERY,  # target `query` method in ClientApp
                 dst_node_id=node_id,
-                group_id=str(0),
+                group_id=str('0')
             )
             messages.append(message)
         #

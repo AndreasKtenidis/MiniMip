@@ -1,6 +1,6 @@
 from abc import ABC,abstractmethod
 
-class NumpyAggregatorClient(ABC):
+class LocalStorage(ABC):
 
     @abstractmethod
     def store(self, key:str, value):
