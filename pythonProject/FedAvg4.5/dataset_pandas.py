@@ -1,12 +1,8 @@
 from flwr_datasets.partitioner import IidPartitioner
 from flwr_datasets import FederatedDataset
-from sympy import symbols, sympify
-from numpy import ndarray
 
 
-
-
-class PandasDataset():
+class PandasDataset:
     # Static attribute to store the global fds object
     fds = None
 
@@ -19,7 +15,6 @@ class PandasDataset():
                 partitioners={"train": partitioner}
             )
         # Load a specific partition and format it as pandas DataFrame
-        print('Pandas',partition_id)
         self.dataset = PandasDataset.fds.load_partition(partition_id, "train").with_format("pandas")[:]
 
     def get_data(self):

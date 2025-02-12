@@ -4,7 +4,7 @@ import random
 import time
 
 from logging import INFO
-from typing import Optional,Dict,List
+from typing import Optional,Dict
 
 
 from flwr.common import Context, MessageType, RecordSet,  ConfigsRecord
@@ -17,7 +17,8 @@ from flwr.server.strategy import Strategy
 from flwr. server.client_manager import ClientManager
 from flwr. server.typing import ServerFn
 
-from constants import  PARAMS
+from _constants import  PARAMS,AGG
+
 
 
 class MyServerApp(ServerApp):
@@ -35,7 +36,7 @@ class MyServerApp(ServerApp):
         @self.main()
         def main(driver: Driver, context: Context) -> None:
             print(driver.get_node_ids())
-            num_rounds = 2
+            # num_rounds = 2
             min_nodes = 5
             fraction_sample = 1
 
@@ -67,10 +68,30 @@ def first_round(driver: Driver,node_ids,my_mapping:Dict[str,str]):
         )
         messages.append(message)
 
-    answers = driver.send_and_receive(messages)
-    for rep in answers:
-        print(rep)
-        # rep.content.metrics_records
+    #
+    replies = driver.send_and_receive(messages)
+    merge_answers(replies)
+
+def merge_answers(replies):
+    output = {}
+    aggregation = {}
+    for reply in replies:
+        answer = reply.content.metrics_records
+        for key, value in answer.items():
+            for aggFunc, values in value.items():
+                if key not in output:
+                    aggregation[key] = aggFunc
+                    output[key] = values
+                else:
+                    if aggFunc==AGG.COUNT or aggFunc==AGG.SUM or aggFunc==AGG.AVG:
+                        output[key]=output[key]+values
+    for key,value in output.items():
+        agg_func = aggregation.get(key)
+        if agg_func==AGG.AVG:
+            output[key]=output[key][0]/output[key][1]
+        else:
+            output[key] = output[key][0]
+    return output
 
 def get_available_nodes(driver, min_nodes, fraction_sample):
     all_node_ids = []

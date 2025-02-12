@@ -1,5 +1,3 @@
-"""pandas_example: A Flower / Pandas app."""
-import json
 import warnings
 
 from flwr.client import ClientApp
@@ -7,6 +5,7 @@ from flwr.common import Context, Message, MetricsRecord, RecordSet
 from flwr.client.typing import ClientFnExt, Mod
 from typing import Optional, Callable,List
 import inspect
+import json
 
 from alg1 import algorithmic_steps
 
@@ -14,7 +13,7 @@ from numpy import ndarray
 
 from _agg_function import AggFunction
 
-from constants import PARAMS,AGG
+from _constants import PARAMS
 from dataset_pandas import PandasDataset
 from _abstract_algorithm import FederatedAlgorithm
 
@@ -36,7 +35,7 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
         @self.query()
         def query(msg: Message, context: Context):
             # Fetching variables from the message and its context
-            partition_id,num_partitions,node_id = MyClientApp.get_context(context)
+            partition_id,num_partitions,node_id = MyClientApp.get__context(context)
             fed_round,mapping_string,dataset_name,function_string = MyClientApp.get_configs(msg)
 
             # Getting the Dataset and mapping attributes to variables
@@ -52,7 +51,7 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
             aggregations:List[AggFunction] = MyClientApp.map_and_execute(func,self,local_input)
 
             # Sending result of aggregation round
-            return MyClientApp.reply(aggregations,msg)
+            return MyClientApp.first_reply(aggregations, msg)
 
     def store(self, key: str, value):
         print('Testing')
@@ -63,20 +62,16 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
         pass
 
     @staticmethod
-    def reply(aggregations:List[AggFunction] ,msg: Message):
-        answer={}
-        i=0
+    def first_reply(aggregations:List[AggFunction], msg: Message):
         _metrics_records = {}
         for agg_func in aggregations:
-            local_aggregations = agg_func.get_local_aggregations()
-            _metrics_records[str(i)]=MetricsRecord(local_aggregations)
-            i=i+1
+            out = {agg_func.get_operation().value:agg_func.get_local_aggregations()}
+            _metrics_records[agg_func.get_var_name()] = MetricsRecord(out)
         reply_content = RecordSet(metrics_records=_metrics_records)
-        # reply_content = RecordSet(metrics_records={PARAMS.RESULTS.__str__(): MetricsRecord(out)})
         return msg.create_reply(reply_content)
 
     @staticmethod
-    def get_context(context: Context):
+    def get__context(context: Context):
         print(context)
         return context.node_config["partition-id"],context.node_config["num-partitions"],context.node_id
 

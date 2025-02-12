@@ -8,14 +8,6 @@ class AGG(Enum):
         return self.name
 
 
-class Database(Enum):
-    OPP = 'operation_id'
-    CLIENT = 'client_id'
-    ROUND = 'round'
-    AGG = 'agg_func'
-    VALUE = 'value'
-    CLIENT_COUNT = 'client_count'
-
 
 
 class PARAMS(Enum):

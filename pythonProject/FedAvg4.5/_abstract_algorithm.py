@@ -1,20 +1,8 @@
-from ray import client
-
 from _client_server import NumpyAggregatorClient
-from abc import ABC, abstractmethod
-from typing import List, Union,Any,Callable, Tuple
+from abc import ABC
+from typing import List, Callable
 from _agg_function import AggFunction
-from _storage import StoredElement
 from numpy import ndarray
-
-# class RoundCall(ABC):
-#     def __init__(self):
-#         pass
-#
-#     @abstractmethod
-#     def compute(self, *values)->List[Union[AggFunction,StoredElement]]:
-#         pass
-#
 
 class FederatedAlgorithm(ABC):
 
