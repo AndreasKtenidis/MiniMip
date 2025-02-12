@@ -38,20 +38,30 @@ class MyClientApp(ClientApp,NumpyAggregatorClient):
             partition_id,num_partitions,node_id = MyClientApp.get__context(context)
             fed_round,mapping_string,dataset_name,function_string = MyClientApp.get_configs(msg)
 
+            if fed_round==1:
+                print('Round',0)
+                return self.first_round(msg ,fed_round , mapping_string, partition_id, num_partitions)
+            else:
+                pass
             # Getting the Dataset and mapping attributes to variables
-            mapping = json.loads(mapping_string)
-            dataset = MyClientApp.get_clientapp_dataset(partition_id,num_partitions)
-            local_input={}
-            for key,value in mapping.items():
-                local_input[key] = dataset.get_attribute(value)
 
-            # Getting and executing the function
-            alg = FederatedAlgorithm(algorithmic_steps)
-            func:Callable[[NumpyAggregatorClient, ndarray], List[AggFunction]]= alg.get_operation(fed_round)[fed_round]
-            aggregations:List[AggFunction] = MyClientApp.map_and_execute(func,self,local_input)
 
-            # Sending result of aggregation round
-            return MyClientApp.first_reply(aggregations, msg)
+
+    def first_round(self,msg:Message ,fed_round:int , mapping_string:str, partition_id:int, num_partitions:int):
+        mapping = json.loads(mapping_string)
+        dataset = MyClientApp.get_clientapp_dataset(partition_id, num_partitions)
+        local_input = {}
+        for key, value in mapping.items():
+            local_input[key] = dataset.get_attribute(value)
+
+        # Getting and executing the function
+        alg = FederatedAlgorithm(algorithmic_steps)
+        func: Callable[[NumpyAggregatorClient, ndarray], List[AggFunction]] = alg.get_operation(fed_round)[fed_round]
+        aggregations: List[AggFunction] = MyClientApp.map_and_execute(func, self, local_input)
+
+        # Sending result of aggregation round
+        return MyClientApp.first_reply(aggregations, msg)
+
 
     def store(self, key: str, value):
         print('Testing')

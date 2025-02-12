@@ -41,69 +41,87 @@ class MyServerApp(ServerApp):
             fraction_sample = 1
 
             # Loop and wait until enough nodes are available.
-            node_ids, all_node_ids = get_available_nodes(driver,min_nodes,fraction_sample)
+            node_ids, all_node_ids = MyServerApp.get_available_nodes(driver,min_nodes,fraction_sample)
             log(INFO, "Sampled %s nodes (out of %s)", len(node_ids), len(all_node_ids))
 
             my_mapping = {'x': 'SepalLengthCm','y': 'SepalWidthCm'}
+            MyServerApp.first_round(driver,node_ids,my_mapping)
 
-            first_round(driver,node_ids,my_mapping)
+    @staticmethod
+    def get_available_nodes(driver, min_nodes, fraction_sample):
+        all_node_ids = []
+        node_ids=[]
+        while len(all_node_ids) < min_nodes:
+            all_node_ids = driver.get_node_ids()
+            if len(all_node_ids) >= min_nodes:
+                # Sample nodes
+                num_to_sample = int(len(all_node_ids) * fraction_sample)
+                node_ids = random.sample(all_node_ids, num_to_sample)
+                break
+            time.sleep(1)
+        return node_ids,all_node_ids
 
-def first_round(driver: Driver,node_ids,my_mapping:Dict[str,str]):
-    recordset = RecordSet()
-    configs = ConfigsRecord({
-        PARAMS.OPERATION_ID.value: 1,
-        PARAMS.MAPPING.value: json.dumps(my_mapping),
-        PARAMS.DATASET.value: "scikit-learn/iris",
-        PARAMS.FUNCTION.value: "test",
-        PARAMS.ROUND.value: 0
-    })
-    recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
-    messages = []
-    for node_id in node_ids:  # one message for each node
-        message = driver.create_message(
-            content=recordset,
-            message_type=MessageType.QUERY,  # target `query` method in ClientApp
-            dst_node_id=node_id,
-            group_id=str(0),
-        )
-        messages.append(message)
+    @staticmethod
+    def first_round(driver: Driver,node_ids,my_mapping:Dict[str,str]):
+        recordset = RecordSet()
+        configs = ConfigsRecord({
+            PARAMS.MAPPING.value: json.dumps(my_mapping),
+            PARAMS.DATASET.value: "scikit-learn/iris",
+            PARAMS.FUNCTION.value: "test",
+            PARAMS.ROUND.value: 0
+        })
+        recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
+        answers = MyServerApp.send_and_merge(driver,node_ids,recordset)
+        return MyServerApp.next_round(driver,node_ids,answers,1)
 
-    #
-    replies = driver.send_and_receive(messages)
-    merge_answers(replies)
+    @staticmethod
+    def next_round(driver: Driver,node_ids,answers,next_round:int):
+        recordset = RecordSet()
+        configs = ConfigsRecord({
+            PARAMS.MAPPING.value: json.dumps(answers),
+            PARAMS.ROUND.value: next_round
+        })
+        recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
+        return MyServerApp.send_and_merge(driver,node_ids,recordset)
 
-def merge_answers(replies):
-    output = {}
-    aggregation = {}
-    for reply in replies:
-        answer = reply.content.metrics_records
-        for key, value in answer.items():
-            for aggFunc, values in value.items():
-                if key not in output:
-                    aggregation[key] = aggFunc
-                    output[key] = values
-                else:
-                    if aggFunc==AGG.COUNT or aggFunc==AGG.SUM or aggFunc==AGG.AVG:
-                        output[key]=output[key]+values
-    for key,value in output.items():
-        agg_func = aggregation.get(key)
-        if agg_func==AGG.AVG:
-            output[key]=output[key][0]/output[key][1]
-        else:
-            output[key] = output[key][0]
-    return output
 
-def get_available_nodes(driver, min_nodes, fraction_sample):
-    all_node_ids = []
-    node_ids=[]
-    while len(all_node_ids) < min_nodes:
-        all_node_ids = driver.get_node_ids()
-        if len(all_node_ids) >= min_nodes:
-            # Sample nodes
-            num_to_sample = int(len(all_node_ids) * fraction_sample)
-            node_ids = random.sample(all_node_ids, num_to_sample)
-            break
-        time.sleep(2)
-    return node_ids,all_node_ids
+    @staticmethod
+    def send_and_merge(driver: Driver,node_ids,recordset):
+        messages = []
+        for node_id in node_ids:  # one message for each node
+            message = driver.create_message(
+                content=recordset,
+                message_type=MessageType.QUERY,  # target `query` method in ClientApp
+                dst_node_id=node_id,
+                group_id=str(0),
+            )
+            messages.append(message)
+        #
+        replies = driver.send_and_receive(messages)
+        return MyServerApp.merge_answers(replies)
+
+    @staticmethod
+    def merge_answers(replies):
+        output = {}
+        aggregation = {}
+        for reply in replies:
+            answer = reply.content.metrics_records
+            for key, value in answer.items():
+                for aggFunc, values in value.items():
+                    if key not in output:
+                        aggregation[key] = aggFunc
+                        output[key] = values
+                    else:
+                        if aggFunc==AGG.COUNT.value or aggFunc==AGG.SUM.value or aggFunc==AGG.AVG.value:
+                            output[key]=output[key]+values
+        for key,value in output.items():
+            agg_func = aggregation.get(key)
+            if agg_func==AGG.AVG:
+                output[key]=output[key][0]/output[key][1]
+            else:
+                output[key] = output[key][0]
+        return output
+
+
 
 app = MyServerApp()

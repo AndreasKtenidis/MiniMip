@@ -1,7 +1,6 @@
 from typing import List, Union, Any, Callable
 from _abstract_algorithm import AggFunction
 from _agg_function import SUM,COUNT,AVG
-from _abstract_algorithm import FederatedAlgorithm,  StoredElement
 from numpy import ndarray
 from _client_server import NumpyAggregatorClient
 
