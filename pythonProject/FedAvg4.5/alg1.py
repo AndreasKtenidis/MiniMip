@@ -7,10 +7,11 @@ from _abstract_algorithm import FederatedAlgorithm
 
 def func1(storage:LocalStorage, x:ndarray)-> List[AggFunction]:
     storage.store('x', x)
-    return [AVG('avg_x',x**2)]
+    return [AVG('avg_x',x)]
 
 def func2(storage:LocalStorage, avg_x)-> List[AggFunction]:
     x=storage.load('x')
-    return [AVG('dev_x',(x-avg_x)**2)]
+    return [AVG('avg_x', x)]
+    # return [AVG('dev_x',(x-avg_x)**2)]
 
 algorithm   = FederatedAlgorithm(func1,func2)

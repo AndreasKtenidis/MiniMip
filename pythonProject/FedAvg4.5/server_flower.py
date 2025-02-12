@@ -35,7 +35,6 @@ class MyServerApp(ServerApp):
         super().__init__(server,config,strategy,client_manager,server_fn)
         @self.main()
         def main(driver: Driver, context: Context) -> None:
-            print(driver.get_node_ids())
             # num_rounds = 2
             min_nodes = 5
             fraction_sample = 1
@@ -72,6 +71,7 @@ class MyServerApp(ServerApp):
         })
         recordset.configs_records[PARAMS.OPERATION_ID.value] = configs
         answers = MyServerApp.send_and_merge(driver,node_ids,recordset)
+        print('1st round:',answers)
         return MyServerApp.next_round(driver,node_ids,answers,1)
 
     @staticmethod
@@ -114,10 +114,12 @@ class MyServerApp(ServerApp):
                         output[key] = values
                     else:
                         if aggFunc==AGG.COUNT.value or aggFunc==AGG.SUM.value or aggFunc==AGG.AVG.value:
-                            output[key]=output[key]+values
+                            output[key]=[a + b for a, b in zip(output[key], values)]
+        print(output)
+        print()
         for key,value in output.items():
             agg_func = aggregation.get(key)
-            if agg_func==AGG.AVG:
+            if agg_func==AGG.AVG.value:
                 output[key]=output[key][0]/output[key][1]
             else:
                 output[key] = output[key][0]
