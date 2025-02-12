@@ -11,5 +11,6 @@ class AggFunc(ABC):
 
 class MeanSquare(AggFunc):
     def compute(self, x):
-        y = x ** 2
-        return self.agg_client.avg(y)
+        y = self.agg_client.avg(x)
+        z=y-x
+        return self.agg_client.avg(z**2)

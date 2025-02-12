@@ -7,6 +7,7 @@ from flwr.common import Context, Message, MetricsRecord, RecordSet
 from flwr.client.typing import ClientFnExt, Mod
 import time
 from typing import Optional
+import numpy as np
 
 
 from flask_communicator import FlaskCommunicator
@@ -93,7 +94,7 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
         self.agg_round=0
         self.client_count=client_count
 
-    def __global_sum__(self, local_sum2) -> float:
+    def __global_sum__(self, local_sum2):
         self.communicator.add_aggregation(self.operation_id, self.node_id, self.agg_round, AGG.SUM, local_sum2)
         while 1 == 1:
             answer = self.communicator.get_aggregation(self.operation_id, self.agg_round, AGG.SUM.value,
@@ -102,9 +103,9 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
                 time.sleep(1)
             else:
                 self.agg_round+=1
-                return answer
+                return np.array(float(answer))
 
-    def __global_count__(self, local_count2) -> int:
+    def __global_count__(self, local_count2):
         self.communicator.add_aggregation(self.operation_id, self.node_id, self.agg_round, AGG.COUNT.value, local_count2)
         while 1==1:
             answer = self.communicator.get_aggregation(self.operation_id,self.agg_round,AGG.COUNT.value,self.client_count)
@@ -112,9 +113,9 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
                 time.sleep(1)
             else:
                 self.agg_round += 1
-                return answer
+                return np.array(int(answer))
 
-    def __global_avg__(self, local_sum, local_count) -> int:
+    def __global_avg__(self, local_sum, local_count):
         self.communicator.add_aggregation(self.operation_id,self.node_id,self.agg_round,AGG.SUM,local_sum)
         self.communicator.add_aggregation(self.operation_id, self.node_id, self.agg_round, AGG.COUNT.value,
                                           local_count)
@@ -124,7 +125,7 @@ class FlowerNumpyAggregatorClient(NumpyAggregatorClient):
                 time.sleep(1)
             else:
                 self.agg_round += 1
-                return answer
+                return np.array(float(answer))
 
 # Flower ClientApp
 app = MyClientApp()
