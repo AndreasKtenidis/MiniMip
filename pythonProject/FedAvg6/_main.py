@@ -1,8 +1,8 @@
 import torch
 from flwr.simulation import run_simulation
 
-from client.client_flower import MyClientApp
-from pythonProject.FedAvg6.server.server_flower import MyServerApp
+from client.flower_client import MyClientApp
+from pythonProject.FedAvg6.server.flower_server import MyServerApp
 
 NUM_PARTITIONS = 5
 DEVICE = torch.device("cpu")  # Try "cuda" to train on GPU

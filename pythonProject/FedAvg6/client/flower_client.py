@@ -15,7 +15,7 @@ from constants import PARAMS,AGG
 from dataset.dataset_pandas import PandasDataset
 import inspect
 
-from client.federator import NumpyAggregationClient
+from client.aggregation_client import NumpyAggregationClient
 from function.abstract_function import MeanSquare
 
 fds = None  # Cache FederatedDataset
