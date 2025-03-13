@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package aggregator;
+
+service Aggregator{
+  // A simple RPC.
+  //
+  // Obtains the MessageResponse at a given position.
+ rpc GetServerResponse(Agg) returns (AggResponse) {}
+
+}
+
+message Agg{
+ int32  operation_id=1;
+ string agg_func = 2;
+ int32 agg_round = 3; // The id of the aggregation
+ repeated double values = 4;  // List (vector) of double values
+}
+
+message AggResponse{
+ double answer = 1;
+}

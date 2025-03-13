@@ -17,13 +17,13 @@ class NumpyAggregationClient(ABC):
         pass
 
     def sum(self, a):
-        return self.__global_sum__(np.sum(a))
+        return self.__global_sum__(np.sum(np.asarray(a)))
 
     def count(self, a):
-        return self.__global_count__(len(a))
+        return self.__global_count__(len(np.asarray(a)))
 
     def avg(self, a):
         print('---->',a)
         print('---->',np.sum(a))
-        return self.__global_avg__(np.sum(a),len(a))
+        return self.__global_avg__(np.sum(np.asarray(a)),len(np.asarray(a)))
 
