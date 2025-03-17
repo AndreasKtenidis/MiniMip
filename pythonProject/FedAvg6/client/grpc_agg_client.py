@@ -5,10 +5,14 @@ from constants import AGG
 import grpc_example.aggregator_pb2 as pb2
 import grpc_example.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
+from dataset.dataset_pandas import PandasDataset
+import inspect
+
+from function.abstract_function import AggFunc
 
 
 class GRPCClient(NumpyAggregationClient):
-    def __init__(self):
+    def __init__(self,client_id,client_count):
         self.channel = grpc.insecure_channel("localhost:50051")
         self.stub = pb2_grpc.AggregatorStub(self.channel)
         self.agg_round = 0
@@ -39,18 +43,46 @@ class GRPCClient(NumpyAggregationClient):
         print(f"Received response: {response.answer}")
         return response
 
+    @staticmethod
+    def get_clientapp_dataset(partition_id: int, num_partitions: int):
+        return PandasDataset(partition_id=partition_id, num_partitions=num_partitions)
 
-def run_client():
-    client = GRPCClient()
-    random_number = random.randint(1, 10)
+    @staticmethod
+    def map_and_execute(aggregation_function:AggFunc, data_dict):
+        dataset = GRPCClient.get_clientapp_dataset(partition_id, num_partitions)
+
+        # mapping = json.loads(mapping_string)
+        # dataset = MyClientApp.get_clientapp_dataset(partition_id, num_partitions)
+        # local_input = {}
+        #
+        # for key, value in mapping.items():
+        #     local_input[key] = dataset.get_attribute(value)
+        #     print(local_input[key])
+        #
+        # # Getting and executing the function
+        # func = MeanSquare(aggregator)
+        # answer = MyClientApp.map_and_execute(func.compute, local_input)
+
+
+        # Get function parameters
+        compute = aggregation_function.compute
+        params = inspect.signature(aggregation_function.compute).parameters
+        param_names = params.keys()
+        # Extract relevant arguments from the dictionary
+        mapped_args = {param: data_dict[param] for param in param_names if param in data_dict}
+        # Execute the function with the mapped arguments
+        return compute(**mapped_args)
+
+
+def run_client(client_id,client_count):
+    random_number = random.randint(1, 20)
+    client = GRPCClient(client_id,client_count)
     print(f"Client {random_number} started")
     _sum = client.__global_sum__(random_number)
     print(f"Client {random_number} sum: {_sum}")
 
-
 if __name__ == "__main__":
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-        futures = [executor.submit(run_client) for _ in range(3)]
-
+        futures = [executor.submit(run_client, client_id, 3) for client_id in range(3)]
         # Wait for all clients to finish
         concurrent.futures.wait(futures)
