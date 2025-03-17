@@ -44,7 +44,8 @@ def run_client():
     client = GRPCClient()
     random_number = random.randint(1, 10)
     print(f"Client {random_number} started")
-    client.__global_sum__(random_number)
+    _sum = client.__global_sum__(random_number)
+    print(f"Client {random_number} sum: {_sum}")
 
 
 if __name__ == "__main__":

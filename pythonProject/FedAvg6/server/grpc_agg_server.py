@@ -2,12 +2,12 @@ import grpc
 from concurrent import futures
 import grpc_example.aggregator_pb2 as pb2
 import grpc_example.aggregator_pb2_grpc as pb2_grpc
-import  aggregation_server
+import  server.aggregation_server as server
 from constants import AGG
 import asyncio  # Import asyncio to use asyncio.sleep
 import traceback
 
-class GRPCServer(pb2_grpc.AggregatorServicer, aggregation_server.NumpyAggregationServer):
+class GRPCServer(pb2_grpc.AggregatorServicer, server.NumpyAggregationServer):
     def __init__(self):
         self.operations = {}
         self.answers = {}
