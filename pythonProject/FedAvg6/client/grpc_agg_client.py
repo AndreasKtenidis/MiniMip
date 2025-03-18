@@ -1,7 +1,7 @@
 import random
 import grpc
 import concurrent.futures
-from constants import AGG
+from constants import AGG,client_count
 import grpc_example.aggregator_pb2 as pb2
 import grpc_example.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
@@ -20,6 +20,7 @@ class GRPCClient(NumpyAggregationClient):
 
     def __global_sum__(self, local_sum):
         self.agg_round += 1
+        print('!!',[local_sum])
         return self.send_aggregation_request(self.operation_id, AGG.SUM, self.agg_round, [local_sum])
 
     def __global_count__(self, local_count):
@@ -29,6 +30,7 @@ class GRPCClient(NumpyAggregationClient):
     def __global_avg__(self, local_sum, local_count):
         self.agg_round += 1
         return self.send_aggregation_request(self.operation_id, AGG.AVG, self.agg_round, [local_sum, local_count])
+
 
     def send_aggregation_request(self, operation_id, agg_func, agg_round, values):
         request = pb2.Agg(
@@ -49,7 +51,7 @@ class GRPCClient(NumpyAggregationClient):
 
     @staticmethod
     def map_and_execute(aggregation_function:AggFunc, data_dict):
-        dataset = GRPCClient.get_clientapp_dataset(partition_id, num_partitions)
+        # dataset = GRPCClient.get_clientapp_dataset(partition_id, num_partitions)
 
         # mapping = json.loads(mapping_string)
         # dataset = MyClientApp.get_clientapp_dataset(partition_id, num_partitions)
@@ -75,14 +77,14 @@ class GRPCClient(NumpyAggregationClient):
 
 
 def run_client(client_id,client_count):
-    random_number = random.randint(1, 20)
+    random_number = [1,2,3,4,5,6]
     client = GRPCClient(client_id,client_count)
-    print(f"Client {random_number} started")
-    _sum = client.__global_sum__(random_number)
+    _sum = client.sum(random_number)
     print(f"Client {random_number} sum: {_sum}")
 
 if __name__ == "__main__":
-    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-        futures = [executor.submit(run_client, client_id, 3) for client_id in range(3)]
+    # run_client(0,0)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=client_count) as executor:
+        futures = [executor.submit(run_client, client_id, client_count) for client_id in range(client_count)]
         # Wait for all clients to finish
         concurrent.futures.wait(futures)

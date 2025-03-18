@@ -2,6 +2,7 @@ from typing import List, Tuple
 
 import numpy as np
 from abc import ABC,abstractmethod
+from itertools import chain
 
 
 
@@ -9,13 +10,15 @@ from abc import ABC,abstractmethod
 class NumpyAggregationServer(ABC):
     @staticmethod
     def sum(values:List[float]):
-        return sum(values)
+        _sum = sum(chain(*values))
+        return _sum
 
     @staticmethod
     def count(values: List[float]):
-        return sum(values)
+        _count = sum(chain(*values))
+        return _count
 
     @staticmethod
     def avg(values: List[Tuple[float,float]]):
-        _avg, _count = map(sum, zip(*values))
-        return _avg /_count
+        _sum, _count = map(sum, zip(*values))
+        return _sum /_count

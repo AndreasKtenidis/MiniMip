@@ -17,6 +17,7 @@ class NumpyAggregationClient(ABC):
         pass
 
     def sum(self, a):
+        test = np.sum(np.asarray(a))
         return self.__global_sum__(np.sum(np.asarray(a)))
 
     def count(self, a):
