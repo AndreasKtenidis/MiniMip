@@ -9,18 +9,20 @@ from dataset.dataset_pandas import PandasDataset
 import inspect
 
 from function.abstract_function import AggFunc
+from function.mean_square import MeanSquare
 
 
 class GRPCClient(NumpyAggregationClient):
-    def __init__(self,client_id,client_count):
+    def __init__(self,client_id,client_count2):
         self.channel = grpc.insecure_channel("localhost:50051")
         self.stub = pb2_grpc.AggregatorStub(self.channel)
         self.agg_round = 0
         self.operation_id = 0
+        self.client_id = client_id
+        self.client_count = client_count2
 
     def __global_sum__(self, local_sum):
         self.agg_round += 1
-        print('!!',[local_sum])
         return self.send_aggregation_request(self.operation_id, AGG.SUM, self.agg_round, [local_sum])
 
     def __global_count__(self, local_count):
@@ -49,10 +51,14 @@ class GRPCClient(NumpyAggregationClient):
     def get_clientapp_dataset(partition_id: int, num_partitions: int):
         return PandasDataset(partition_id=partition_id, num_partitions=num_partitions)
 
-    @staticmethod
-    def map_and_execute(aggregation_function:AggFunc, data_dict):
-        # dataset = GRPCClient.get_clientapp_dataset(partition_id, num_partitions)
 
+    def map_and_execute(self,aggregation_function:AggFunc, mapping):
+        dataset = GRPCClient.get_clientapp_dataset(self.client_id,self.client_count )
+        local_input={}
+        for key, value in mapping.items():
+            local_input[key] = dataset.get_attribute(value)
+            print(local_input[key])
+        print('1111')
         # mapping = json.loads(mapping_string)
         # dataset = MyClientApp.get_clientapp_dataset(partition_id, num_partitions)
         # local_input = {}
@@ -67,20 +73,19 @@ class GRPCClient(NumpyAggregationClient):
 
 
         # Get function parameters
-        compute = aggregation_function.compute
+        # compute = aggregation_function.compute
         params = inspect.signature(aggregation_function.compute).parameters
         param_names = params.keys()
         # Extract relevant arguments from the dictionary
-        mapped_args = {param: data_dict[param] for param in param_names if param in data_dict}
+        mapped_args = {param: local_input[param] for param in param_names if param in mapping}
         # Execute the function with the mapped arguments
-        return compute(**mapped_args)
-
+        return aggregation_function.compute(**mapped_args)
 
 def run_client(client_id,client_count):
-    random_number = [1,2,3,4,5,6]
     client = GRPCClient(client_id,client_count)
-    _sum = client.sum(random_number)
-    print(f"Client {random_number} sum: {_sum}")
+    client.map_and_execute(aggregation_function=MeanSquare(client),mapping={'x':'SepalWidthCm'})
+
+
 
 if __name__ == "__main__":
     # run_client(0,0)
