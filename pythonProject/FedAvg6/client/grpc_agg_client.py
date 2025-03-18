@@ -10,6 +10,7 @@ import inspect
 import numpy as np
 
 from function.abstract_function import AggFunc
+from function.bivariate_statistics import PearsonCorrelation
 from function.univariate_statistics import SumOfSquares
 
 
@@ -78,7 +79,7 @@ class GRPCClient(NumpyAggregationClient):
 
 def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c)
-    answer = client.map_and_execute(agg_class=SumOfSquares,mapping={'x':'SepalWidthCm'})
+    answer = client.map_and_execute(agg_class=PearsonCorrelation,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'})
     print(answer)
 
 if __name__ == "__main__":

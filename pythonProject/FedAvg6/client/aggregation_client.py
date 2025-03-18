@@ -25,17 +25,20 @@ class NumpyAggregationClient(ABC):
         pass
 
     def sum(self, a):
-        return self.__global_sum__(np.sum(np.asarray(a)))
+        _ans = self.__global_sum__(np.sum(np.asarray(a)))
+        return _ans.answer
 
     def count(self, a):
         return self.__global_count__(len(np.asarray(a)))
 
     def avg(self, a):
-        _temp = self.__global_avg__(np.sum(np.asarray(a)),len(np.asarray(a)))
-        return _temp
+        _ans = self.__global_avg__(np.sum(np.asarray(a)),len(np.asarray(a)))
+        return _ans.answer
 
     def min(self, a):
-        return self.__global_min__(np.min(np.asarray(a)))
+        _ans = self.__global_min__(np.min(np.asarray(a)))
+        return _ans.answer
 
     def max(self, a):
-        return self.__global_max__(np.max(np.asarray(a)))
+        _ans = self.__global_max__(np.max(np.asarray(a)))
+        return _ans.answer

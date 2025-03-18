@@ -20,26 +20,5 @@ class PandasDataset:
         # Load a specific partition and format it as pandas DataFrame
         self.dataset = PandasDataset.fds.load_partition(partition_id, "train").with_format("pandas")[:]
 
-    def get_data(self):
-        """Returns the dataset loaded into pandas format."""
-        return self.dataset
-
     def get_attribute(self, value):
         return self.dataset[value].values
-
-
-def replace_variables(expression, mapping):
-    """
-    Replaces variables in a mathematical expression with new variables based on a mapping.
-    """
-    expr = sympify(expression)
-    symbol_mapping = {symbols(k): symbols(v) for k, v in mapping.items()}
-    updated_expr = expr.subs(symbol_mapping)
-    return str(updated_expr)
-
-def get_variable(mapping):
-    for value in mapping.values():
-        return value
-#
-# dataset=PandasDataset(0,3)
-# print(dataset.get_data()['Species'].values)

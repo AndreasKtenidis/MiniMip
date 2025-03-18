@@ -5,7 +5,9 @@ import math
 
 class Covariance(AggFunc):
     def compute(self, x, y):
-        return self.avg((x - self.avg(x)) * (y - self.avg(y)))
+        avg_x = self.avg(x)
+        avg_y = self.avg(y)
+        return self.avg((x - avg_x) * (y - avg_y))
 
 class PearsonCorrelation(AggFunc):
     def compute(self, x, y):

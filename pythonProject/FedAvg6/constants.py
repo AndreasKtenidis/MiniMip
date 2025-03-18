@@ -9,4 +9,4 @@ class AGG(Enum):
     def __str__(self):
         return self.name
 
-client_count:int=3
+client_count:int=2
