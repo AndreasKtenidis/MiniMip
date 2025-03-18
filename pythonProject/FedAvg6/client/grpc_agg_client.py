@@ -10,7 +10,7 @@ import inspect
 import numpy as np
 
 from function.abstract_function import AggFunc
-from function.mean_square import MeanSquare
+from function.univariate_statistics import SumOfSquares
 
 
 class GRPCClient(NumpyAggregationClient):
@@ -78,7 +78,7 @@ class GRPCClient(NumpyAggregationClient):
 
 def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c)
-    answer = client.map_and_execute(agg_class=MeanSquare,mapping={'x':'SepalWidthCm'})
+    answer = client.map_and_execute(agg_class=SumOfSquares,mapping={'x':'SepalWidthCm'})
     print(answer)
 
 if __name__ == "__main__":
