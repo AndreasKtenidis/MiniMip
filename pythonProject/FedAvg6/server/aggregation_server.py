@@ -22,3 +22,11 @@ class NumpyAggregationServer(ABC):
     def avg(values: List[Tuple[float,float]]):
         _sum, _count = map(sum, zip(*values))
         return _sum /_count
+
+    @staticmethod
+    def min(values: List[float]):
+        return min(chain(*values))
+
+    @staticmethod
+    def max(values: List[float]):
+        return max(chain(*values))

@@ -36,6 +36,10 @@ class GRPCServer(pb2_grpc.AggregatorServicer, server.NumpyAggregationServer):
                         self.answers[triple] = self.count(self.operations[triple])
                     elif request.agg_func == AGG.AVG.value:  # Corrected here
                         self.answers[triple] = self.avg(self.operations[triple])
+                    elif request.agg_func == AGG.MIN.value:
+                        self.answers[triple] = self.min(self.operations[triple])
+                    elif request.agg_func == AGG.MAX.value:  # Corrected here
+                        self.answers[triple] = self.max(self.operations[triple])
         except Exception as e:
             traceback.print_exc()
         response = pb2.AggResponse(answer= self.answers[triple])

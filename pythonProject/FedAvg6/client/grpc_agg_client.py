@@ -7,12 +7,14 @@ import grpc_example.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
 from dataset.dataset_pandas import PandasDataset
 import inspect
+import numpy as np
 
 from function.abstract_function import AggFunc
 from function.mean_square import MeanSquare
 
 
 class GRPCClient(NumpyAggregationClient):
+
     def __init__(self,client_id,client_count2):
         self.channel = grpc.insecure_channel("localhost:50051")
         self.stub = pb2_grpc.AggregatorStub(self.channel)
@@ -33,6 +35,13 @@ class GRPCClient(NumpyAggregationClient):
         self.agg_round += 1
         return self.send_aggregation_request(self.operation_id, AGG.AVG, self.agg_round, [local_sum, local_count])
 
+    def __global_min__(self, local_min):
+        self.agg_round += 1
+        return self.send_aggregation_request(self.operation_id, AGG.MIN, self.agg_round, [local_min])
+
+    def __global_max__(self, local_max):
+        self.agg_round += 1
+        return self.send_aggregation_request(self.operation_id, AGG.MAX, self.agg_round, [local_max])
 
     def send_aggregation_request(self, operation_id, agg_func, agg_round, values):
         request = pb2.Agg(
@@ -41,10 +50,8 @@ class GRPCClient(NumpyAggregationClient):
             agg_round=agg_round,
             values=values
         )
-        print(f"Sending request: {request}")
 
         response = self.stub.GetServerResponse(request)
-        print(f"Received response: {response.answer}")
         return response
 
     @staticmethod
@@ -52,25 +59,13 @@ class GRPCClient(NumpyAggregationClient):
         return PandasDataset(partition_id=partition_id, num_partitions=num_partitions)
 
 
-    def map_and_execute(self,aggregation_function:AggFunc, mapping):
+    def map_and_execute(self,agg_class:type[AggFunc], mapping):
+        aggregation_function = agg_class.__new__(agg_class)
+        aggregation_function.__init__(self)
         dataset = GRPCClient.get_clientapp_dataset(self.client_id,self.client_count )
         local_input={}
         for key, value in mapping.items():
             local_input[key] = dataset.get_attribute(value)
-            print(local_input[key])
-        print('1111')
-        # mapping = json.loads(mapping_string)
-        # dataset = MyClientApp.get_clientapp_dataset(partition_id, num_partitions)
-        # local_input = {}
-        #
-        # for key, value in mapping.items():
-        #     local_input[key] = dataset.get_attribute(value)
-        #     print(local_input[key])
-        #
-        # # Getting and executing the function
-        # func = MeanSquare(aggregator)
-        # answer = MyClientApp.map_and_execute(func.compute, local_input)
-
 
         # Get function parameters
         # compute = aggregation_function.compute
@@ -81,11 +76,10 @@ class GRPCClient(NumpyAggregationClient):
         # Execute the function with the mapped arguments
         return aggregation_function.compute(**mapped_args)
 
-def run_client(client_id,client_count):
-    client = GRPCClient(client_id,client_count)
-    client.map_and_execute(aggregation_function=MeanSquare(client),mapping={'x':'SepalWidthCm'})
-
-
+def run_client(client_id, client_c):
+    client = GRPCClient(client_id, client_c)
+    answer = client.map_and_execute(agg_class=MeanSquare,mapping={'x':'SepalWidthCm'})
+    print(answer)
 
 if __name__ == "__main__":
     # run_client(0,0)

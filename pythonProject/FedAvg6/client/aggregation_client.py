@@ -16,15 +16,26 @@ class NumpyAggregationClient(ABC):
     def __global_avg__(self, local_sum, local_count):
         pass
 
+    @abstractmethod
+    def __global_min__(self, local_min):
+        pass
+
+    @abstractmethod
+    def __global_max__(self, local_max):
+        pass
+
     def sum(self, a):
-        test = np.sum(np.asarray(a))
         return self.__global_sum__(np.sum(np.asarray(a)))
 
     def count(self, a):
         return self.__global_count__(len(np.asarray(a)))
 
     def avg(self, a):
-        print('---->',a)
-        print('---->',np.sum(a))
-        return self.__global_avg__(np.sum(np.asarray(a)),len(np.asarray(a)))
+        _temp = self.__global_avg__(np.sum(np.asarray(a)),len(np.asarray(a)))
+        return _temp
 
+    def min(self, a):
+        return self.__global_min__(np.min(np.asarray(a)))
+
+    def max(self, a):
+        return self.__global_max__(np.max(np.asarray(a)))
