@@ -10,3 +10,10 @@ pythonProject/FedAvg5/database.db
 *.db
 .idea/dataSources.local.xml
 .idea/dataSources.xml
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE from JetBrains files
+.idea/
