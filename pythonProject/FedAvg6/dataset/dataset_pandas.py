@@ -22,3 +22,9 @@ class PandasDataset:
 
     def get_attribute(self, value):
         return self.dataset[value].values
+
+    def get_type(self,attribute):
+        return self.dataset[attribute].dtype
+
+    def get_attributes(self):
+        return list(self.dataset.keys())
