@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "myflower"
+name = "pythonProject"
 version = "0.1.0"
 description = ""
 authors = ["thoubou <thoubou@gmail.com>"]
@@ -13,7 +13,8 @@ flwr-datasets = "^0.4.0"
 scipy = "^1.15.1"
 statsmodels = "^0.14.4"
 flask = "^3.1.0"
-
+grpcio = "^1.71.0"
+protobuf = "5.29.0"
 
 [build-system]
 requires = ["poetry-core"]
