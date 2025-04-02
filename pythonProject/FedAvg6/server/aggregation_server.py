@@ -10,21 +10,8 @@ from itertools import chain
 class NumpyAggregationServer(ABC):
     @staticmethod
     def sum(values:List[float]):
-        _sum = sum(chain(*values))
-        return _sum
+        return np.sum(np.array(values), axis=0).astype(np.float64)
 
-    @staticmethod
-    def count(values: List[float]):
-        _count = sum(chain(*values))
-        return _count
-
-    @staticmethod
-    def avg(values: List[Tuple[float,float]]):
-        _sum, _count = map(sum, zip(*values))
-        if _count!=0:
-            return _sum /_count
-        else:
-            return None
 
     @staticmethod
     def min(values: List[float]):

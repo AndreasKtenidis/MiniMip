@@ -8,13 +8,13 @@ class NumpyAggregationClient(ABC):
     def __global_sum__(self, local_sum):
         pass
 
-    @abstractmethod
-    def __global_count__(self, local_count):
-        pass
+    # @abstractmethod
+    # def __global_count__(self, local_count):
+    #     pass
 
-    @abstractmethod
-    def __global_avg__(self, local_sum, local_count):
-        pass
+    # @abstractmethod
+    # def __global_avg__(self, local_sum, local_count):
+    #     pass
 
     @abstractmethod
     def __global_min__(self, local_min):
@@ -29,11 +29,11 @@ class NumpyAggregationClient(ABC):
         return _ans.answer
 
     def count(self, a):
-        return self.__global_count__(len(np.asarray(a)))
+        return self.__global_sum__(len(np.asarray(a)))
 
     def avg(self, a):
-        _ans = self.__global_avg__(np.sum(np.asarray(a)),len(np.asarray(a)))
-        return _ans.answer
+        _ans = self.__global_sum__(np.stack((np.sum(np.asarray(a)), len(np.asarray(a))), axis=0))
+        return _ans.answer[0]/_ans.answer[1]
 
     def min(self, a):
         _ans = self.__global_min__(np.min(np.asarray(a)))

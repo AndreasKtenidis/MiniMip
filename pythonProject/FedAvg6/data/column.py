@@ -1,17 +1,22 @@
 from abc import ABC, abstractmethod
 class Column(ABC):
-    # def __init__(self, column_name, data_type):
-    #     self.column_name = column_name
-    #     self.data_type = data_type
 
     @abstractmethod
-    def get_type(self):
+    def count(self):
         pass
 
     @abstractmethod
-    def get_name(self):
+    def sum(self):
         pass
 
     @abstractmethod
-    def len(self):
+    def avg(self):
+        pass
+
+    @abstractmethod
+    def min(self):
+        pass
+
+    @abstractmethod
+    def max(self):
         pass

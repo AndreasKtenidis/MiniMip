@@ -6,6 +6,7 @@ import grpc_example.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
 from data.pandas.pandas_dataset import PandasDataset
 import inspect
+import numpy as np
 
 from function.abstract_function import AggFunc
 from function.bivariate_statistics import PearsonCorrelation
@@ -23,30 +24,23 @@ class GRPCClient(NumpyAggregationClient):
 
     def __global_sum__(self, local_sum):
         self.agg_round += 1
-        return self.send_aggregation_request(self.operation_id, AGG.SUM, self.agg_round, [local_sum])
-
-    def __global_count__(self, local_count):
-        self.agg_round += 1
-        return self.send_aggregation_request(self.operation_id, AGG.COUNT, self.agg_round, [local_count])
-
-    def __global_avg__(self, local_sum, local_count):
-        self.agg_round += 1
-        return self.send_aggregation_request(self.operation_id, AGG.AVG, self.agg_round, [local_sum, local_count])
+        return self.send_aggregation_request(self.operation_id, AGG.SUM, self.agg_round, np.stack(local_sum, axis=0))
 
     def __global_min__(self, local_min):
         self.agg_round += 1
-        return self.send_aggregation_request(self.operation_id, AGG.MIN, self.agg_round, [local_min])
+        return self.send_aggregation_request(self.operation_id, AGG.MIN, self.agg_round, np.stack(local_min, axis=0))
 
     def __global_max__(self, local_max):
         self.agg_round += 1
-        return self.send_aggregation_request(self.operation_id, AGG.MAX, self.agg_round, [local_max])
+        return self.send_aggregation_request(self.operation_id, AGG.MAX, self.agg_round, np.stack(local_max, axis=0))
 
     def send_aggregation_request(self, operation_id, agg_func, agg_round, values):
+
         request = pb2.Agg(
             operation_id=operation_id,
             agg_func=agg_func.value,
             agg_round=agg_round,
-            values=values
+            values=values.astype(np.float64)
         )
 
         response = self.stub.GetServerResponse(request)

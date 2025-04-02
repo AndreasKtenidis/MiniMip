@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from grpc_example import aggregator_pb2 as grpc__example_dot_aggregator__pb2
+import grpc_example.aggregator_pb2 as aggregator__pb2
 
 GRPC_GENERATED_VERSION = '1.71.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in grpc_example/aggregator_pb2_grpc.py depends on'
+        + f' but the generated code in aggregator_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,8 +36,8 @@ class AggregatorStub(object):
         """
         self.GetServerResponse = channel.unary_unary(
                 '/aggregator.Aggregator/GetServerResponse',
-                request_serializer=grpc__example_dot_aggregator__pb2.Agg.SerializeToString,
-                response_deserializer=grpc__example_dot_aggregator__pb2.AggResponse.FromString,
+                request_serializer=aggregator__pb2.Agg.SerializeToString,
+                response_deserializer=aggregator__pb2.AggResponse.FromString,
                 _registered_method=True)
 
 
@@ -58,8 +58,8 @@ def add_AggregatorServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'GetServerResponse': grpc.unary_unary_rpc_method_handler(
                     servicer.GetServerResponse,
-                    request_deserializer=grpc__example_dot_aggregator__pb2.Agg.FromString,
-                    response_serializer=grpc__example_dot_aggregator__pb2.AggResponse.SerializeToString,
+                    request_deserializer=aggregator__pb2.Agg.FromString,
+                    response_serializer=aggregator__pb2.AggResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -87,8 +87,8 @@ class Aggregator(object):
             request,
             target,
             '/aggregator.Aggregator/GetServerResponse',
-            grpc__example_dot_aggregator__pb2.Agg.SerializeToString,
-            grpc__example_dot_aggregator__pb2.AggResponse.FromString,
+            aggregator__pb2.Agg.SerializeToString,
+            aggregator__pb2.AggResponse.FromString,
             options,
             channel_credentials,
             insecure,

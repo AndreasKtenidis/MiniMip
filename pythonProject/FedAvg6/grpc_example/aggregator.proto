@@ -18,5 +18,5 @@ message Agg{
 }
 
 message AggResponse{
- double answer = 1;
+ repeated double answer = 1;
 }

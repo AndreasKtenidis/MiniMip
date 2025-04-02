@@ -32,10 +32,10 @@ class GRPCServer(pb2_grpc.AggregatorServicer, server.NumpyAggregationServer):
                 async with self.lock:
                     if request.agg_func == AGG.SUM.value:
                         self.answers[triple] = self.sum(self.operations[triple])
-                    elif request.agg_func == AGG.COUNT.value:
-                        self.answers[triple] = self.count(self.operations[triple])
-                    elif request.agg_func == AGG.AVG.value:  # Corrected here
-                        self.answers[triple] = self.avg(self.operations[triple])
+                    # elif request.agg_func == AGG.COUNT.value:
+                    #     self.answers[triple] = self.count(self.operations[triple])
+                    # elif request.agg_func == AGG.AVG.value:  # Corrected here
+                    #     self.answers[triple] = self.avg(self.operations[triple])
                     elif request.agg_func == AGG.MIN.value:
                         self.answers[triple] = self.min(self.operations[triple])
                     elif request.agg_func == AGG.MAX.value:  # Corrected here
