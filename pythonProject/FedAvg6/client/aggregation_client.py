@@ -25,20 +25,21 @@ class NumpyAggregationClient(ABC):
         pass
 
     def sum(self, a):
-        _ans = self.__global_sum__(np.sum(np.asarray(a)))
-        return _ans.answer
+        _ans = self.__global_sum__(np.stack([np.sum(np.asarray(a))], axis=0))
+        return _ans[0]
 
     def count(self, a):
-        return self.__global_sum__(len(np.asarray(a)))
+        _ans = self.__global_sum__(np.stack([len(np.asarray(a))], axis=0))
+        return _ans[0]
 
     def avg(self, a):
-        _ans = self.__global_sum__(np.stack((np.sum(np.asarray(a)), len(np.asarray(a))), axis=0))
-        return _ans.answer[0]/_ans.answer[1]
+        _ans = self.__global_sum__(np.stack([np.sum(np.asarray(a)), len(np.asarray(a))], axis=0))
+        return _ans[0]/_ans[1]
 
     def min(self, a):
-        _ans = self.__global_min__(np.min(np.asarray(a)))
-        return _ans.answer
+        _ans = self.__global_min__(np.stack([np.min(np.asarray(a))], axis=0))
+        return _ans[0]
 
     def max(self, a):
-        _ans = self.__global_max__(np.max(np.asarray(a)))
-        return _ans.answer
+        _ans = self.__global_max__(np.stack([np.max(np.asarray(a))], axis=0))
+        return _ans[0]

@@ -35,16 +35,15 @@ class GRPCClient(NumpyAggregationClient):
         return self.send_aggregation_request(self.operation_id, AGG.MAX, self.agg_round, np.stack(local_max, axis=0))
 
     def send_aggregation_request(self, operation_id, agg_func, agg_round, values):
-
+        original_shape = values.shape
         request = pb2.Agg(
             operation_id=operation_id,
             agg_func=agg_func.value,
             agg_round=agg_round,
-            values=values.astype(np.float64)
+            values=values.flatten().astype(np.float64)
         )
-
         response = self.stub.GetServerResponse(request)
-        return response
+        return np.asarray(response.answer).reshape(original_shape)
 
     @staticmethod
     def get_clientapp_dataset(partition_id: int, num_partitions: int):
