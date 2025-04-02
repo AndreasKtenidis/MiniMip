@@ -8,14 +8,6 @@ class NumpyAggregationClient(ABC):
     def __global_sum__(self, local_sum):
         pass
 
-    # @abstractmethod
-    # def __global_count__(self, local_count):
-    #     pass
-
-    # @abstractmethod
-    # def __global_avg__(self, local_sum, local_count):
-    #     pass
-
     @abstractmethod
     def __global_min__(self, local_min):
         pass

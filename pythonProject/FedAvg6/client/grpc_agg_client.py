@@ -9,7 +9,7 @@ import inspect
 import numpy as np
 
 from function.abstract_function import AggFunc
-from function.bivariate_statistics import PearsonCorrelation
+from function.bivariate_statistics import PearsonCorrelation, LeastSquaresRegression, Covariance, SumOfProducts
 
 
 class GRPCClient(NumpyAggregationClient):
@@ -69,7 +69,7 @@ class GRPCClient(NumpyAggregationClient):
 
 def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c)
-    answer = client.map_and_execute(agg_class=PearsonCorrelation,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'})
+    answer = client.map_and_execute(agg_class=SumOfProducts,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'})
     print(answer)
 
 if __name__ == "__main__":
