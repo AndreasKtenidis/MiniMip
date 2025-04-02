@@ -7,7 +7,8 @@ service Aggregator{
   //
   // Obtains the MessageResponse at a given position.
  rpc GetServerResponse(Agg) returns (AggResponse) {}
-
+ rpc GetOperationId(Operation) returns (OperationResponse) {}
+ rpc GetRandom(Random) returns (RandomResponse) {}
 }
 
 message Agg{
@@ -18,5 +19,22 @@ message Agg{
 }
 
 message AggResponse{
+ repeated double answer = 1;
+}
+
+message Operation{
+}
+
+message OperationResponse{
+ int32  operation_id = 1;
+}
+
+message Random{
+ int32  operation_id=1;
+ int32 agg_round = 2; // The id of the aggregation
+ int32 size = 3;
+}
+
+message RandomResponse{
  repeated double answer = 1;
 }

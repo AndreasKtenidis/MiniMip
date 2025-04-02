@@ -1,7 +1,7 @@
 import grpc
 from concurrent import futures
-import grpc_example.aggregator_pb2 as pb2
-import grpc_example.aggregator_pb2_grpc as pb2_grpc
+import grpc_.aggregator_pb2 as pb2
+import grpc_.aggregator_pb2_grpc as pb2_grpc
 import  server.aggregation_server as server
 from constants import AGG,client_count
 import asyncio  # Import asyncio to use asyncio.sleep
