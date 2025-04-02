@@ -5,13 +5,13 @@ import grpc_example.aggregator_pb2 as pb2
 import grpc_example.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
 from data.numpy_dataset.multiset import Multiset
-from data.pandas.pandas_dataset import PandasDataset
+
 import inspect
 import numpy as np
 
+from data.pandas.iris_dataset import IrisDataset
 from function.abstract_function import AggFunc
-from function.bivariate_statistics import PearsonCorrelation, LeastSquaresRegression, Covariance, SumOfProducts
-from function.univariate_statistics import Dummy, Variance, StandardDeviation, MeanAbsoluteDeviation
+from library.bivariate_statistics import PearsonCorrelation, LeastSquaresRegression, Covariance, SumOfProducts
 
 
 class GRPCClient(NumpyAggregationClient):
@@ -49,7 +49,7 @@ class GRPCClient(NumpyAggregationClient):
 
     @staticmethod
     def get_clientapp_dataset(partition_id: int, num_partitions: int):
-        return PandasDataset(partition_id=partition_id, num_partitions=num_partitions)
+        return IrisDataset(partition_id=partition_id, num_partitions=num_partitions)
 
 
     def map_and_execute(self,agg_class:type[AggFunc], mapping):
