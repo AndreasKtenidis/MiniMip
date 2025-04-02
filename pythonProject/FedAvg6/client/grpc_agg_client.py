@@ -1,17 +1,14 @@
-import random
 import grpc
 import concurrent.futures
 from constants import AGG,client_count
 import grpc_example.aggregator_pb2 as pb2
 import grpc_example.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
-from dataset.dataset_pandas import PandasDataset
+from data.pandas.pandas_dataset import PandasDataset
 import inspect
-import numpy as np
 
 from function.abstract_function import AggFunc
 from function.bivariate_statistics import PearsonCorrelation
-from function.univariate_statistics import SumOfSquares
 
 
 class GRPCClient(NumpyAggregationClient):

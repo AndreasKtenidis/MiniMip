@@ -1,8 +1,6 @@
 from function.abstract_function import AggFunc
 import math
 
-
-
 class Covariance(AggFunc):
     def compute(self, x, y):
         avg_x = self.avg(x)
