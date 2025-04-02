@@ -20,16 +20,7 @@ class Dataset(ABC):
         """
         pass
 
-    @abstractmethod
-    def get_type(self, attribute):
-        """
-        Method to return the type of the specified attribute.
-        Args:
-            attribute (str): The attribute name to fetch the type for.
-        Returns:
-            type: The type of the attribute (e.g., int, float).
-        """
-        pass
+
 
     @abstractmethod
     def get_attributes(self):
