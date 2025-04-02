@@ -4,13 +4,14 @@ from constants import AGG,client_count
 import grpc_example.aggregator_pb2 as pb2
 import grpc_example.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
+from data.numpy_dataset.multiset import Multiset
 from data.pandas.pandas_dataset import PandasDataset
 import inspect
 import numpy as np
 
 from function.abstract_function import AggFunc
 from function.bivariate_statistics import PearsonCorrelation, LeastSquaresRegression, Covariance, SumOfProducts
-from function.univariate_statistics import Dummy, Variance
+from function.univariate_statistics import Dummy, Variance, StandardDeviation, MeanAbsoluteDeviation
 
 
 class GRPCClient(NumpyAggregationClient):
@@ -53,7 +54,7 @@ class GRPCClient(NumpyAggregationClient):
 
     def map_and_execute(self,agg_class:type[AggFunc], mapping):
         aggregation_function = agg_class.__new__(agg_class)
-        aggregation_function.__init__(self)
+        aggregation_function.__init__()
         dataset = GRPCClient.get_clientapp_dataset(self.client_id,self.client_count )
         local_input={}
         for key, value in mapping.items():
@@ -64,13 +65,13 @@ class GRPCClient(NumpyAggregationClient):
         params = inspect.signature(aggregation_function.compute).parameters
         param_names = params.keys()
         # Extract relevant arguments from the dictionary
-        mapped_args = {param: local_input[param] for param in param_names if param in mapping}
+        mapped_args = {param: Multiset(local_input[param], client=self) for param in param_names if param in mapping}
         # Execute the function with the mapped arguments
         return aggregation_function.compute(**mapped_args)
 
 def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c)
-    answer = client.map_and_execute(agg_class=Variance,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'})
+    answer = client.map_and_execute(agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'})
     print(answer)
 
 if __name__ == "__main__":

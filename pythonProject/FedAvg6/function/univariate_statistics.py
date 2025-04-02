@@ -1,3 +1,4 @@
+from data.numpy_dataset.multiset import Multiset
 from function.abstract_function import AggFunc
 import math
 import numpy as np
@@ -9,47 +10,47 @@ class Dummy(AggFunc):
         return 3
 
 class Variance(AggFunc):
-    def compute(self, x):
-        _count = self.count(x)
-        if self.count(x)<=1:
+    def compute(self, x:Multiset):
+        _count = x.fed_count()
+        if _count<=1:
             return 0
-        sum_of_squares = self.avg(x ** 2)
-        return sum_of_squares - self.avg(x) ** 2
+        sum_of_squares = (x ** 2).fed_avg()
+        return sum_of_squares -(x .fed_avg()** 2)
 
 class StandardDeviation(AggFunc):
-    def compute(self, x):
-        return math.sqrt(Variance(self.agg_client).compute(x))
+    def compute(self, x:Multiset):
+        return math.sqrt(Variance().compute(x))
 
 class SumOfSquares(AggFunc):
-    def compute(self, x):
-        return self.sum(x ** 2)
+    def compute(self, x:Multiset):
+        return (x ** 2).sum()
 
 class Range(AggFunc):
-    def compute(self, x):
-        return self.max(x) - self.min(x)
+    def compute(self, x:Multiset):
+        return x.max() - x.min()
 
 class CoefficientOfVariation(AggFunc):
-    def compute(self, x):
-        avg_data = self.avg(x)
+    def compute(self, x:Multiset):
+        avg_data = x.fed_avg()
         if avg_data == 0:
             return 0
-        StandardDeviation(self.agg_client).compute(x)/avg_data
+        StandardDeviation().compute(x)/avg_data
 
 class MeanAbsoluteDeviation(AggFunc):
-    def compute(self, x):
-        if self.count(x) == 0:
+    def compute(self, x:Multiset):
+        if x.fed_count() == 0:
             return 0
-        avg_data = self.avg(x)
-        return self.avg(abs(x - avg_data))
+        avg_data = x.fed_avg()
+        return abs(x - avg_data).fed_avg()
 
 class RootMeanSquare(AggFunc):
-    def compute(self, x):
-        if self.count(x) == 0:
+    def compute(self, x:Multiset):
+        if x.fed_count() == 0:
             return 0
-        return math.sqrt(self.avg(x ** 2))
+        return math.sqrt((x ** 2).fed_avg())
 
 class MeanSquare(AggFunc):
-    def compute(self, x):
-        y = self.agg_client.avg(x)
+    def compute(self, x:Multiset):
+        y = x.fed_avg()
         z=y-x
-        return self.agg_client.avg(z**2)
+        return (z**2).fed_avg()
