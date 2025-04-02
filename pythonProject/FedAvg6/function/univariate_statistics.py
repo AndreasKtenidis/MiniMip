@@ -1,5 +1,12 @@
 from function.abstract_function import AggFunc
 import math
+import numpy as np
+
+class Dummy(AggFunc):
+    def compute(self, x):
+        random_integers = np.random.randint(1, 11, size=3)
+        print(random_integers)
+        return 3
 
 class Variance(AggFunc):
     def compute(self, x):

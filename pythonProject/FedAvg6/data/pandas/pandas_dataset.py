@@ -1,4 +1,4 @@
-
+import numpy as np
 
 from flwr_datasets.partitioner import IidPartitioner
 from flwr_datasets import FederatedDataset
@@ -22,7 +22,7 @@ class PandasDataset(Dataset):
         # Load a specific partition and format it as pandas DataFrame
         self.dataset = PandasDataset.fds.load_partition(partition_id, "train").with_format("pandas")[:]
 
-    def get_attribute(self, attribute):
+    def get_attribute(self, attribute)->np.ndarray:
         return self.dataset[attribute].values
 
     def get_type(self,attribute):
