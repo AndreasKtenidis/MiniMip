@@ -39,3 +39,6 @@ class Multiset(np.ndarray):
     def fed_max(self):
         _ans = self.client.__global_max__(np.stack([np.max(self, axis=0)], axis=0))
         return _ans[0]
+
+    def get_client(self)->NumpyAggregationClient:
+        return self.client

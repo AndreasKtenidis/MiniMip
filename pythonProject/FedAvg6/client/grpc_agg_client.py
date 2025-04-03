@@ -6,7 +6,7 @@ from constants import AGG,client_count
 import grpc_.aggregator_pb2 as pb2
 import grpc_.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
-from data.numpy_dataset.multiset import Multiset
+from data.numpy_dataset.fed_multiset import Multiset
 
 import inspect
 import numpy as np
@@ -34,7 +34,8 @@ class GRPCClient(NumpyAggregationClient):
 
     def __global_min__(self, local_min):
         self.agg_round += 1
-        return self.send_aggregation_request(self.operation_id, AGG.MIN, self.agg_round, np.stack(local_min, axis=0))
+        _ans = self.send_aggregation_request(self.operation_id, AGG.MIN, self.agg_round, np.stack(local_min, axis=0))
+        return _ans
 
     def __global_max__(self, local_max):
         self.agg_round += 1
@@ -53,7 +54,7 @@ class GRPCClient(NumpyAggregationClient):
 
     @staticmethod
     def get_clientapp_dataset(partition_id: int, num_partitions: int):
-        return IrisDataset(partition_id=partition_id, num_partitions=num_partitions)
+        return BlobDataset(partition_id=partition_id, num_partitions=num_partitions)
 
 
     def map_and_execute(self,agg_class:type[AggFunc], mapping: Dict[str, Union[str, List[str]]],constants: Dict[str,Any]):
@@ -79,7 +80,7 @@ class GRPCClient(NumpyAggregationClient):
 
 def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c,154)
-    answer = client.map_and_execute(agg_class=LeastSquaresRegression, mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
+    answer = client.map_and_execute(agg_class=KMeans, mapping={'x':['x','y']},constants={'k':3})
     print(answer)
 
 if __name__ == "__main__":

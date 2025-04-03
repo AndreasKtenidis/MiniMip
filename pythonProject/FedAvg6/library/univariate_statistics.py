@@ -1,4 +1,4 @@
-from data.numpy_dataset.multiset import Multiset
+from data.numpy_dataset.fed_multiset import Multiset
 from function.abstract_function import AggFunc
 import math
 import numpy as np

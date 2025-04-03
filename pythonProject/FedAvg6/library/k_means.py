@@ -1,6 +1,6 @@
 import numpy as np
 
-from data.numpy_dataset.multiset import Multiset
+from data.numpy_dataset.fed_multiset import Multiset
 from function.abstract_function import AggFunc
 
 
@@ -13,13 +13,16 @@ class KMeans(AggFunc):
         self.labels = None
 
     def compute(self, x:Multiset,k:int):
-        self.x = x
+        self.x:Multiset = x
         self.k = k
         return self.kmeans()
 
 
     def initialize_centroids(self):
         """Randomly initialize k centroids from the dataset X."""
+        _min = self.x.fed_min()
+        # _min,_max = self.x.fed_min(),self.x.fed_max()
+
         indices = np.random.choice(self.x.shape[0], self.k, replace=False)
         return self.x[indices]
 

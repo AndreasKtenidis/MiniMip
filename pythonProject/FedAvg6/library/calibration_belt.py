@@ -16,7 +16,7 @@ import statsmodels.formula.api as smf
 
 from math import sqrt, exp, pi, asin, atan
 
-from data.numpy_dataset.multiset import Multiset
+from data.numpy_dataset.fed_multiset import Multiset
 from data.pandas.calibration_dataset import CalibrationDataset
 from function.abstract_function import AggFunc
 
