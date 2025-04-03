@@ -22,7 +22,7 @@ class Dataset(ABC):
         pass
 
     @abstractmethod
-    def get_attributes(self, attributes:List[str]):
+    def get_attributes(self, *attributes: str):
         pass
 
     @abstractmethod

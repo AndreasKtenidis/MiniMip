@@ -71,7 +71,7 @@ class GRPCClient(NumpyAggregationClient):
         return aggregation_function.compute(**mapped_args)
 
 def run_client(client_id, client_c):
-    client = GRPCClient(client_id, client_c)
+    client = GRPCClient(client_id, client_c,154)
     answer = client.map_and_execute(agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'})
     print(answer)
 

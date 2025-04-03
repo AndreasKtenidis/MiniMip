@@ -7,6 +7,10 @@ from data.dataset import Dataset
 
 
 class IrisDataset(Dataset):
+
+    def get_attributes(self, *attributes: str):
+        pass
+
     # Static attribute to store the global fds object
     fds = None
 
