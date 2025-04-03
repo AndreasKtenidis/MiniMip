@@ -1,3 +1,5 @@
+from typing import Dict, Union, List, Any
+
 import grpc
 import concurrent.futures
 from constants import AGG,client_count
@@ -9,10 +11,11 @@ from data.numpy_dataset.multiset import Multiset
 import inspect
 import numpy as np
 
+from data.pandas.blobs_dataset import BlobDataset
 from data.pandas.iris_dataset import IrisDataset
 from function.abstract_function import AggFunc
 from library.bivariate_statistics import PearsonCorrelation, LeastSquaresRegression, Covariance, SumOfProducts
-
+from library.k_means import KMeans
 
 class GRPCClient(NumpyAggregationClient):
 
@@ -53,13 +56,16 @@ class GRPCClient(NumpyAggregationClient):
         return IrisDataset(partition_id=partition_id, num_partitions=num_partitions)
 
 
-    def map_and_execute(self,agg_class:type[AggFunc], mapping):
+    def map_and_execute(self,agg_class:type[AggFunc], mapping: Dict[str, Union[str, List[str]]],constants: Dict[str,Any]):
         aggregation_function = agg_class.__new__(agg_class)
         aggregation_function.__init__()
         dataset = GRPCClient.get_clientapp_dataset(self.client_id,self.client_count )
         local_input={}
         for key, value in mapping.items():
-            local_input[key] = dataset.get_attribute(value)
+            if isinstance(value, list):
+                local_input[key] = dataset.get_attributes(*value)
+            else:
+                local_input[key] = dataset.get_attribute(value)
 
         # Get function parameters
         # compute = aggregation_function.compute
@@ -67,12 +73,13 @@ class GRPCClient(NumpyAggregationClient):
         param_names = params.keys()
         # Extract relevant arguments from the dictionary
         mapped_args = {param: Multiset(local_input[param], client=self) for param in param_names if param in mapping}
+        mapped_args.update(constants)
         # Execute the function with the mapped arguments
         return aggregation_function.compute(**mapped_args)
 
 def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c,154)
-    answer = client.map_and_execute(agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'})
+    answer = client.map_and_execute(agg_class=LeastSquaresRegression, mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
     print(answer)
 
 if __name__ == "__main__":

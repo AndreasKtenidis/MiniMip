@@ -15,6 +15,8 @@ class KMeans(AggFunc):
     def compute(self, x:Multiset,k:int):
         self.x = x
         self.k = k
+        return self.kmeans()
+
 
     def initialize_centroids(self):
         """Randomly initialize k centroids from the dataset X."""
@@ -32,30 +34,11 @@ class KMeans(AggFunc):
 
     def kmeans(self, max_iters=100, tol=1e-4):
         """Perform K-Means clustering."""
-        centroids = self.initialize_centroids()
-        labels=None
+        self.centroids = self.initialize_centroids()
         for _ in range(max_iters):
-            labels = self.assign_clusters()
+            self.labels = self.assign_clusters()
             new_centroids = self.update_centroids()
-            if np.linalg.norm(new_centroids - centroids) < tol:
+            if np.linalg.norm(new_centroids - self.centroids) < tol:
                 break
-            centroids = new_centroids
-        return labels, centroids
-
-
-    # Example usage
-    if __name__ == "__main__":
-        from sklearn.datasets import make_blobs
-        import matplotlib.pyplot as plt
-
-        # Generate sample data
-        X, _ = make_blobs(n_samples=300, centers=3, random_state=42)
-
-        # Run K-Means
-        labels, centroids = kmeans(X, 3)
-
-        # Plot results
-        plt.scatter(X[:, 0], X[:, 1], c=labels, cmap='viridis', alpha=0.5)
-        plt.scatter(centroids[:, 0], centroids[:, 1], c='red', marker='X', s=200, label='Centroids')
-        plt.legend()
-        plt.show()
+            self.centroids = new_centroids
+        return self.centroids

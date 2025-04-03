@@ -22,7 +22,6 @@ class IrisDataset(Dataset):
                 dataset="scikit-learn/iris",
                 partitioners={"train": partitioner}
             )
-
         # Load a specific partition and format it as pandas DataFrame
         self.dataset = IrisDataset.fds.load_partition(partition_id, "train").with_format("pandas")[:]
 
@@ -31,6 +30,3 @@ class IrisDataset(Dataset):
 
     def get_attribute_names(self):
         return list(self.dataset.keys())
-
-
-
