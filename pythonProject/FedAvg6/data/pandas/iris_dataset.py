@@ -25,7 +25,7 @@ class IrisDataset(Dataset):
     def get_attribute(self, attribute)->np.ndarray:
         return self.dataset[attribute].values
 
-    def get_attributes(self):
+    def get_attribute_names(self):
         return list(self.dataset.keys())
 
 

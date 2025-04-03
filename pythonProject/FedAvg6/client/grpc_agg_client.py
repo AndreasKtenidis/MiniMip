@@ -16,13 +16,14 @@ from library.bivariate_statistics import PearsonCorrelation, LeastSquaresRegress
 
 class GRPCClient(NumpyAggregationClient):
 
-    def __init__(self,client_id,client_count2):
+    def __init__(self,client_id,client_count2,seed):
         self.channel = grpc.insecure_channel("localhost:50051")
         self.stub = pb2_grpc.AggregatorStub(self.channel)
         self.agg_round = 0
         self.operation_id = 0
         self.client_id = client_id
         self.client_count = client_count2
+        self.seed = seed
 
     def __global_sum__(self, local_sum):
         self.agg_round += 1

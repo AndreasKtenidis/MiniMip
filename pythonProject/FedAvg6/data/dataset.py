@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from numbers import Number  # To handle numeric types like int, float
+from typing import List
 
 
 class Dataset(ABC):
@@ -20,10 +21,12 @@ class Dataset(ABC):
         """
         pass
 
-
+    @abstractmethod
+    def get_attributes(self, attributes:List[str]):
+        pass
 
     @abstractmethod
-    def get_attributes(self):
+    def get_attribute_names(self):
         """
         Method to return the list of attributes (keys) of the data.
         Returns:

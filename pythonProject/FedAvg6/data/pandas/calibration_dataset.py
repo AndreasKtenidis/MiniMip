@@ -17,7 +17,7 @@ class CalibrationDataset(Dataset):
         else:
             return CalibrationDataset.records[_part_start:_part_start+_part_size,ind][:_part_size]
 
-    def get_attributes(self):
+    def get_attribute_names(self):
         return CalibrationDataset.attributes
 
 
