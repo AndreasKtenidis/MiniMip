@@ -6,6 +6,7 @@ from constants import AGG,client_count
 import grpc_.aggregator_pb2 as pb2
 import grpc_.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
+from data.abstractdataset import AbstractDataset
 from data.numpy_dataset.fed_multiset import Multiset
 
 import inspect
@@ -16,6 +17,8 @@ from data.pandas.iris_dataset import IrisDataset
 from function.abstract_function import AggFunc
 from library.bivariate_statistics import PearsonCorrelation, LeastSquaresRegression, Covariance, SumOfProducts
 from library.k_means import KMeans
+from library.univariate_statistics import Variance
+
 
 class GRPCClient(NumpyAggregationClient):
 
@@ -34,8 +37,7 @@ class GRPCClient(NumpyAggregationClient):
 
     def __global_min__(self, local_min):
         self.agg_round += 1
-        _ans = self.send_aggregation_request(self.operation_id, AGG.MIN, self.agg_round, np.stack(local_min, axis=0))
-        return _ans
+        return self.send_aggregation_request(self.operation_id, AGG.MIN, self.agg_round, np.stack(local_min, axis=0))
 
     def __global_max__(self, local_max):
         self.agg_round += 1
@@ -53,14 +55,14 @@ class GRPCClient(NumpyAggregationClient):
         return np.asarray(response.answer).reshape(original_shape)
 
     @staticmethod
-    def get_clientapp_dataset(partition_id: int, num_partitions: int):
-        return BlobDataset(partition_id=partition_id, num_partitions=num_partitions)
+    def get_clientapp_dataset(dataset,partition_id: int, num_partitions: int):
+        return dataset(partition_id=partition_id, num_partitions=num_partitions)
 
 
-    def map_and_execute(self,agg_class:type[AggFunc], mapping: Dict[str, Union[str, List[str]]],constants: Dict[str,Any]):
+    def map_and_execute(self,dataset,agg_class:type[AggFunc], mapping: Dict[str, Union[str, List[str]]],constants: Dict[str,Any]):
         aggregation_function = agg_class.__new__(agg_class)
         aggregation_function.__init__()
-        dataset = GRPCClient.get_clientapp_dataset(self.client_id,self.client_count )
+        dataset = GRPCClient.get_clientapp_dataset(dataset,self.client_id,self.client_count )
         local_input={}
         for key, value in mapping.items():
             if isinstance(value, list):
@@ -80,7 +82,8 @@ class GRPCClient(NumpyAggregationClient):
 
 def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c,154)
-    answer = client.map_and_execute(agg_class=KMeans, mapping={'x':['x','y']},constants={'k':3})
+    answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
+    # answer = client.map_and_execute(dataset=BlobDataset, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
     print(answer)
 
 if __name__ == "__main__":

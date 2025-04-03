@@ -3,11 +3,14 @@ from numbers import Number  # To handle numeric types like int, float
 from typing import List
 
 
-class Dataset(ABC):
+class AbstractDataset(ABC):
     """
     Abstract class that defines the structure for a data.
     Subclasses must implement the methods to load data and fetch attributes.
     """
+    @abstractmethod
+    def  __init__(self, partition_id, num_partitions):
+        pass
 
 
     @abstractmethod

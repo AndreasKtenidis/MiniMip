@@ -1,7 +1,7 @@
-from data.dataset import Dataset
+from data.abstractdataset import AbstractDataset
 import numpy as np
 
-class CalibrationDataset(Dataset):
+class CalibrationDataset(AbstractDataset):
 
     def __init__(self, partition_id, num_partitions):
         self.partition_id = partition_id

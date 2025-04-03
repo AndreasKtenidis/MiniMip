@@ -2,9 +2,9 @@ from typing import List
 
 import numpy as np
 from sklearn.datasets import make_blobs
-from data.dataset import Dataset
+from data.abstractdataset import AbstractDataset
 
-class BlobDataset(Dataset):
+class BlobDataset(AbstractDataset):
 
     def __init__(self, partition_id, num_partitions):
         self.partition_id = partition_id
