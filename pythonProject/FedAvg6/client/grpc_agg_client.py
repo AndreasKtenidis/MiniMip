@@ -9,6 +9,7 @@ from client.aggregation_client import NumpyAggregationClient
 from data.abstractdataset import AbstractDataset
 from data.numpy_dataset.fed_multiset import Multiset
 
+import random
 import inspect
 import numpy as np
 
@@ -29,7 +30,9 @@ class GRPCClient(NumpyAggregationClient):
         self.operation_id = 0
         self.client_id = client_id
         self.client_count = client_count2
-        self.seed = seed
+        self.random = random.Random(seed)
+
+
 
     def __global_sum__(self, local_sum):
         self.agg_round += 1
@@ -82,9 +85,9 @@ class GRPCClient(NumpyAggregationClient):
 def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c,154)
     # answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
-    answer = client.map_and_execute(dataset=IrisDataset, agg_class=PearsonCorrelation,
-                                    mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
-    # answer = client.map_and_execute(dataset=BlobDataset, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
+    # answer = client.map_and_execute(dataset=IrisDataset, agg_class=PearsonCorrelation,
+    #                                 mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
+    answer = client.map_and_execute(dataset=BlobDataset, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
     print(answer)
 
 if __name__ == "__main__":
