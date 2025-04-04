@@ -15,8 +15,8 @@ class NumpyAggregationServer(ABC):
 
     @staticmethod
     def min(values: List[float]):
-        return min(chain(*values))
+        return np.min(np.array(values), axis=0).astype(np.float64)
 
     @staticmethod
     def max(values: List[float]):
-        return max(chain(*values))
+        return np.max(np.array(values), axis=0).astype(np.float64)

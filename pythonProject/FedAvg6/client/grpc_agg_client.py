@@ -33,26 +33,25 @@ class GRPCClient(NumpyAggregationClient):
 
     def __global_sum__(self, local_sum):
         self.agg_round += 1
-        return self.send_aggregation_request(self.operation_id, AGG.SUM, self.agg_round, np.stack(local_sum, axis=0))
+        return self.send_aggregation_request(self.operation_id, AGG.SUM, self.agg_round, local_sum)
 
     def __global_min__(self, local_min):
         self.agg_round += 1
-        return self.send_aggregation_request(self.operation_id, AGG.MIN, self.agg_round, np.stack(local_min, axis=0))
+        return self.send_aggregation_request(self.operation_id, AGG.MIN, self.agg_round, local_min)
 
     def __global_max__(self, local_max):
         self.agg_round += 1
-        return self.send_aggregation_request(self.operation_id, AGG.MAX, self.agg_round, np.stack(local_max, axis=0))
+        return self.send_aggregation_request(self.operation_id, AGG.MAX, self.agg_round, local_max)
 
-    def send_aggregation_request(self, operation_id, agg_func, agg_round, values):
-        original_shape = values.shape
+    def send_aggregation_request(self, operation_id, agg_func, agg_round, array):
         request = pb2.Agg(
             operation_id=operation_id,
             agg_func=agg_func.value,
             agg_round=agg_round,
-            values=values.flatten().astype(np.float64)
+            values=array
         )
         response = self.stub.GetServerResponse(request)
-        return np.asarray(response.answer).reshape(original_shape)
+        return response.answer
 
     @staticmethod
     def get_clientapp_dataset(dataset,partition_id: int, num_partitions: int):
@@ -82,7 +81,9 @@ class GRPCClient(NumpyAggregationClient):
 
 def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c,154)
-    answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
+    # answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
+    answer = client.map_and_execute(dataset=IrisDataset, agg_class=PearsonCorrelation,
+                                    mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=BlobDataset, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
     print(answer)
 
