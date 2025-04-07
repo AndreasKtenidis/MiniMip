@@ -6,20 +6,15 @@ from constants import AGG,client_count
 import grpc_.aggregator_pb2 as pb2
 import grpc_.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
-from data.abstractdataset import AbstractDataset
 from data.numpy_dataset.fed_multiset import Multiset
 
 import random
 import inspect
-import numpy as np
 
-from data.pandas.blobs_dataset import BlobDataset
-from data.pandas.iris_dataset import IrisDataset
+
 from function.abstract_function import AggFunc
-from library.bivariate_statistics import PearsonCorrelation, LeastSquaresRegression, Covariance, SumOfProducts
 from library.k_means import KMeans
-from library.univariate_statistics import Variance
-
+from data.pandas.blobs_dataset import BlobDataset
 
 class GRPCClient(NumpyAggregationClient):
 

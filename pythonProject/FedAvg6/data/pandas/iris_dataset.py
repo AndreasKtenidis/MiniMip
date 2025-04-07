@@ -3,10 +3,10 @@ import numpy as np
 from flwr_datasets.partitioner import IidPartitioner
 from flwr_datasets import FederatedDataset
 
-from data.abstractdataset import AbstractDataset
+from data.abstract_table import AbstractTable
 
 
-class IrisDataset(AbstractDataset):
+class IrisDataset(AbstractTable):
 
     def get_attributes(self, *attributes: str):
         pass

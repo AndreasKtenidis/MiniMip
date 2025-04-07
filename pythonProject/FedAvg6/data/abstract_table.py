@@ -2,8 +2,10 @@ from abc import ABC, abstractmethod
 from numbers import Number  # To handle numeric types like int, float
 from typing import List
 
+from client.aggregation_client import NumpyAggregationClient
 
-class AbstractDataset(ABC):
+
+class AbstractTable(ABC):
     """
     Abstract class that defines the structure for a data.
     Subclasses must implement the methods to load data and fetch attributes.

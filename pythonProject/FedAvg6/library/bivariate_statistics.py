@@ -1,15 +1,15 @@
-from data.numpy_dataset.fed_multiset import Multiset
+from data.abstract_table import AbstractTable
 from function.abstract_function import AggFunc
 import math
 
 class Covariance(AggFunc):
-    def compute(self, x:Multiset, y:Multiset):
+    def compute(self, x:AbstractTable, y:AbstractTable):
         avg_x = x.fed_avg()
         avg_y = y.fed_avg()
         return ((x - avg_x) * (y - avg_y)).fed_avg()
 
 class PearsonCorrelation(AggFunc):
-    def compute(self, x:Multiset, y:Multiset):
+    def compute(self, x:AbstractTable, y:AbstractTable):
         cov = Covariance().compute(x, y)
         avg_data1=x.fed_avg()
         avg_data2 = y.fed_avg()
@@ -18,7 +18,7 @@ class PearsonCorrelation(AggFunc):
         return cov / (stddev1 * stddev2) if stddev1 > 0 and stddev2 > 0 else 0
 
 class LeastSquaresRegression(AggFunc):
-    def compute(self, x:Multiset, y:Multiset):
+    def compute(self, x:AbstractTable, y:AbstractTable):
         cov = Covariance().compute(x, y)
         avg_data1 = (x.fed_avg())
         avg_data2 = (y.fed_avg())
@@ -28,7 +28,7 @@ class LeastSquaresRegression(AggFunc):
         return slope, intercept
 
 class SumOfProducts(AggFunc):
-    def compute(self, x:Multiset, y:Multiset):
+    def compute(self, x:AbstractTable, y:AbstractTable):
         avg_data1 = x.fed_avg()
         avg_data2 = y.fed_avg()
         return ((x - avg_data1) * (y - avg_data2)).fed_sum()

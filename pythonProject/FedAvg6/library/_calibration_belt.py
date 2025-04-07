@@ -16,7 +16,7 @@ import statsmodels.formula.api as smf
 
 from math import sqrt, exp, pi, asin, atan
 
-from data.pandas.calibration_dataset import CalibrationDataset
+from data.experiment_datasets.numpy.calibration_dataset import CalibrationTable
 
 
 class CalibrationBelt():
@@ -315,12 +315,7 @@ class CalibrationBelt():
         return fig, ax
 
 
-
-
-
-
-
-dataset = CalibrationDataset(0,1)
+dataset = CalibrationTable(0, 1)
 
 # Separate P (outcome) and E (probability outputed by the model)
 # In this case we will evaluate two different models
