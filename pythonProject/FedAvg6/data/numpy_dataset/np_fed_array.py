@@ -1,9 +1,9 @@
 import numpy as np
 
 from client.aggregation_client import NumpyAggregationClient
+from data.numpy_dataset.np_fed_table import transform,inv_transform
 
-
-class FedArray(np.ndarray):
+class NumpyFedArray(np.ndarray):
     def __new__(cls, input_array, client:NumpyAggregationClient):
         # Convert input_array into an ndarray
         obj = np.asarray(input_array).view(cls)
@@ -20,6 +20,9 @@ class FedArray(np.ndarray):
     def __repr__(self):
         return f"CustomArray({super().__repr__()}, client={self.client})"
 
-
     def fed_avg(self):
-        return self.client.fed_avg(self,1)
+        _shape, _flattened = transform(np.sum(self, axis=0))
+        _flattened = np.append(_flattened, self.shape[0])
+        _ans = self.client.__global_sum__(_flattened)
+        return inv_transform(_shape, _ans[:-1]) / 1
+

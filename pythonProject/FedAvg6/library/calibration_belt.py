@@ -16,8 +16,8 @@ import statsmodels.formula.api as smf
 
 from math import sqrt, exp, pi, asin, atan
 
-from data.numpy_dataset.fed_multiset import Multiset
-from data.experiment_datasets.numpy.calibration_dataset import CalibrationTable
+from data.numpy_dataset.np_fed_table import NumpyFedTable
+from data.pandas.calibration_dataset import CalibrationDataset
 from function.abstract_function import AggFunc
 
 
@@ -40,9 +40,9 @@ class CalibrationBelt(AggFunc):
         self.n = None
         self.boundaries = None
 
-    def compute(self, x: Multiset, y: Multiset):
-        self.p: Multiset = x
-        self.e: Multiset = y
+    def compute(self, x: NumpyFedTable, y: NumpyFedTable):
+        self.p: NumpyFedTable = x
+        self.e: NumpyFedTable = y
         self.n = x.fed_count()
         self.boundaries = {}
 
@@ -333,7 +333,7 @@ class CalibrationBelt(AggFunc):
 
 
 def main():
-    dataset = CalibrationTable(0, 1)
+    dataset = CalibrationDataset(0, 1)
 
     # Separate P (outcome) and E (probability outputed by the model)
     # In this case we will evaluate two different models

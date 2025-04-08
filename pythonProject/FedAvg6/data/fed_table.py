@@ -5,7 +5,7 @@ from typing import List
 from client.aggregation_client import NumpyAggregationClient
 
 
-class AbstractTable(ABC):
+class FedTable(ABC):
     """
     Abstract class that defines the structure for a data.
     Subclasses must implement the methods to load data and fetch attributes.

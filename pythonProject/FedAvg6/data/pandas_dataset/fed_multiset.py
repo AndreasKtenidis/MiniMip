@@ -1,7 +1,8 @@
 import pandas as pd
+import numpy as np
 
 from client.aggregation_client import NumpyAggregationClient
-
+from data.numpy_dataset.np_fed_table import transform,inv_transform
 
 class Multiset(pd.DataFrame):
     _metadata = ['client']
@@ -20,20 +21,29 @@ class Multiset(pd.DataFrame):
         return f"Multiset(client={self.client})\n{base}"
 
     def fed_sum(self):
-
-        return self.client.fed_sum(self.sum())
+        _shape, _flattened = transform(np.sum(self, axis=0))
+        _ans = self.client.__global_sum__(_flattened)
+        return inv_transform(_shape, _ans)
 
     def fed_count(self):
-        return self.client.fed_count(self.count())
+        _ans = self.client.__global_sum__([self.shape[0]])
+        return _ans[0]
 
     def fed_avg(self):
-        return self.client.fed_avg(self.sum(),self.count())
+        _shape, _flattened = transform(np.sum(self, axis=0))
+        _flattened = np.append(_flattened, self.shape[0])
+        _ans = self.client.__global_sum__(_flattened)
+        return inv_transform(_shape, _ans[:-1]) / _ans[-1]
 
     def fed_min(self):
-        return self.client.fed_min(self.min())
+        _shape, _flattened = transform(np.min(self, axis=0))
+        _ans = self.client.__global_min__(_flattened)
+        return inv_transform(_shape, _ans)
 
     def fed_max(self):
-        return self.client.fed_max(self.max())
+        _shape, _flattened = transform(np.max(self, axis=0))
+        _ans = self.client.__global_max__(_flattened)
+        return inv_transform(_shape, _ans)
 
-    def get_client(self)->NumpyAggregationClient:
+    def get_client(self) -> NumpyAggregationClient:
         return self.client
