@@ -6,12 +6,12 @@ from constants import AGG,client_count
 import grpc_.aggregator_pb2 as pb2
 import grpc_.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import NumpyAggregationClient
-from data.numpy_federation.np_fed_table import NumpyFedTable
+from data.experiment_datasets.iris_dataset2 import IrisDataset2
 
 import random
 import inspect
 
-from data.experiment_datasets.iris_dataset import IrisDataset
+from data.pandas_federation.fed_multiset import Multiset
 from function.abstract_function import AggFunc
 from library.bivariate_statistics import PearsonCorrelation
 
@@ -72,15 +72,16 @@ class GRPCClient(NumpyAggregationClient):
         params = inspect.signature(aggregation_function.compute).parameters
         param_names = params.keys()
         # Extract relevant arguments from the dictionary
-        mapped_args = {param: NumpyFedTable(local_input[param], client=self) for param in param_names if param in mapping}
+        mapped_args = {param: Multiset(local_input[param], client=self) for param in param_names if param in mapping}
         mapped_args.update(constants)
+        # Execute the function with the mapped arguments
         # Execute the function with the mapped arguments
         return aggregation_function.compute(**mapped_args)
 
 def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c,154)
     # answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
-    answer = client.map_and_execute(dataset=IrisDataset, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
+    answer = client.map_and_execute(dataset=IrisDataset2, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=BlobDataset, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
     print(answer)
 

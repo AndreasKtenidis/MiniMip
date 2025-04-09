@@ -1,4 +1,5 @@
 from data.fed_table import FedTable
+from data.pandas_federation.fed_multiset import Multiset
 from function.abstract_function import AggFunc
 import math
 
@@ -10,12 +11,16 @@ class Covariance(AggFunc):
 
 class PearsonCorrelation(AggFunc):
     def compute(self, x:FedTable, y:FedTable):
-
+        import pandas as pd
+        x = Multiset(pd.concat([x, y], axis=1),client=x.get_client())
+        print(x.fed_sum())
         print(x.fed_count())
+        print(x.fed_avg())
+
         print(x.fed_min())
         print(x.fed_max())
-        print(x.fed_sum())
-        print(x.fed_avg())
+
+
         cov = Covariance().compute(x, y)
         avg_data1=x.fed_avg()
         avg_data2 = y.fed_avg()

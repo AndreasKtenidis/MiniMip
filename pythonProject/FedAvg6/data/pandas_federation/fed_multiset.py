@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 
 from client.aggregation_client import NumpyAggregationClient
-from data.numpy_federation.np_fed_table import transform,inv_transform
 
 class Multiset(pd.DataFrame):
     _metadata = ['client']
@@ -21,13 +20,31 @@ class Multiset(pd.DataFrame):
         return f"Multiset(client={self.client})\n{base}"
 
     def fed_sum(self):
-        _shape, _flattened = transform(np.sum(self, axis=0))
+        _agg = pd.DataFrame([self.sum()])
+        _shape, _flattened = transform(_agg)
         _ans = self.client.__global_sum__(_flattened)
-        return inv_transform(_shape, _ans)
+        _ans = Multiset(inv_transform(_shape, _ans), client=self.client)
+        rename_mapping = {old: new for old, new in zip(_ans.columns, self.columns)}
+        _ans.rename(columns=rename_mapping, inplace=True)
+        return _ans
 
     def fed_count(self):
-        _ans = self.client.__global_sum__([self.shape[0]])
-        return _ans[0]
+        _agg = pd.DataFrame([self.count()])
+        _shape, _flattened = transform(_agg)
+        _ans = self.client.__global_sum__(_flattened)
+        _ans = Multiset(inv_transform(_shape, _ans), client=self.client)
+        rename_mapping = {old: new for old, new in zip(_ans.columns, self.columns)}
+        _ans.rename(columns=rename_mapping, inplace=True)
+        return _ans
+
+    def fed_min(self):
+        _agg = pd.DataFrame([self.min()])
+        _shape, _flattened = transform(_agg)
+        _ans = self.client.__global_sum__(_flattened)
+        _ans = Multiset(inv_transform(_shape, _ans), client=self.client)
+        rename_mapping = {old: new for old, new in zip(_ans.columns, self.columns)}
+        _ans.rename(columns=rename_mapping, inplace=True)
+        return _ans
 
     def fed_avg(self):
         _shape, _flattened = transform(np.sum(self, axis=0))
@@ -35,15 +52,22 @@ class Multiset(pd.DataFrame):
         _ans = self.client.__global_sum__(_flattened)
         return inv_transform(_shape, _ans[:-1]) / _ans[-1]
 
-    def fed_min(self):
-        _shape, _flattened = transform(np.min(self, axis=0))
-        _ans = self.client.__global_min__(_flattened)
-        return inv_transform(_shape, _ans)
+
 
     def fed_max(self):
-        _shape, _flattened = transform(np.max(self, axis=0))
-        _ans = self.client.__global_max__(_flattened)
-        return inv_transform(_shape, _ans)
+        _max = pd.DataFrame([self.max()])
+        _shape, _flattened = transform(_max)
+        _ans = self.client.__global_sum__(_flattened)
+        _ans = inv_transform(_shape, _ans)
+        return Multiset(_ans, client=self.client)
 
     def get_client(self) -> NumpyAggregationClient:
         return self.client
+
+def transform(array):
+    out = array.to_numpy().flatten().astype(np.float64).tolist()
+    return array.shape,out
+
+
+def inv_transform(original_shape,answer):
+    return np.asarray(answer).reshape(original_shape)
