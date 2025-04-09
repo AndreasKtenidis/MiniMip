@@ -3,35 +3,46 @@ import pandas as pd
 from client.aggregation_client import NumpyAggregationClient
 
 
-class ClientSeries(pd.Series):
+import pandas as pd
+
+class FedSeries(pd.Series):
+    # Declare custom attributes in _metadata
     _metadata = ['client']
 
     def __init__(self, *args, client=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.client = client
+        self.client = client  # will now be handled safely by pandas
 
     @property
     def _constructor(self):
-        return ClientSeries
-
-    def __repr__(self):
-        base = super().__repr__()
-        return f"ClientSeries(client={self.client})\n{base}"
+        return FedSeries
 
     def fed_sum(self):
-        return self.client.fed_sum(self.sum())
+        _agg = ([self.sum()])
+        _ans = self.client.__global_sum__(_agg)
+        return _ans[0]
 
     def fed_count(self):
-        return self.client.fed_count(self.count())
+        _agg = ([self.count()])
+        _ans = self.client.__global_sum__(_agg)
+        return _ans[0]
 
-    def fed_avg(self):
-        return self.client.fed_avg(self.sum(),self.count())
 
     def fed_min(self):
-        return self.client.fed_min(self.min())
+        _agg = ([self.min()])
+        _ans = self.client.__global_min__(_agg)
+        return _ans[0]
 
     def fed_max(self):
-        return self.client.fed_max(self.max())
+        _agg = ([self.max()])
+        _ans = self.client.__global_max__(_agg)
+        return _ans[0]
 
-    def get_client(self)->NumpyAggregationClient:
+    def fed_avg(self):
+        _sum = (self.sum())
+        _count = (self.count())
+        _ans = self.client.__global_sum__([_sum, _count])
+        return _ans[0] / _ans[1]
+
+    def get_client(self) -> NumpyAggregationClient:
         return self.client

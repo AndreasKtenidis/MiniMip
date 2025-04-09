@@ -23,11 +23,11 @@ class StandardDeviation(AggFunc):
 
 class SumOfSquares(AggFunc):
     def compute(self, x:FedTable):
-        return (x ** 2).sum()
+        return (x ** 2).fed_sum()
 
 class Range(AggFunc):
     def compute(self, x:FedTable):
-        return x.max() - x.min()
+        return x.fed_max() - x.fed_min()
 
 class CoefficientOfVariation(AggFunc):
     def compute(self, x:FedTable):

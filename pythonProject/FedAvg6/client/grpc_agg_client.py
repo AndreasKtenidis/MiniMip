@@ -11,7 +11,7 @@ from data.experiment_datasets.iris_dataset2 import IrisDataset2
 import random
 import inspect
 
-from data.pandas_federation.fed_multiset import Multiset
+from data.pandas_federation.fed_column import FedSeries
 from function.abstract_function import AggFunc
 from library.bivariate_statistics import PearsonCorrelation
 
@@ -72,7 +72,7 @@ class GRPCClient(NumpyAggregationClient):
         params = inspect.signature(aggregation_function.compute).parameters
         param_names = params.keys()
         # Extract relevant arguments from the dictionary
-        mapped_args = {param: Multiset(local_input[param], client=self) for param in param_names if param in mapping}
+        mapped_args = {param: FedSeries(local_input[param], client=self) for param in param_names if param in mapping}
         mapped_args.update(constants)
         # Execute the function with the mapped arguments
         # Execute the function with the mapped arguments
