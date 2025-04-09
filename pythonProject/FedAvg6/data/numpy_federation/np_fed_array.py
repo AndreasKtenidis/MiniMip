@@ -1,7 +1,7 @@
 import numpy as np
 
 from client.aggregation_client import NumpyAggregationClient
-from data.numpy_dataset.np_fed_table import transform,inv_transform
+from data.numpy_federation.np_fed_table import transform,inv_transform
 
 class NumpyFedArray(np.ndarray):
     def __new__(cls, input_array, client:NumpyAggregationClient):

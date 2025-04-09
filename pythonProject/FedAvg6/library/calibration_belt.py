@@ -16,8 +16,8 @@ import statsmodels.formula.api as smf
 
 from math import sqrt, exp, pi, asin, atan
 
-from data.numpy_dataset.np_fed_table import NumpyFedTable
-from data.pandas.calibration_dataset import CalibrationDataset
+from data.numpy_federation.np_fed_table import NumpyFedTable
+from data.experiment_datasets.calibration_dataset import CalibrationDataset
 from function.abstract_function import AggFunc
 
 

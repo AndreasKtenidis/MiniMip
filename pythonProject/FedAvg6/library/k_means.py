@@ -2,7 +2,7 @@ import numpy as np
 
 from data.fed_table import FedTable
 from function.abstract_function import AggFunc
-from data.numpy_dataset.np_fed_array import NumpyFedArray
+from data.numpy_federation.np_fed_array import NumpyFedArray
 
 class KMeans(AggFunc):
 
@@ -33,7 +33,7 @@ class KMeans(AggFunc):
         """Compute new centroids as the mean of all points assigned to each cluster."""
         new_centroids = np.array([self.x[self.labels == i].mean(axis=0) for i in range(self.k)])
         new_centroids=NumpyFedArray(new_centroids, self.x.client)
-        new_centroids.fed_avg()
+        new_centroids=new_centroids.fed_avg()
         return new_centroids
 
     def kmeans(self, max_iters=100, tol=1e-4):
