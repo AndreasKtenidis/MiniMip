@@ -45,6 +45,8 @@ class CalibrationBelt(AggFunc):
         self.e: NumpyFedTable = y
         self.n = x.fed_count()
         self.boundaries = {}
+        self.plot(confidences=[.8, .95])
+
 
     @classmethod
     def _cdf_m_1(cls, T):
@@ -159,7 +161,8 @@ class CalibrationBelt(AggFunc):
                 model = model1
 
             formula += " + "
-
+        print(m)
+        print(model)
         return m, model
 
     def test(self, q=.95, **kwargs):
@@ -167,7 +170,9 @@ class CalibrationBelt(AggFunc):
         m, model = self.forward_select(q, **kwargs)
 
         # Compute stat (Eq9)
-        llh =(xlogy(self.p, self.e) + xlogy(1 - self.p, 1 - self.e)).fed_sum()
+        _llh =(xlogy(self.p, self.e) + xlogy(1 - self.p, 1 - self.e))
+        _llh.client=self.p.client
+        llh =_llh.fed_sum()
         T = 2 * (model.llf - llh)
         p_value = 1 - self.calculate_cdf(T, m, q)
 

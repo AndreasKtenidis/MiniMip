@@ -3,6 +3,9 @@ import numpy as np
 
 class CalibrationDataset(AbstractTable):
 
+    def get_attributes(self, *attributes: str):
+        pass
+
     def __init__(self, partition_id, num_partitions):
         self.partition_id = partition_id
         self.num_partitions = num_partitions
