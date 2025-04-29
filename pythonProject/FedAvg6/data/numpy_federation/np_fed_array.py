@@ -1,10 +1,10 @@
 import numpy as np
 
-from client.aggregation_client import NumpyAggregationClient
+from client.aggregation_client import AggregationClient
 from data.numpy_federation.np_fed_table import transform,inv_transform
 
 class NumpyFedArray(np.ndarray):
-    def __new__(cls, input_array, client:NumpyAggregationClient):
+    def __new__(cls, input_array, client:AggregationClient):
         # Convert input_array into an ndarray
         obj = np.asarray(input_array).view(cls)
         # Add client

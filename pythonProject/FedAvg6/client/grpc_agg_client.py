@@ -5,7 +5,7 @@ import concurrent.futures
 from constants import AGG,client_count
 import grpc_.aggregator_pb2 as pb2
 import grpc_.aggregator_pb2_grpc as pb2_grpc
-from client.aggregation_client import NumpyAggregationClient
+from client.aggregation_client import AggregationClient
 from data.experiment_datasets.blobs_dataset import BlobDataset
 from data.experiment_datasets.blobs_dataset2 import BlobDataset2
 from data.experiment_datasets.calibration_dataset import CalibrationDataset
@@ -23,7 +23,7 @@ from library.calibration_belt import CalibrationBelt
 from library.k_means import KMeans
 
 
-class GRPCClient(NumpyAggregationClient):
+class GRPCClient(AggregationClient):
 
     def __init__(self,client_id,client_count2,seed):
         self.channel = grpc.insecure_channel("localhost:50051")
@@ -89,9 +89,9 @@ def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c,154)
     # answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
     # answer = client.map_and_execute(dataset=IrisDataset2, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
-    answer = client.map_and_execute(dataset=BlobDataset2, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
-    # answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'x':'target','y': 'RLR'},
-    #                                 constants={})
+    # answer = client.map_and_execute(dataset=BlobDataset2, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
+    answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'x':'target','y': 'RLR'},
+                                    constants={})
     print(answer)
 
 if __name__ == "__main__":

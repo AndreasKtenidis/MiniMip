@@ -1,6 +1,6 @@
 import pandas as pd
 
-from client.aggregation_client import NumpyAggregationClient
+from client.aggregation_client import AggregationClient
 
 
 import pandas as pd
@@ -44,5 +44,5 @@ class FedSeries(pd.Series):
         _ans = self.client.__global_sum__([_sum, _count])
         return _ans[0] / _ans[1]
 
-    def get_client(self) -> NumpyAggregationClient:
+    def get_client(self) -> AggregationClient:
         return self.client

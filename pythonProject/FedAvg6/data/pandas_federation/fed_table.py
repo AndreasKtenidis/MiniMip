@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import pandas as pd
 
-from client.aggregation_client import NumpyAggregationClient
+from client.aggregation_client import AggregationClient
 
 class FedDataFrame(pd.DataFrame):
     _metadata = ['client']
@@ -66,7 +66,7 @@ class FedDataFrame(pd.DataFrame):
 
 
 
-    def get_client(self) -> NumpyAggregationClient:
+    def get_client(self) -> AggregationClient:
         return self.client
 
 def transform(array):

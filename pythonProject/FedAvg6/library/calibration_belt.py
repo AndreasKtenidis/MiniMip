@@ -20,6 +20,7 @@ from data.numpy_federation.np_fed_table import NumpyFedTable
 from data.experiment_datasets.calibration_dataset import CalibrationDataset
 from function.abstract_function import AggFunc
 
+import pandas as pd
 
 class CalibrationBelt(AggFunc):
     """Class for assessment of the calibration belt and goodness
@@ -142,6 +143,20 @@ class CalibrationBelt(AggFunc):
                 family = sm.families.Binomial()
                 model1 = smf.glm(formula=formula, data=data,
                                  family=family).fit()
+
+
+                client = self.e.get_client()
+                new_params = client.fed__avg(model1.params.values)
+                new_params2 = pd.Series(new_params, index=model1.params.index)
+                model1.params = new_params2
+                predicted_probs=model1.predict(data).values
+
+                actual_labels = data['p'].values  # Use the actual labels from your data (0 or 1)
+
+                # Calculate Log-Likelihood Function (LLF)
+                # Using the formula for Log-Likelihood for binary logistic regression
+                llf = np.sum(
+                    actual_labels * np.log(predicted_probs) + (1 - actual_labels) * np.log(1 - predicted_probs))
 
                 if m1 > m_start:
                     # Log-likelihood ratio test (Eq6)

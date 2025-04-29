@@ -1,11 +1,11 @@
 import numpy as np
 
-from client.aggregation_client import NumpyAggregationClient
+from client.aggregation_client import AggregationClient
 from data.fed_table import FedTable
 
 
 class NumpyFedTable(np.ndarray):
-    def __new__(cls, input_array, client:NumpyAggregationClient):
+    def __new__(cls, input_array, client:AggregationClient):
         # Convert input_array into an ndarray
         obj = np.asarray(input_array).view(cls)
         # Add client
@@ -48,7 +48,7 @@ class NumpyFedTable(np.ndarray):
         _ans = self.client.__global_max__(_flattened)
         return inv_transform(_shape, _ans)
 
-    def get_client(self)->NumpyAggregationClient:
+    def get_client(self)->AggregationClient:
         return self.client
     # ------------------------------------------------------------------
     # ------------------------------------------------------------------

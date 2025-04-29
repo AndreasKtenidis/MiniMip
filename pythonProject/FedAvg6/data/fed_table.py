@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from numbers import Number  # To handle numeric types like int, float
 from typing import List
 
-from client.aggregation_client import NumpyAggregationClient
+from client.aggregation_client import AggregationClient
 
 
 class FedTable(ABC):
@@ -98,5 +98,5 @@ class FedTable(ABC):
     def fed_max(self):
         pass
 
-    def get_client(self)->NumpyAggregationClient:
+    def get_client(self)->AggregationClient:
         pass

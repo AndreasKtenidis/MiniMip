@@ -1,4 +1,4 @@
-from client.aggregation_client import NumpyAggregationClient
+from client.aggregation_client import AggregationClient
 from abc import ABC
 
 
