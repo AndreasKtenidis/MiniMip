@@ -16,7 +16,6 @@ import statsmodels.formula.api as smf
 
 from math import sqrt, exp, pi, asin, atan
 
-from data.numpy_federation.np_fed_table import NumpyFedTable
 from data.experiment_datasets.calibration_dataset import CalibrationDataset
 from function.abstract_function import AggFunc
 
@@ -34,19 +33,22 @@ class CalibrationBelt(AggFunc):
     outcomes." Statistics in medicine 33.14 (2014): 2390-2407.
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self,client):
+        self.client = client
+        self.agg = self.get_numpy_aggregator()
         self.p = None
         self.e = None
         self.n = None
         self.boundaries = None
 
-    def compute(self, x: NumpyFedTable, y: NumpyFedTable):
-        self.p: NumpyFedTable = x
-        self.e: NumpyFedTable = y
-        self.n = x.fed_count()
+
+    def compute(self, x: np.array, y: np.array):
+        self.p= x
+        self.e= y
+        self.n = self.agg.global_count(x)
         self.boundaries = {}
         self.plot(confidences=[.8, .95])
+
 
 
     @classmethod
@@ -133,29 +135,28 @@ class CalibrationBelt(AggFunc):
         inv_chi2 = chi2.ppf(q, 1)
         v= logit(self.e)
         data = {"p": self.p, "ge": logit(self.e)}
+        model = None
 
         for m1 in range(m_start, m_max+1):
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             # Add new term
             formula += f"I(ge ** {m1})"
 
             if m1 >= m_start:
+                print("***********************************")
                 # Fit logistic regression with current m
                 family = sm.families.Binomial()
                 model1 = smf.glm(formula=formula, data=data,
                                  family=family).fit()
 
-
-                client = self.e.get_client()
-                new_params = client.fed__avg(model1.params.values)
+                new_params =self.agg.fed_avg(model1.params.values)
                 new_params2 = pd.Series(new_params, index=model1.params.index)
                 model1.params = new_params2
                 predicted_probs=model1.predict(data).values
-
-                actual_labels = data['p'].values  # Use the actual labels from your data (0 or 1)
-
+                actual_labels = data['p'] # Use the actual labels from your data (0 or 1)
                 # Calculate Log-Likelihood Function (LLF)
                 # Using the formula for Log-Likelihood for binary logistic regression
-                llf = np.sum(
+                model1.llf = self.agg.global_sum(
                     actual_labels * np.log(predicted_probs) + (1 - actual_labels) * np.log(1 - predicted_probs))
 
                 if m1 > m_start:
@@ -186,8 +187,7 @@ class CalibrationBelt(AggFunc):
 
         # Compute stat (Eq9)
         _llh =(xlogy(self.p, self.e) + xlogy(1 - self.p, 1 - self.e))
-        _llh.client=self.p.client
-        llh =_llh.fed_sum()
+        llh =self.agg.global_sum(_llh)
         T = 2 * (model.llf - llh)
         p_value = 1 - self.calculate_cdf(T, m, q)
 
@@ -261,7 +261,7 @@ class CalibrationBelt(AggFunc):
 
             # Compute Log-likelihood
             lalpha = xlogy(self.p, alphaE) + xlogy(1 - self.p, 1 - alphaE)
-            return lalpha.fed_sum()
+            return self.agg.global_sum(lalpha)
 
         def jac_lalpha(alpha):
             # Calculate probability
@@ -269,6 +269,8 @@ class CalibrationBelt(AggFunc):
             return (self.p - alphaE) @ GeM
 
         lower, upper = [], []
+        print(fun_lalpha)
+        print(boundary)
         for geM in tqdm(GeM_sub):
             constraints = NonlinearConstraint(
                 fun_lalpha,
@@ -279,6 +281,7 @@ class CalibrationBelt(AggFunc):
 
             # Minimize alpha to find lower bound
             args = (geM, 1)
+            print('--->',model.params)
             min_alpha = minimize(
                 fun=self._fun, x0=model.params, args=args,
                 method='trust-constr', jac=self._jac,
@@ -288,6 +291,8 @@ class CalibrationBelt(AggFunc):
 
             # Maximize alpha to find upper bound
             args = (geM, -1)
+            print('--->', model.params)
+            print('--->', constraints)
             max_alpha = minimize(
                 fun=self._fun, x0=model.params, args=args,
                 method='trust-constr', jac=self._jac,

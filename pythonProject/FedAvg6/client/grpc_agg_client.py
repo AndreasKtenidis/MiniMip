@@ -9,16 +9,16 @@ from client.aggregation_client import AggregationClient
 from data.experiment_datasets.blobs_dataset import BlobDataset
 from data.experiment_datasets.blobs_dataset2 import BlobDataset2
 from data.experiment_datasets.calibration_dataset import CalibrationDataset
-from data.experiment_datasets.iris_dataset2 import IrisDataset2
+from data.experiment_datasets.iris_dataset import IrisDataset
 
 import random
 import inspect
 
-from data.numpy_federation.np_fed_table import NumpyFedTable
-from data.pandas_federation.fed_column import FedSeries
-from data.pandas_federation.fed_table import FedDataFrame
+
+
 from function.abstract_function import AggFunc
-from library.bivariate_statistics import PearsonCorrelation
+from library.bivariate_statistics import PearsonCorrelation, Covariance, LeastSquaresRegression, SumOfProducts
+from library.univariate_statistics import Variance
 from library.calibration_belt import CalibrationBelt
 from library.k_means import KMeans
 
@@ -65,7 +65,7 @@ class GRPCClient(AggregationClient):
 
     def map_and_execute(self,dataset,agg_class:type[AggFunc], mapping: Dict[str, Union[str, List[str]]],constants: Dict[str,Any]):
         aggregation_function = agg_class.__new__(agg_class)
-        aggregation_function.__init__()
+        aggregation_function.__init__(self)
         dataset = GRPCClient.get_clientapp_dataset(dataset,self.client_id,self.client_count )
         local_input={}
         for key, value in mapping.items():
@@ -79,7 +79,7 @@ class GRPCClient(AggregationClient):
         params = inspect.signature(aggregation_function.compute).parameters
         param_names = params.keys()
         # Extract relevant arguments from the dictionary
-        mapped_args = {param: FedDataFrame(local_input[param], client=self) for param in param_names if param in mapping}
+        mapped_args = {param: local_input[param] for param in param_names if param in mapping}
         mapped_args.update(constants)
         # Execute the function with the mapped arguments
         # Execute the function with the mapped arguments
@@ -89,6 +89,7 @@ def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c,154)
     # answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
     # answer = client.map_and_execute(dataset=IrisDataset2, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
+    # answer = client.map_and_execute(dataset=IrisDataset, agg_class=Variance,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=BlobDataset2, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
     answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'x':'target','y': 'RLR'},
                                     constants={})

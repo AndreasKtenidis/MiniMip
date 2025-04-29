@@ -60,7 +60,10 @@ class FedDataFrame(pd.DataFrame):
         _shape, _flattened = transform(np.sum(self, axis=0))
         _flattened = np.append(_flattened, self.shape[0])
         _ans = self.client.__global_sum__(_flattened)
-        return inv_transform(_shape, _ans[:-1]) / _ans[-1]
+        _ans =FedDataFrame(inv_transform(_shape, _ans[:-1]) / _ans[-1])
+        rename_mapping = {old: new for old, new in zip(_ans.columns, self.columns)}
+        _ans.rename(columns=rename_mapping, inplace=True)
+        return _ans
 
 
 

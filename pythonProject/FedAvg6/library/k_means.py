@@ -3,7 +3,7 @@ import pandas as pd
 
 from data.pandas_federation.fed_table import FedDataFrame
 from function.abstract_function import AggFunc
-from data.numpy_federation.np_fed_array import NumpyFedArray
+
 
 class KMeans(AggFunc):
 
