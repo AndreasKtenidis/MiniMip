@@ -5,6 +5,7 @@ import numpy as np
 from tqdm import tqdm
 from textwrap import dedent
 import matplotlib.pyplot as plt
+from typing import Union, Dict, Any
 
 from scipy.stats import chi2
 from scipy.special import logit, xlogy, expit
@@ -17,10 +18,9 @@ import statsmodels.formula.api as smf
 from math import sqrt, exp, pi, asin, atan
 from data.experiment_datasets.calibration_dataset import CalibrationDataset
 
-import matplotlib.pyplot as plt
 
 
-class CalibrationBelt():
+class CalibrationBelt:
     """Class for assessment of the calibration belt and goodness
     of fit of binomial models.
 
@@ -32,10 +32,10 @@ class CalibrationBelt():
     outcomes." Statistics in medicine 33.14 (2014): 2390-2407.
     """
 
-    def __init__(self, P, E):
-        self.P = P
-        self.E = E
-        self.n = len(self.P)
+    def __init__(self, p, e):
+        self.p = p
+        self.e = e
+        self.n = len(self.p)
         self.boundaries = {}
 
     @classmethod
@@ -117,8 +117,9 @@ class CalibrationBelt():
         m_start = 1
         formula = "p ~ 1 + "
         inv_chi2 = chi2.ppf(q, 1)
-        data = {"p": self.P, "ge": logit(self.E)}
+        data = {"p": self.p, "ge": logit(self.e)}
         model=None
+        m=None
 
         for m1 in range(m_start, m_max+1):
             # Add new term
@@ -155,25 +156,27 @@ class CalibrationBelt():
         m, model = self.forward_select(q, **kwargs)
 
         # Compute stat (Eq9)
-        llh = np.sum(xlogy(self.P, self.E) + xlogy(1-self.P, 1-self.E))
-        T = 2 * (model.llf - llh)
-        p_value = 1 - self.calculate_cdf(T, m, q)
+        llh = np.sum(xlogy(self.p, self.e) + xlogy(1 - self.p, 1 - self.e))
+        t = 2 * (model.llf - llh)
+        p_value = 1 - self.calculate_cdf(t, m, q)
 
-        return T, p_value
+        return t, p_value
 
     def _root_fun(self, x, *args):
         m, q, confidence = args
         return self.calculate_cdf(x, m, q) - confidence
 
-    def _fun(self, alpha, *args):
+    @staticmethod
+    def _fun(alpha, *args):
         # Eq26
-        geM, sign = args
-        return sign * (alpha @ geM)
+        ge_m_array, sign = args
+        return sign * (alpha @ ge_m_array)
 
-    def _jac(self, alpha, *args):
+    @staticmethod
+    def _jac(alpha, *args):
         # Eq29
-        geM, sign = args
-        return sign * geM
+        ge_m_array, sign = args
+        return sign * ge_m_array
 
     def calculate_boundaries(self, confidence, size=50, q=.95, **kwargs):
         # Forward select parameter m
@@ -198,45 +201,46 @@ class CalibrationBelt():
 
         # Find ky
         a, b = (m - 1) * chi2.ppf(q, 1), 40
-        args = m, q, confidence
-        k = brentq(self._root_fun, a, b, args=args)
+        my_args = m, q, confidence
+        k = brentq(self._root_fun, a, b, args=my_args)
+
 
         # Calculate logit(E) matrix
-        M = np.linspace([0], [m], num=m+1, axis=1)
-        Ge = logit(self.E)[np.newaxis]
-        GeM = Ge.T ** M
+        m_array = np.linspace([0], [m], num=m+1, axis=1)
+        ge_array = logit(self.e)[np.newaxis]
+        g_array_e_m_array = ge_array.T ** m_array
 
         # Upper boundary (Eq27)
         boundary = model.llf - k / 2
 
         # Create subset based on size
-        logit_sub = np.linspace(np.min(Ge), np.max(Ge), num=size//2)
-        e_sub = np.linspace(np.min(self.E), np.max(self.E), num=size//2)
-        Ge_sub = np.sort(np.append(logit_sub, logit(e_sub)))
-        GeM_sub = Ge_sub[np.newaxis].T ** M
+        logit_sub = np.linspace(np.min(ge_array), np.max(ge_array), num=size//2)
+        e_sub = np.linspace(np.min(self.e), np.max(self.e), num=size // 2)
+        ge_sub = np.sort(np.append(logit_sub, logit(e_sub)))
+        gem_sub = ge_sub[np.newaxis].T ** m_array
 
         # Constraint function (Eq27)
         def fun_lalpha(alpha):
             # Calculate probability
-            alphaE = expit(GeM @ alpha)
+            alpha_e = expit(g_array_e_m_array @ alpha)
 
             # Clip probability to epsilon so
             # we can compute log-likelihood
             eps = 1e-5
-            alphaE = np.clip(alphaE, eps, 1-eps)
+            alpha_e = np.clip(alpha_e, eps, 1-eps)
 
             # Compute Log-likelihood
-            lalpha = xlogy(self.P, alphaE) + xlogy(1-self.P, 1-alphaE)
+            lalpha = xlogy(self.p, alpha_e) + xlogy(1 - self.p, 1 - alpha_e)
             return np.nansum(lalpha)
 
         def jac_lalpha(alpha):
             # Calculate probability
-            alphaE = expit(GeM @ alpha)
-            return (self.P - alphaE) @ GeM
+            alpha_e = expit(g_array_e_m_array @ alpha)
+            return (self.p - alpha_e) @ g_array_e_m_array
 
         lower, upper = [], []
-        for geM in tqdm(GeM_sub):
-            constraints = NonlinearConstraint(
+        for ge_m_array in tqdm(gem_sub):
+            constraints: Union[NonlinearConstraint, Dict[str, Any]] = NonlinearConstraint(
                 fun_lalpha,
                 boundary, 0,
                 jac_lalpha,
@@ -244,29 +248,29 @@ class CalibrationBelt():
             )
 
             # Minimize alpha to find lower bound
-            args = (geM, 1)
+            my_args = (ge_m_array, 1)
             min_alpha = minimize(
-                fun=self._fun, x0=model.params, args=args,
+                fun=self._fun, x0=model.params, args=my_args,
                 method='trust-constr', jac=self._jac,
                 hess=lambda alpha, *args: np.zeros((m+1,)),
                 constraints=constraints, tol=1e-5
             ).x
 
             # Maximize alpha to find upper bound
-            args = (geM, -1)
+            my_args = (ge_m_array, -1)
             max_alpha = minimize(
-                fun=self._fun, x0=model.params, args=args,
+                fun=self._fun, x0=model.params, args=my_args,
                 method='trust-constr', jac=self._jac,
                 hess=lambda alpha, *args: np.zeros((m+1,)),
                 constraints=constraints, tol=1e-5
             ).x
 
             # Calculate bounds
-            lower.append(expit(min_alpha @ geM))
-            upper.append(expit(max_alpha @ geM))
+            lower.append(expit(min_alpha @ ge_m_array))
+            upper.append(expit(max_alpha @ ge_m_array))
 
         # Save parameters
-        boundaries = np.array([expit(Ge_sub), lower, upper]).T
+        boundaries = np.array([expit(ge_sub), lower, upper]).T
         self.boundaries[confidence] = {
             "params": params,
             "boundaries": boundaries
@@ -311,8 +315,8 @@ class CalibrationBelt():
         viridis = plt.cm.get_cmap("viridis")
         for i, confidence in enumerate(confidences):
             alpha = .9 / len(confidences)
-            [Ge, lower, upper] = self.boundaries[confidence]["boundaries"].T
-            ax.fill_between(Ge, lower, upper, color=viridis(i), alpha=alpha)
+            [ge_array, lower, upper] = self.boundaries[confidence]["boundaries"].T
+            ax.fill_between(ge_array, lower, upper, color=viridis(i), alpha=alpha)
 
         return fig, ax
 
@@ -320,6 +324,6 @@ dataset = CalibrationDataset(0,1)
 belts = {'SVM':CalibrationBelt(dataset.get_attribute('target'), dataset.get_attribute('SVM'))}
 
 for my_model, belt in belts.items():
-    fig, ax  = belt.plot(confidences=[.8, .95])
-    ax.set_title(my_model, fontsize=30)
+    figure, axis  = belt.plot(confidences=[.8, .95])
+    axis.set_title(my_model, fontsize=30)
 plt.show()
