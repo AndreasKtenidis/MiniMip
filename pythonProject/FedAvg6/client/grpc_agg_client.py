@@ -91,7 +91,7 @@ def run_client(client_id, client_c):
     # answer = client.map_and_execute(dataset=IrisDataset2, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=IrisDataset, agg_class=Variance,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=BlobDataset2, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
-    answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'RLR'},
+    answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'SVM'},
                                     constants={})
     print(answer)
 
