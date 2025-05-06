@@ -24,9 +24,39 @@ class CalibrationBelt:
 
         # Step 1: Transform expected probabilities to logits (g_e)
         g_e = np.log(e / (1 - e))
-
-
         # Step 2: Fit polynomial logistic regression (up to max_poly_degree)
+        best_model,best_m=self.fit(g_e,max_poly_degree)
+        # Step 3: Compute calibration curve
+        x_range,g_e_range,p_pred=self.get_callibration_curve(g_e,best_model,best_m)
+        # Step 4: Compute confidence band
+        e_range,p_lower,p_upper,cov_matrix=self.get_confidence_band(x_range,g_e_range,best_model,best_m,confidence)
+        # Step 5: Plot
+        self.plot_graph(e_range, p_lower, p_upper, p_pred, best_m, confidence)
+
+        # return {
+        #     'polynomial_degree': best_m,
+        #     'coefficients': best_model.params,
+        #     'covariance_matrix': cov_matrix,
+        #     'calibration_curve': (e_range, p_pred),
+        #     'confidence_band': (e_range, p_lower, p_upper)
+        # }
+    @staticmethod
+    def plot_graph(e_range, p_lower, p_upper,p_pred,best_m,confidence):
+        # Step 5: Plot
+        plt.figure(figsize=(10, 6))
+        plt.plot(e_range, p_pred, label=f'Calibration curve (m={best_m})', color='blue')
+        plt.fill_between(e_range, p_lower, p_upper, alpha=0.2, color='gray',
+                         label=f'{int(confidence * 100)}% Calibration belt')
+        plt.plot([0, 1], [0, 1], 'k--', label='Perfect calibration')
+        plt.xlabel('Expected Probability (e)')
+        plt.ylabel('Observed Probability (p)')
+        plt.title('Calibration Belt')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.show()
+
+    @staticmethod
+    def fit(g_e,max_poly_degree):
         best_m = 1
         best_model = None
         best_ll = -np.inf
@@ -46,46 +76,28 @@ class CalibrationBelt:
             best_m = m
             best_model = model
             best_ll = model.llf
+        return best_model, best_m
 
-        # Step 3: Compute calibration curve
+    @staticmethod
+    def get_callibration_curve(g_e,best_model,best_m):
         g_e_range = np.linspace(np.min(g_e), np.max(g_e), 50)
-        X_range = np.column_stack([g_e_range ** i for i in range(best_m + 1)])
-        p_pred = best_model.predict(add_constant(X_range))
+        x_range = np.column_stack([g_e_range ** i for i in range(best_m + 1)])
+        p_pred = best_model.predict(add_constant(x_range))
+        return x_range,g_e_range,p_pred
 
-        # Step 4: Compute confidence band
+    @staticmethod
+    def get_confidence_band(x_range,g_e_range,best_model,best_m,confidence):
         cov_matrix = best_model.cov_params()
-        se = np.sqrt(np.sum([X_range[:, i] * X_range[:, j] * cov_matrix[i, j]
+        se = np.sqrt(np.sum([x_range[:, i] * x_range[:, j] * cov_matrix[i, j]
                              for i in range(best_m + 1) for j in range(best_m + 1)], axis=0))
         chi2_val = chi2.ppf(confidence, df=2)
-        g_p_lower = best_model.predict(add_constant(X_range), which="linear") - np.sqrt(chi2_val) * se
-        g_p_upper = best_model.predict(add_constant(X_range), which="linear") + np.sqrt(chi2_val) * se
-
+        g_p_lower = best_model.predict(add_constant(x_range), which="linear") - np.sqrt(chi2_val) * se
+        g_p_upper = best_model.predict(add_constant(x_range), which="linear") + np.sqrt(chi2_val) * se
         # Back-transform to probabilities
         p_lower = 1 / (1 + np.exp(-g_p_lower))
         p_upper = 1 / (1 + np.exp(-g_p_upper))
         e_range = 1 / (1 + np.exp(-g_e_range))  # Back to e-scale for plotting
-
-        # Step 5: Plot
-        plt.figure(figsize=(10, 6))
-        plt.plot(e_range, p_pred, label=f'Calibration curve (m={best_m})', color='blue')
-        plt.fill_between(e_range, p_lower, p_upper, alpha=0.2, color='gray',
-                         label=f'{int(confidence * 100)}% Calibration belt')
-        plt.plot([0, 1], [0, 1], 'k--', label='Perfect calibration')
-        plt.xlabel('Expected Probability (e)')
-        plt.ylabel('Observed Probability (p)')
-        plt.title('Calibration Belt')
-        plt.legend()
-        plt.grid(True, alpha=0.3)
-        plt.show()
-
-        # return {
-        #     'polynomial_degree': best_m,
-        #     'coefficients': best_model.params,
-        #     'covariance_matrix': cov_matrix,
-        #     'calibration_curve': (e_range, p_pred),
-        #     'confidence_band': (e_range, p_lower, p_upper)
-        # }
-
+        return e_range,p_lower,p_upper,cov_matrix
 
 # Example usage
 np.random.seed(42)
