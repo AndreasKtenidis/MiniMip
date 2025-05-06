@@ -19,7 +19,7 @@ import inspect
 from function.abstract_function import AggFunc
 from library.bivariate_statistics import PearsonCorrelation, Covariance, LeastSquaresRegression, SumOfProducts
 from library.univariate_statistics import Variance
-from library.cal_belt4 import CalibrationBelt
+from library.calibration_belt import CalibrationBelt
 from library.k_means import KMeans
 
 
