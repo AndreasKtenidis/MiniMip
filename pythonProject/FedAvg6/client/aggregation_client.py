@@ -22,9 +22,15 @@ class NumpyAggClient( ABC):
         self.client = client
 
     def fed_avg(self,array:np.ndarray):
-        tmp = np.append(array, 1)
-        tmp = self.client.__global_sum__( tmp)
-        return np.array(tmp[:-1])/tmp[-1]
+        _shape, _flattened = NumpyAggClient.transform(array)
+        _ans = self.client.__global_sum__(np.append(_flattened,1))
+        tmp = np.array(_ans[:-1])/_ans[-1]
+        return NumpyAggClient.inv_transform(_shape, tmp)
+
+    def fed_sum(self,array:np.ndarray):
+        _shape, _flattened = NumpyAggClient.transform(array)
+        _ans = self.client.__global_sum__( _flattened)
+        return NumpyAggClient.inv_transform(_shape, _ans)
 
     def global_sum(self,array:np.array):
         _shape, _flattened = NumpyAggClient.transform(np.sum(array, axis=0))

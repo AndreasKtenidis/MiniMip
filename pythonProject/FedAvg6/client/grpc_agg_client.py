@@ -19,7 +19,7 @@ import inspect
 from function.abstract_function import AggFunc
 from library.bivariate_statistics import PearsonCorrelation, Covariance, LeastSquaresRegression, SumOfProducts
 from library.univariate_statistics import Variance
-from library.calibration_belt import CalibrationBelt
+from library.cal_belt4 import CalibrationBelt
 from library.k_means import KMeans
 
 
@@ -91,7 +91,7 @@ def run_client(client_id, client_c):
     # answer = client.map_and_execute(dataset=IrisDataset2, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=IrisDataset, agg_class=Variance,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=BlobDataset2, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
-    answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'x':'target','y': 'RLR'},
+    answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'RLR'},
                                     constants={})
     print(answer)
 
