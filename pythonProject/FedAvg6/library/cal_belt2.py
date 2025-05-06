@@ -169,14 +169,14 @@ class CalibrationBelt:
     @staticmethod
     def _fun(alpha, *args):
         # Eq26
-        ge_m_array, sign = args
-        return sign * (alpha @ ge_m_array)
+        logit_poly, sign = args
+        return sign * (alpha @ logit_poly)
 
     @staticmethod
-    def _jac(alpha, *args):
+    def _jac(_, *args):
         # Eq29
-        ge_m_array, sign = args
-        return sign * ge_m_array
+        logit_poly, sign = args
+        return sign * logit_poly
 
     def calculate_boundaries(self, confidence, size=50, q=.95, **kwargs):
         # Forward select parameter m
@@ -203,26 +203,28 @@ class CalibrationBelt:
         a, b = (m - 1) * chi2.ppf(q, 1), 40
         my_args = m, q, confidence
         k = brentq(self._root_fun, a, b, args=my_args)
+        if isinstance(k, tuple):  # Handle cases where brentq returns (root, info)
+            k = k[0]
 
 
         # Calculate logit(E) matrix
-        m_array = np.linspace([0], [m], num=m+1, axis=1)
-        ge_array = logit(self.e)[np.newaxis]
-        g_array_e_m_array = ge_array.T ** m_array
+        degrees = np.linspace([0], [m], num=m+1, axis=1)
+        logits = logit(self.e)[np.newaxis]
+        design_mat  = logits.T ** degrees
 
-        # Upper boundary (Eq27)
-        boundary = model.llf - k / 2
+        # Upper ll_bound (Eq27)
+        ll_bound = model.llf - k / 2
 
         # Create subset based on size
-        logit_sub = np.linspace(np.min(ge_array), np.max(ge_array), num=size//2)
+        logit_sub = np.linspace(np.min(logits), np.max(logits), num=size//2)
         e_sub = np.linspace(np.min(self.e), np.max(self.e), num=size // 2)
-        ge_sub = np.sort(np.append(logit_sub, logit(e_sub)))
-        gem_sub = ge_sub[np.newaxis].T ** m_array
+        eval_points = np.sort(np.append(logit_sub, logit(e_sub)))
+        eval_mat = eval_points[np.newaxis].T ** degrees
 
         # Constraint function (Eq27)
-        def fun_lalpha(alpha):
+        def calc_ll(alpha):
             # Calculate probability
-            alpha_e = expit(g_array_e_m_array @ alpha)
+            alpha_e = expit(design_mat  @ alpha)
 
             # Clip probability to epsilon so
             # we can compute log-likelihood
@@ -233,22 +235,22 @@ class CalibrationBelt:
             lalpha = xlogy(self.p, alpha_e) + xlogy(1 - self.p, 1 - alpha_e)
             return np.nansum(lalpha)
 
-        def jac_lalpha(alpha):
+        def calc_jac(alpha):
             # Calculate probability
-            alpha_e = expit(g_array_e_m_array @ alpha)
-            return (self.p - alpha_e) @ g_array_e_m_array
+            alpha_e = expit(design_mat  @ alpha)
+            return (self.p - alpha_e) @ design_mat
 
         lower, upper = [], []
-        for ge_m_array in tqdm(gem_sub):
+        for logit_poly in tqdm(eval_mat):
             constraints: Union[NonlinearConstraint, Dict[str, Any]] = NonlinearConstraint(
-                fun_lalpha,
-                boundary, 0,
-                jac_lalpha,
+                calc_ll,
+                ll_bound, 0,
+                calc_jac,
                 keep_feasible=True
             )
 
             # Minimize alpha to find lower bound
-            my_args = (ge_m_array, 1)
+            my_args = (logit_poly, 1)
             min_alpha = minimize(
                 fun=self._fun, x0=model.params, args=my_args,
                 method='trust-constr', jac=self._jac,
@@ -257,20 +259,23 @@ class CalibrationBelt:
             ).x
 
             # Maximize alpha to find upper bound
-            my_args = (ge_m_array, -1)
+            my_args = (logit_poly, -1)
             max_alpha = minimize(
-                fun=self._fun, x0=model.params, args=my_args,
-                method='trust-constr', jac=self._jac,
+                fun=self._fun, x0=model.params,
+                args=my_args,
+                method='trust-constr',
+                jac=self._jac,
                 hess=lambda alpha, *args: np.zeros((m+1,)),
-                constraints=constraints, tol=1e-5
+                constraints=constraints,
+                tol=1e-5
             ).x
 
             # Calculate bounds
-            lower.append(expit(min_alpha @ ge_m_array))
-            upper.append(expit(max_alpha @ ge_m_array))
+            lower.append(expit(min_alpha @ logit_poly))
+            upper.append(expit(max_alpha @ logit_poly))
 
         # Save parameters
-        boundaries = np.array([expit(ge_sub), lower, upper]).T
+        boundaries = np.array([expit(eval_points), lower, upper]).T
         self.boundaries[confidence] = {
             "params": params,
             "boundaries": boundaries
@@ -315,8 +320,8 @@ class CalibrationBelt:
         viridis = plt.cm.get_cmap("viridis")
         for i, confidence in enumerate(confidences):
             alpha = .9 / len(confidences)
-            [ge_array, lower, upper] = self.boundaries[confidence]["boundaries"].T
-            ax.fill_between(ge_array, lower, upper, color=viridis(i), alpha=alpha)
+            [logits, lower, upper] = self.boundaries[confidence]["boundaries"].T
+            ax.fill_between(logits, lower, upper, color=viridis(i), alpha=alpha)
 
         return fig, ax
 
