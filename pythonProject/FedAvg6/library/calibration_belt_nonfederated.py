@@ -44,19 +44,15 @@ class CalibrationBelt:
             best_m = m
             best_model = model
             best_ll = model.llf
-            print(m)
-        cov_matrix = best_model.cov_params()
-        print(cov_matrix)
 
         # Step 3: Compute calibration curve
         g_e_range = np.linspace(np.min(g_e), np.max(g_e), 50)
         x_range = np.column_stack([g_e_range ** i for i in range(best_m + 1)])
         p_pred = best_model.predict(add_constant(x_range))
-        print(p_pred)
+
 
         # Step 4: Compute confidence band
         cov_matrix = best_model.cov_params()
-        print(cov_matrix)
         se = np.sqrt(np.sum([x_range[:, i] * x_range[:, j] * cov_matrix[i, j]
                              for i in range(best_m + 1) for j in range(best_m + 1)], axis=0))
         chi2_val = chi2.ppf(confidence, df=2)
