@@ -25,6 +25,8 @@ from library.k_means import KMeans
 
 class GRPCClient(AggregationClient):
 
+
+
     def __init__(self,client_id,client_count2,seed):
         self.channel = grpc.insecure_channel("localhost:50051")
         self.stub = pb2_grpc.AggregatorStub(self.channel)
@@ -35,6 +37,9 @@ class GRPCClient(AggregationClient):
         self.random = random.Random(seed)
 
 
+    def __global_union__(self, categories):
+        self.agg_round += 1
+        return self.send_aggregation_request(self.operation_id, AGG.UNION, self.agg_round, categories)
 
     def __global_sum__(self, local_sum):
         self.agg_round += 1
@@ -57,6 +62,18 @@ class GRPCClient(AggregationClient):
         )
         response = self.stub.GetServerResponse(request)
         return response.answer
+
+    def send_category_aggregation_request(self, operation_id, agg_func, agg_round, array):
+        request = pb2.CategoryAgg(
+            operation_id=operation_id,
+            agg_func=agg_func.value,
+            agg_round=agg_round,
+            values=array
+        )
+        response = self.stub.GetCategoryServerResponse(request)
+        return response.answer
+
+
 
     @staticmethod
     def get_clientapp_dataset(dataset,partition_id: int, num_partitions: int):

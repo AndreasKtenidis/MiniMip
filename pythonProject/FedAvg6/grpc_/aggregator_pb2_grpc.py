@@ -49,6 +49,16 @@ class AggregatorStub(object):
                 request_serializer=aggregator__pb2.Random.SerializeToString,
                 response_deserializer=aggregator__pb2.RandomResponse.FromString,
                 _registered_method=True)
+        self.GetCategoryServerResponse = channel.unary_unary(
+                '/aggregator.Aggregator/GetCategoryServerResponse',
+                request_serializer=aggregator__pb2.CategoryAgg.SerializeToString,
+                response_deserializer=aggregator__pb2.CategoryAggResponse.FromString,
+                _registered_method=True)
+        self.GetIntServerResponse = channel.unary_unary(
+                '/aggregator.Aggregator/GetIntServerResponse',
+                request_serializer=aggregator__pb2.IntegerAgg.SerializeToString,
+                response_deserializer=aggregator__pb2.IntegerAggResponse.FromString,
+                _registered_method=True)
 
 
 class AggregatorServicer(object):
@@ -75,6 +85,18 @@ class AggregatorServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetCategoryServerResponse(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetIntServerResponse(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_AggregatorServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -92,6 +114,16 @@ def add_AggregatorServicer_to_server(servicer, server):
                     servicer.GetRandom,
                     request_deserializer=aggregator__pb2.Random.FromString,
                     response_serializer=aggregator__pb2.RandomResponse.SerializeToString,
+            ),
+            'GetCategoryServerResponse': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetCategoryServerResponse,
+                    request_deserializer=aggregator__pb2.CategoryAgg.FromString,
+                    response_serializer=aggregator__pb2.CategoryAggResponse.SerializeToString,
+            ),
+            'GetIntServerResponse': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetIntServerResponse,
+                    request_deserializer=aggregator__pb2.IntegerAgg.FromString,
+                    response_serializer=aggregator__pb2.IntegerAggResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -175,6 +207,60 @@ class Aggregator(object):
             '/aggregator.Aggregator/GetRandom',
             aggregator__pb2.Random.SerializeToString,
             aggregator__pb2.RandomResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetCategoryServerResponse(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aggregator.Aggregator/GetCategoryServerResponse',
+            aggregator__pb2.CategoryAgg.SerializeToString,
+            aggregator__pb2.CategoryAggResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetIntServerResponse(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/aggregator.Aggregator/GetIntServerResponse',
+            aggregator__pb2.IntegerAgg.SerializeToString,
+            aggregator__pb2.IntegerAggResponse.FromString,
             options,
             channel_credentials,
             insecure,

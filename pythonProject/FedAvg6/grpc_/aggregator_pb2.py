@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10\x61ggregator.proto\x12\naggregator\"P\n\x03\x41gg\x12\x14\n\x0coperation_id\x18\x01 \x01(\x05\x12\x10\n\x08\x61gg_func\x18\x02 \x01(\t\x12\x11\n\tagg_round\x18\x03 \x01(\x05\x12\x0e\n\x06values\x18\x04 \x03(\x01\"\x1d\n\x0b\x41ggResponse\x12\x0e\n\x06\x61nswer\x18\x01 \x03(\x01\"\x0b\n\tOperation\")\n\x11OperationResponse\x12\x14\n\x0coperation_id\x18\x01 \x01(\x05\"?\n\x06Random\x12\x14\n\x0coperation_id\x18\x01 \x01(\x05\x12\x11\n\tagg_round\x18\x02 \x01(\x05\x12\x0c\n\x04size\x18\x03 \x01(\x05\" \n\x0eRandomResponse\x12\x0e\n\x06\x61nswer\x18\x01 \x03(\x01\x32\xd6\x01\n\nAggregator\x12?\n\x11GetServerResponse\x12\x0f.aggregator.Agg\x1a\x17.aggregator.AggResponse\"\x00\x12H\n\x0eGetOperationId\x12\x15.aggregator.Operation\x1a\x1d.aggregator.OperationResponse\"\x00\x12=\n\tGetRandom\x12\x12.aggregator.Random\x1a\x1a.aggregator.RandomResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x10\x61ggregator.proto\x12\naggregator\"P\n\x03\x41gg\x12\x14\n\x0coperation_id\x18\x01 \x01(\x05\x12\x10\n\x08\x61gg_func\x18\x02 \x01(\t\x12\x11\n\tagg_round\x18\x03 \x01(\x05\x12\x0e\n\x06values\x18\x04 \x03(\x01\"\x1d\n\x0b\x41ggResponse\x12\x0e\n\x06\x61nswer\x18\x01 \x03(\x01\"X\n\x0b\x43\x61tegoryAgg\x12\x14\n\x0coperation_id\x18\x01 \x01(\x05\x12\x10\n\x08\x61gg_func\x18\x02 \x01(\t\x12\x11\n\tagg_round\x18\x03 \x01(\x05\x12\x0e\n\x06values\x18\x04 \x03(\t\"%\n\x13\x43\x61tegoryAggResponse\x12\x0e\n\x06\x61nswer\x18\x01 \x03(\t\"W\n\nIntegerAgg\x12\x14\n\x0coperation_id\x18\x01 \x01(\x05\x12\x10\n\x08\x61gg_func\x18\x02 \x01(\t\x12\x11\n\tagg_round\x18\x03 \x01(\x05\x12\x0e\n\x06values\x18\x04 \x03(\x05\"$\n\x12IntegerAggResponse\x12\x0e\n\x06\x61nswer\x18\x01 \x03(\x05\"\x0b\n\tOperation\")\n\x11OperationResponse\x12\x14\n\x0coperation_id\x18\x01 \x01(\x05\"?\n\x06Random\x12\x14\n\x0coperation_id\x18\x01 \x01(\x05\x12\x11\n\tagg_round\x18\x02 \x01(\x05\x12\x0c\n\x04size\x18\x03 \x01(\x05\" \n\x0eRandomResponse\x12\x0e\n\x06\x61nswer\x18\x01 \x03(\x01\x32\x81\x03\n\nAggregator\x12?\n\x11GetServerResponse\x12\x0f.aggregator.Agg\x1a\x17.aggregator.AggResponse\"\x00\x12H\n\x0eGetOperationId\x12\x15.aggregator.Operation\x1a\x1d.aggregator.OperationResponse\"\x00\x12=\n\tGetRandom\x12\x12.aggregator.Random\x1a\x1a.aggregator.RandomResponse\"\x00\x12W\n\x19GetCategoryServerResponse\x12\x17.aggregator.CategoryAgg\x1a\x1f.aggregator.CategoryAggResponse\"\x00\x12P\n\x14GetIntServerResponse\x12\x16.aggregator.IntegerAgg\x1a\x1e.aggregator.IntegerAggResponse\"\x00\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -35,14 +35,22 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_AGG']._serialized_end=112
   _globals['_AGGRESPONSE']._serialized_start=114
   _globals['_AGGRESPONSE']._serialized_end=143
-  _globals['_OPERATION']._serialized_start=145
-  _globals['_OPERATION']._serialized_end=156
-  _globals['_OPERATIONRESPONSE']._serialized_start=158
-  _globals['_OPERATIONRESPONSE']._serialized_end=199
-  _globals['_RANDOM']._serialized_start=201
-  _globals['_RANDOM']._serialized_end=264
-  _globals['_RANDOMRESPONSE']._serialized_start=266
-  _globals['_RANDOMRESPONSE']._serialized_end=298
-  _globals['_AGGREGATOR']._serialized_start=301
-  _globals['_AGGREGATOR']._serialized_end=515
+  _globals['_CATEGORYAGG']._serialized_start=145
+  _globals['_CATEGORYAGG']._serialized_end=233
+  _globals['_CATEGORYAGGRESPONSE']._serialized_start=235
+  _globals['_CATEGORYAGGRESPONSE']._serialized_end=272
+  _globals['_INTEGERAGG']._serialized_start=274
+  _globals['_INTEGERAGG']._serialized_end=361
+  _globals['_INTEGERAGGRESPONSE']._serialized_start=363
+  _globals['_INTEGERAGGRESPONSE']._serialized_end=399
+  _globals['_OPERATION']._serialized_start=401
+  _globals['_OPERATION']._serialized_end=412
+  _globals['_OPERATIONRESPONSE']._serialized_start=414
+  _globals['_OPERATIONRESPONSE']._serialized_end=455
+  _globals['_RANDOM']._serialized_start=457
+  _globals['_RANDOM']._serialized_end=520
+  _globals['_RANDOMRESPONSE']._serialized_start=522
+  _globals['_RANDOMRESPONSE']._serialized_end=554
+  _globals['_AGGREGATOR']._serialized_start=557
+  _globals['_AGGREGATOR']._serialized_end=942
 # @@protoc_insertion_point(module_scope)

@@ -9,6 +9,8 @@ service Aggregator{
  rpc GetServerResponse(Agg) returns (AggResponse) {}
  rpc GetOperationId(Operation) returns (OperationResponse) {}
  rpc GetRandom(Random) returns (RandomResponse) {}
+ rpc GetCategoryServerResponse(CategoryAgg) returns (CategoryAggResponse) {}
+ rpc GetIntServerResponse(IntegerAgg) returns (IntegerAggResponse) {}
 }
 
 message Agg{
@@ -20,6 +22,28 @@ message Agg{
 
 message AggResponse{
  repeated double answer = 1;
+}
+
+message CategoryAgg{
+ int32  operation_id=1;
+ string agg_func = 2;
+ int32 agg_round = 3; // The id of the aggregation
+ repeated string values = 4;  // List (vector) of string values
+}
+
+message CategoryAggResponse{
+ repeated string answer = 1;
+}
+
+message IntegerAgg{
+ int32  operation_id=1;
+ string agg_func = 2;
+ int32 agg_round = 3; // The id of the aggregation
+ repeated int32 values = 4;  // List (vector) of string values
+}
+
+message IntegerAggResponse{
+ repeated int32 answer = 1;
 }
 
 message Operation{

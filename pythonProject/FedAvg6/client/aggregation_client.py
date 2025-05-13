@@ -16,6 +16,10 @@ class AggregationClient(ABC):
     def __global_max__(self, local_max):
         pass
 
+    @abstractmethod
+    def __global_union__(self, categories):
+        pass
+
 class NumpyAggClient( ABC):
 
     def __init__(self,client:AggregationClient):
