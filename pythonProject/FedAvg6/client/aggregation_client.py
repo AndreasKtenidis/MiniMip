@@ -17,13 +17,16 @@ class AggregationClient(ABC):
         pass
 
     @abstractmethod
-    def __global_union__(self, categories):
+    def __global_union__(self, categories,c_type):
         pass
 
 class NumpyAggClient( ABC):
 
     def __init__(self,client:AggregationClient):
         self.client = client
+
+    def fed_union(self,categories:np.array):
+        return np.array(self.client.__global_union__(categories.tolist(),categories.dtype))
 
     def fed_avg(self,array:np.ndarray):
         _shape, _flattened = NumpyAggClient.transform(array)

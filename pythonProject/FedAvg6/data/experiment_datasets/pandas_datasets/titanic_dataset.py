@@ -10,6 +10,6 @@ class TitanicPandasDataset(FederatedPandasDataset):
         return pd.read_csv(url)
 
 
-titanic = TitanicPandasDataset(1,2)
-print(titanic.get_attribute_names())
-print(titanic.get_attribute('PassengerId'))
+# titanic = TitanicPandasDataset(1,2)
+# print(titanic.get_attribute_names())
+# print(titanic.get_attributes('PassengerId','Sex'))

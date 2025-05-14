@@ -2,6 +2,9 @@ from typing import Dict, Union, List, Any
 
 import grpc
 import concurrent.futures
+import numpy as np
+
+
 from constants import AGG,client_count
 import grpc_.aggregator_pb2 as pb2
 import grpc_.aggregator_pb2_grpc as pb2_grpc
@@ -10,6 +13,7 @@ from data.experiment_datasets.blobs_dataset import BlobDataset
 from data.experiment_datasets.blobs_dataset2 import BlobDataset2
 from data.experiment_datasets.calibration_dataset import CalibrationDataset
 from data.experiment_datasets.iris_dataset import IrisDataset
+from data.experiment_datasets.pandas_datasets.titanic_dataset import TitanicPandasDataset
 
 import random
 import inspect
@@ -21,6 +25,7 @@ from library.bivariate_statistics import PearsonCorrelation, Covariance, LeastSq
 from library.univariate_statistics import Variance
 from library.calibration_belt import CalibrationBelt
 from library.k_means import KMeans
+from library.chi_squared import ChiSquared
 
 
 class GRPCClient(AggregationClient):
@@ -37,9 +42,12 @@ class GRPCClient(AggregationClient):
         self.random = random.Random(seed)
 
 
-    def __global_union__(self, categories):
+    def __global_union__(self, categories,c_type):
         self.agg_round += 1
-        return self.send_aggregation_request(self.operation_id, AGG.UNION, self.agg_round, categories)
+        if c_type == np.int64:
+            return self.send_int_aggregation_request(self.operation_id, AGG.UNION, self.agg_round, categories)
+        else:
+            raise Exception("Not Supported Type")
 
     def __global_sum__(self, local_sum):
         self.agg_round += 1
@@ -63,17 +71,15 @@ class GRPCClient(AggregationClient):
         response = self.stub.GetServerResponse(request)
         return response.answer
 
-    def send_category_aggregation_request(self, operation_id, agg_func, agg_round, array):
-        request = pb2.CategoryAgg(
+    def send_int_aggregation_request(self, operation_id, agg_func, agg_round, array):
+        request = pb2.IntegerAgg(
             operation_id=operation_id,
             agg_func=agg_func.value,
             agg_round=agg_round,
             values=array
         )
-        response = self.stub.GetCategoryServerResponse(request)
+        response = self.stub.GetIntServerResponse(request)
         return response.answer
-
-
 
     @staticmethod
     def get_clientapp_dataset(dataset,partition_id: int, num_partitions: int):
@@ -108,7 +114,8 @@ def run_client(client_id, client_c):
     # answer = client.map_and_execute(dataset=IrisDataset2, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=IrisDataset, agg_class=Variance,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=BlobDataset2, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
-    answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'SVM'},constants={})
+    # answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'SVM'},constants={})
+    answer = client.map_and_execute(dataset=TitanicPandasDataset, agg_class=ChiSquared, mapping={'factor_to_outcome': ['Pclass','Survived']}, constants={}) #
     # print(answer)
 
 if __name__ == "__main__":

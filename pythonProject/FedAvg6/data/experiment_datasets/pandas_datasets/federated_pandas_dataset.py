@@ -27,4 +27,3 @@ class FederatedPandasDataset(AbstractTable,ABC):
 
     def get_attributes(self, *attributes: str):
         return self.dataset[list(attributes)].to_numpy()
-
