@@ -1,66 +1,66 @@
 import numpy as np
-import pandas as pd
+from typing import Tuple
 
-from data.pandas_federation.fed_table import FedDataFrame
+from client.aggregation_client import AggregationClient
 from function.abstract_function import AggFunc
 
-
 class KMeans(AggFunc):
+    def __init__(self, client: AggregationClient):
+        super().__init__(client)
+        self.aggregator = self.get_numpy_aggregator()
 
-    def __init__(self):
-        self.x = None
-        self.centroids = None
-        self.k=None
-        self.labels = None
-        self.agg_cols = None
+    def assign_clusters(self, X: np.ndarray, centroids: np.ndarray) -> np.ndarray:
+        """Assign each point to the nearest centroid."""
+        dists = np.linalg.norm(X[:, np.newaxis] - centroids, axis=2)  # Shape: (n_samples, k)
+        return np.argmin(dists, axis=1)
 
-    def compute(self, x:FedDataFrame,k:int):
-        self.x:FedDataFrame = x
-        self.k = k
-        self.agg_cols = self.x.columns
-        return self.kmeans()
+    def compute_local_sums_and_counts(self, X: np.ndarray, assignments: np.ndarray, k: int) -> Tuple[
+        np.ndarray, np.ndarray]:
+        """Compute local sum of points and counts for each cluster."""
+        n_features = X.shape[1]
+        sums = np.zeros((k, n_features))
+        counts = np.zeros(k)
 
-    def initialize_centroids(self):
-        """Randomly initialize k centroids from the dataset X."""
-        _min,_max = self.x.fed_min(),self.x.fed_max()
-        _multi_min = pd.concat([_min] * self.k, ignore_index=True)
-        self.centroids = _multi_min + np.random.rand(self.k, _min.shape[1])*(pd.concat([_max] * self.k, ignore_index=True)-_multi_min)
-        self.centroids .index.name = 'centroid'
+        for i in range(k):
+            mask = (assignments == i)
+            if np.any(mask):
+                sums[i] = X[mask].sum(axis=0)
+                counts[i] = mask.sum()
 
+        return sums, counts
 
-    @staticmethod
-    def assign_clusters(points, centroids):
-        diff = points - centroids
-        distances = np.linalg.norm(diff,axis=1)
-        return np.argmin(distances)
+    def initialize_centroids(self, X: np.ndarray, k: int) -> np.ndarray:
+        """Sample local centroids and federate a global initialization."""
+        indices = np.random.choice(X.shape[0], k, replace=False)
+        local_centroids = X[indices]
+        global_centroids = self.aggregator.fed_union(local_centroids)
+        return global_centroids
 
+    def compute(self, x: np.ndarray, k: int):
 
-    def update_centroids(self):
-        """Compute new centroids as the mean of all points assigned to each cluster."""
+        """Perform federated K-means clustering."""
+        max_iters: int = 10
+        tol: float = 1e-4
+        self.centroids = self.initialize_centroids(x, k)
 
-        tmp = self.x.groupby(['centroid'])[self.agg_cols].agg(['mean', 'count']).sort_index()
-        for i in range(0, self.k):
-            point_i=tmp.loc[[0]].xs('mean', axis=1, level=1)
-            print(point_i)
-
-
-
-        # new_centroids = new_centroids.xs('mean', axis=1, level=1)
-        # full_index = pd.RangeIndex(0, self.k)
-        # new_centroids = FedDataFrame(new_centroids.reindex(full_index),self.x.client)
-
-
-        return None
-
-    def kmeans(self, max_iters=100, tol=1e-4):
-        """Perform K-Means clustering."""
-        self.initialize_centroids()
         for _ in range(max_iters):
-            # Assigns each point to a centroid
-            self.x['centroid'] = self.x.apply(self.assign_clusters, axis=1, args=(self.centroids,))
-            new_centroids = self.update_centroids()
+            assignments = self.assign_clusters(x, self.centroids)
+            local_sums, local_counts = self.compute_local_sums_and_counts(x, assignments, k)
 
-            if np.linalg.norm(new_centroids - self.centroids) < tol:
-                break
+            global_sums = self.aggregator.fed_sum(local_sums)
+            global_counts = self.aggregator.fed_sum(local_counts)
+
+            new_centroids = np.zeros_like(self.centroids)
+            for i in range(k):
+                if global_counts[i] > 0:
+                    new_centroids[i] = global_sums[i] / global_counts[i]
+
+            shift = np.linalg.norm(self.centroids - new_centroids)
             self.centroids = new_centroids
+
+            if shift < tol:
+                break
+        print(self.centroids)
+
+    def get_centroids(self) -> np.ndarray:
         return self.centroids
