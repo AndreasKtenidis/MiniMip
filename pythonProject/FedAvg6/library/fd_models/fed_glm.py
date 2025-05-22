@@ -7,6 +7,12 @@ import numpy as np
 
 class Fed_GLM(AggFunc):
 
+
+
+
+
+
+
     def __init__(self,client:AggregationClient):
         super().__init__(client)
         self.params = None

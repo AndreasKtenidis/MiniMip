@@ -1,4 +1,4 @@
-from data.experiment_datasets.pandas_datasets.federated_pandas_dataset import FederatedPandasDataset
+from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
 import pandas as pd
 
 class TitanicPandasDataset(FederatedPandasDataset):

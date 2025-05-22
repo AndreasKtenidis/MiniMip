@@ -19,7 +19,7 @@ class Variance(AggFunc):
 
 class StandardDeviation(AggFunc):
     def compute(self, x:np.array):
-        return math.sqrt(Variance(self.client).compute(x))
+        return np.sqrt(Variance(self.client).compute(x))
 
 class SumOfSquares(AggFunc):
     def compute(self, x:np.array):
@@ -52,7 +52,7 @@ class RootMeanSquare(AggFunc):
         agg = self.get_numpy_aggregator()
         if agg.global_count(x)== 0:
             return 0
-        return agg.global_avg(math.sqrt(x ** 2))
+        return agg.global_avg(np.sqrt(x ** 2))
 
 class MeanSquare(AggFunc):
     def compute(self, x:np.array):

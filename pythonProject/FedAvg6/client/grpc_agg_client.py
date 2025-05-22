@@ -13,6 +13,8 @@ from data.experiment_datasets.blobs_dataset import BlobDataset
 from data.experiment_datasets.blobs_dataset2 import BlobDataset2
 from data.experiment_datasets.calibration_dataset import CalibrationDataset
 from data.experiment_datasets.iris_dataset import IrisDataset
+from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
+from data.experiment_datasets.pandas_datasets.insurance_dataset import InsuranceDataset
 from data.experiment_datasets.pandas_datasets.titanic_dataset import TitanicPandasDataset
 
 import random
@@ -22,6 +24,7 @@ import inspect
 
 from function.abstract_function import AggFunc
 from library.bivariate_statistics import PearsonCorrelation, Covariance, LeastSquaresRegression, SumOfProducts
+from library.fd_models.linear_regression import FederatedLinearRegression
 from library.univariate_statistics import Variance
 from library.calibration_belt import CalibrationBelt
 from library.k_means import KMeans
@@ -46,6 +49,8 @@ class GRPCClient(AggregationClient):
         self.agg_round += 1
         if c_type == np.int64:
             return self.send_int_aggregation_request(self.operation_id, AGG.UNION, self.agg_round, categories)
+        if c_type == np.float64:
+            return self.send_aggregation_request(self.operation_id, AGG.UNION, self.agg_round, categories)
         else:
             raise Exception("Not Supported Type")
 
@@ -113,9 +118,12 @@ def run_client(client_id, client_c):
     # answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
     # answer = client.map_and_execute(dataset=IrisDataset2, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=IrisDataset, agg_class=Variance,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
-    # answer = client.map_and_execute(dataset=BlobDataset2, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
+    answer = client.map_and_execute(dataset=BlobDataset2, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
+    # answer = client.map_and_execute(dataset=InsuranceDataset, agg_class=FederatedLinearRegression,
+    #                                 mapping={'input': ['age', 'bmi', 'children',  'sex_male', 'smoker_yes',
+    #                                                'region_northwest', 'region_southeast', 'region_southwest'], 'output' :'charges'},constants={})
     # answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'SVM'},constants={})
-    answer = client.map_and_execute(dataset=TitanicPandasDataset, agg_class=ChiSquared, mapping={'factor_to_outcome': ['Pclass','Survived']}, constants={}) #
+    # answer = client.map_and_execute(dataset=TitanicPandasDataset, agg_class=ChiSquared, mapping={'factor_to_outcome': ['Pclass','Survived']}, constants={}) #
     # print(answer)
 
 if __name__ == "__main__":
