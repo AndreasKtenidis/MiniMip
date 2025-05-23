@@ -47,7 +47,7 @@ class NumpyAggClient( ABC):
                     A numpy array containing the union of all categories from
                     all clients, with duplicates removed.
                 """
-        _shape, _flattened,_type = NumpyAggClient._transform2(np.unique(categories))
+        _shape, _flattened,_type = NumpyAggClient._transform2(categories)
         _shape = (-1,) + _shape[1:]
         _ans= np.array(self.client.__global_union__(_flattened,_type))
         return NumpyAggClient._inv_transform(_shape, _ans)

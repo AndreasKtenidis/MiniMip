@@ -17,6 +17,3 @@ class InsuranceDataset(FederatedPandasDataset):
         df_encoded = pd.get_dummies(df, columns=["sex", "smoker", "region"], drop_first=True)
         return df_encoded
 
-
-lala = InsuranceDataset(0,1)
-print(lala.get_attribute_names())
