@@ -6,13 +6,13 @@ from client.aggregation_client import AggregationClient
 from function.abstract_function import AggFunc
 
 
-class FedOneHotEncoder(AggFunc, _BaseEncoder):
+class FedOneHotEncoder(AggFunc):
     def __init__(self,client:AggregationClient):
         super().__init__(client)
         self.encoder = OneHotEncoder()
 
     def compute(self,x):
-        self.fit_transform(x)
+        self.fit(x)
         print(x)
 
 
@@ -20,8 +20,10 @@ class FedOneHotEncoder(AggFunc, _BaseEncoder):
         aggregator = self.get_numpy_aggregator()
         if y is not None:
             y_agg = aggregator.fed_union(y)
+        else:
+            y_agg = None
         x_agg = aggregator.fed_union(x)
-        self.encoder.fit(x,y,fit_params)
+        self.encoder.fit(x_agg,y_agg,**fit_params)
 
 
 

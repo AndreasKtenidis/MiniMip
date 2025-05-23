@@ -47,9 +47,9 @@ class NumpyAggClient( ABC):
                     A numpy array containing the union of all categories from
                     all clients, with duplicates removed.
                 """
-        _shape, _flattened = NumpyAggClient._transform(categories)
+        _shape, _flattened,_type = NumpyAggClient._transform2(np.unique(categories))
         _shape = (-1,) + _shape[1:]
-        _ans= np.array(self.client.__global_union__(_flattened,categories.dtype))
+        _ans= np.array(self.client.__global_union__(_flattened,_type))
         return NumpyAggClient._inv_transform(_shape, _ans)
 
     def fed_avg(self,array:np.ndarray):
@@ -192,8 +192,20 @@ class NumpyAggClient( ABC):
 
     @staticmethod
     def _transform(array:np.ndarray):
-        out = array.flatten().astype(np.float64).tolist()
+        try:
+            out = array.flatten().astype(np.float64).tolist()
+        except Exception as e:
+            out = array.flatten().astype(str).tolist()
         return array.shape,out
+
+    @staticmethod
+    def _transform2(array: np.ndarray):
+        try:
+            out = array.flatten().astype(np.float64).tolist()
+            return array.shape, out,np.float64
+        except Exception as e:
+            out = array.flatten().astype(str).tolist()
+            return array.shape, out, str
 
     @staticmethod
     def _inv_transform(original_shape, answer):
