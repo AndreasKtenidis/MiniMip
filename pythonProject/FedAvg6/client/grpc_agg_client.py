@@ -130,10 +130,10 @@ def run_client(client_id, client_c):
     # answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
     # answer = client.map_and_execute(dataset=IrisDataset2, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=IrisDataset, agg_class=Variance,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
-    answer = client.map_and_execute(dataset=BlobDataset, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
-    # answer = client.map_and_execute(dataset=InsuranceDataset, agg_class=FederatedLinearRegression,
-    #                                 mapping={'input': ['age', 'bmi', 'children',  'sex_male', 'smoker_yes',
-    #                                                'region_northwest', 'region_southeast', 'region_southwest'], 'output' :'charges'},constants={})
+    # answer = client.map_and_execute(dataset=BlobDataset, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
+    answer = client.map_and_execute(dataset=InsuranceDataset, agg_class=FederatedLinearRegression,
+                                    mapping={'input': ['age', 'bmi', 'children', 'sex', 'smoker', 'region_northeast',
+       'region_northwest', 'region_southeast', 'region_southwest', 'charges'], 'output' :'charges'},constants={})
     # answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'SVM'},constants={})
     # answer = client.map_and_execute(dataset=TitanicPandasDataset, agg_class=ChiSquared, mapping={'factor_to_outcome': ['Pclass','Survived']}, constants={}) #
     # answer = client.map_and_execute(dataset=TitanicPandasDataset, agg_class=FedOneHotEncoder, mapping={'x': 'Sex'}, constants={}) #

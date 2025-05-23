@@ -8,10 +8,8 @@ import numpy as np
 class Fed_GLM(AggFunc):
 
 
-
-
-
-
+    def compute(self, *args, **kwargs):
+        pass
 
     def __init__(self,client:AggregationClient):
         super().__init__(client)

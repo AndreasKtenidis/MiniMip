@@ -20,8 +20,8 @@ class FederatedLinearRegression(AggFunc):
         self.model = nn.Linear(input.shape[1], 1, bias=True)
         # TODO this step could be avoided if the server was sending the params at first step
         params = self._get_model_params()
-        self.aggregator.global_avg(params)
-        self._set_model_params(params)
+        params2 = self.aggregator.fed_avg(params)
+        self._set_model_params(params2)
         # End TODO
         self.train(input, output)
 
@@ -45,18 +45,15 @@ class FederatedLinearRegression(AggFunc):
             self.model.weight.data = torch.tensor(weights, dtype=torch.float32)
             self.model.bias.data = torch.tensor(bias, dtype=torch.float32)
 
-    def train(self, x: np.ndarray, y: np.ndarray, lr: float = 0.01, epochs: int = 10):
+    def train(self, x: np.ndarray, y: np.ndarray, lr: float = 0.05, epochs: int =500):
         """Train the model locally and apply fed_avg after each epoch."""
-        x=x.astype(np.float32)
-        x= (x - self.aggregator.global_avg(x)) / StandardDeviation(self.client).compute(x)
-
 
         x_tensor = torch.tensor(x, dtype=torch.float32)
         y_tensor = torch.tensor(y, dtype=torch.float32).view(-1, 1)
 
         criterion = nn.MSELoss()
         optimizer = optim.SGD(self.model.parameters(), lr=lr)
-
+        local_params = self._get_model_params()
         for epoch in range(epochs):
             self.model.train()
             optimizer.zero_grad()

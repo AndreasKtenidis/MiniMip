@@ -69,6 +69,6 @@ class TitanicPandasDataset(FederatedPandasDataset):
         return final_df
 
 
-titanic = TitanicPandasDataset(1,2)
-print(titanic.get_attribute_names())
-print(titanic.get_attributes('PassengerId','Sex'))
+# titanic = TitanicPandasDataset(1,2)
+# print(titanic.get_attribute_names())
+# print(titanic.get_attributes('PassengerId','Sex'))
