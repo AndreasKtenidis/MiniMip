@@ -111,6 +111,7 @@ class LogisticRegression(torch.nn.Module,AggFunc):
         torch.nn.Module.__init__(self)
         AggFunc.__init__(self,client)
         self.linear = torch.nn.Linear(n_inputs, n_outputs)
+        self.aggregator = self.get_numpy_aggregator()
 
     def forward(self, x):
         return self.linear(x)  # Note: CrossEntropyLoss includes softmax
@@ -118,30 +119,30 @@ class LogisticRegression(torch.nn.Module,AggFunc):
     def compute(self, *args, **kwargs):
         pass
 
-
     def fed_train(self, train_loader, test_loader, criterion, optimizer, num_epochs, device='cpu', eval_every=1):
         """
-        Train the model for multiple epochs with optional periodic evaluation
+        Federated training with periodic evaluation
+
         Args:
-            model: Model to train
             train_loader: DataLoader for training data
-            test_loader: DataLoader for test data (optional)
+            test_loader: DataLoader for test data
             criterion: Loss function
             optimizer: Optimization algorithm
             num_epochs: Number of training epochs
             device: Device to run training on
             eval_every: Evaluate every N epochs (0 for no evaluation)
+
         Returns:
-            tuple: (model, train_history, eval_history)
+            tuple: (train_history, eval_history)
                 train_history: List of training losses per epoch
-                eval_history: List of evaluation metrics (accuracy, loss) tuples
+                eval_history: List of (epoch, accuracy) tuples
         """
         self.to(device)
         train_history = []
         eval_history = []
 
         for epoch in range(1, num_epochs + 1):
-            # Training phase
+            # Local training phase
             self.train()
             epoch_loss = 0.0
 
@@ -162,57 +163,61 @@ class LogisticRegression(torch.nn.Module,AggFunc):
             avg_epoch_loss = epoch_loss / len(train_loader)
             train_history.append(avg_epoch_loss)
 
+            # Federated aggregation phase
+            self._aggregate_parameters(train_loader, device)
+
             # Evaluation phase
-            eval_metrics = None
             if eval_every > 0 and (epoch % eval_every == 0 or epoch == num_epochs):
-                accuracy, val_loss = self.evaluate(test_loader, criterion, device)
-                eval_metrics = (accuracy, val_loss)
-                eval_history.append((epoch, eval_metrics))
+                accuracy = self.fed_evaluate(test_loader, device)
+                eval_history.append((epoch, accuracy))
                 print(f'Epoch {epoch}/{num_epochs} | '
                       f'Train Loss: {avg_epoch_loss:.4f} | '
-                      f'Val Loss: {val_loss:.4f} | '
                       f'Accuracy: {accuracy:.2f}%')
             else:
                 print(f'Epoch {epoch}/{num_epochs} | Train Loss: {avg_epoch_loss:.4f}')
+
         return train_history, eval_history
 
-    def evaluate(self, test_loader, criterion, device='cpu'):
-        """
-        Evaluate the model on test data
-        Args:
-            model: Model to evaluate
-            test_loader: DataLoader for test data
-            criterion: Loss function
-            device: Device to run evaluation on
-        Returns:
-            tuple: (accuracy, loss)
-        """
+    def _aggregate_parameters(self, train_loader, device):
+        """Helper method for federated parameter aggregation"""
+        with torch.no_grad():
+            # Get current parameters as numpy arrays
+            local_params = [p.cpu().numpy() for p in self.parameters()]
+            weight = len(train_loader.dataset)
+
+            # Federated averaging
+            fed_avg_params = [
+                self.aggregator.fed_avg(param)
+                for param in local_params
+            ]
+
+            # Update model with aggregated parameters
+            for local_param, fed_param in zip(self.parameters(), fed_avg_params):
+                local_param.copy_(torch.from_numpy(fed_param).to(device))
+
+    def fed_evaluate(self, test_loader, device='cpu'):
+        """Federated evaluation aggregating accuracy across clients"""
         self.eval()
         correct = 0
         total = 0
-        test_loss = 0.0
 
         with torch.no_grad():
             for images, labels in test_loader:
                 images, labels = images.to(device), labels.to(device)
                 outputs = self(images.view(-1, 28 * 28))
-
-                test_loss += criterion(outputs, labels).item()
                 _, predicted = torch.max(outputs.data, 1)
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
 
-        accuracy = 100 * correct / total
-        avg_loss = test_loss / len(test_loader)
-        return accuracy, avg_loss
+        local_accuracy = np.array([100 * correct / total])
+        local_count = np.array([total])
 
-config = {
-        'batch_size': 64,
-        'learning_rate': 0.01,
-        'num_epochs': 20,
-        'eval_every': 2,  # Evaluate every 2 epochs
-        'num_clients':2
-    }
+        # Federated aggregation
+        total_correct = self.aggregator.global_sum(local_accuracy * local_count / 100)
+        total_count = self.aggregator.global_sum(local_count)
+
+        return (total_correct / total_count) * 100
+
 
 def compute(client_num):
     # Configuration
@@ -276,3 +281,10 @@ def compute(client_num):
 #
 
 
+config = {
+        'batch_size': 64,
+        'learning_rate': 0.01,
+        'num_epochs': 20,
+        'eval_every': 2,  # Evaluate every 2 epochs
+        'num_clients':2
+    }
