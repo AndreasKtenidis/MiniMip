@@ -17,3 +17,11 @@ venv/
 
 # IDE from JetBrains files
 .idea/
+pythonProject/FedAvg6/library/fd_models/data/MNIST/raw/train-labels-idx1-ubyte.gz
+pythonProject/FedAvg6/library/fd_models/data/MNIST/raw/train-labels-idx1-ubyte
+pythonProject/FedAvg6/library/fd_models/data/MNIST/raw/train-images-idx3-ubyte.gz
+pythonProject/FedAvg6/library/fd_models/data/MNIST/raw/train-images-idx3-ubyte
+pythonProject/FedAvg6/library/fd_models/data/MNIST/raw/t10k-labels-idx1-ubyte.gz
+pythonProject/FedAvg6/library/fd_models/data/MNIST/raw/t10k-labels-idx1-ubyte
+pythonProject/FedAvg6/library/fd_models/data/MNIST/raw/t10k-images-idx3-ubyte.gz
+pythonProject/FedAvg6/library/fd_models/data/MNIST/raw/t10k-images-idx3-ubyte
