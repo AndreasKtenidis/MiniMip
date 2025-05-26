@@ -2,7 +2,7 @@ from data.experiment_datasets.pandas_datasets.federated_dataset import Federated
 import pandas as pd
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, OrdinalEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
@@ -20,19 +20,18 @@ class TitanicPandasDataset(FederatedPandasDataset):
 
     @staticmethod
     def preprocess_titanic_data(df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Preprocesses the Titanic DataFrame and returns a fully transformed DataFrame
-        with all columns (including Survived if present).
-        """
-
         df = df.copy()
 
         # Drop irrelevant columns
         df = df.drop(columns=["Name", "Ticket", "Cabin", "PassengerId"], errors="ignore")
 
-        # Define features including the target (we don't separate it)
+        # Define numeric and categorical features
         numeric_features = ["Age", "Fare"]
-        categorical_features = ["Pclass", "Sex", "Embarked", "SibSp", "Parch"]
+
+        # Determine binary vs non-binary categorical columns
+        potential_categorical = ["Pclass", "Sex", "Embarked", "SibSp", "Parch"]
+        binary_categorical = [col for col in potential_categorical if df[col].nunique() == 2]
+        multiclass_categorical = [col for col in potential_categorical if df[col].nunique() > 2]
 
         # Pipelines
         numeric_pipeline = Pipeline([
@@ -40,7 +39,12 @@ class TitanicPandasDataset(FederatedPandasDataset):
             ("scaler", StandardScaler())
         ])
 
-        categorical_pipeline = Pipeline([
+        binary_cat_pipeline = Pipeline([
+            ("imputer", SimpleImputer(strategy="most_frequent")),
+            ("encoder", OrdinalEncoder())
+        ])
+
+        multiclass_cat_pipeline = Pipeline([
             ("imputer", SimpleImputer(strategy="most_frequent")),
             ("encoder", OneHotEncoder(handle_unknown="ignore", sparse_output=False))
         ])
@@ -48,27 +52,31 @@ class TitanicPandasDataset(FederatedPandasDataset):
         # Column transformer
         preprocessor = ColumnTransformer([
             ("num", numeric_pipeline, numeric_features),
-            ("cat", categorical_pipeline, categorical_features)
+            ("bin_cat", binary_cat_pipeline, binary_categorical),
+            ("multi_cat", multiclass_cat_pipeline, multiclass_categorical)
         ])
 
         # Fit and transform
-        X_features = df[numeric_features + categorical_features]
+        X_features = df[numeric_features + binary_categorical + multiclass_categorical]
         X_transformed = preprocessor.fit_transform(X_features)
 
-        # Get transformed column names
-        cat_cols = preprocessor.named_transformers_["cat"]["encoder"].get_feature_names_out(categorical_features)
-        all_transformed_cols = np.concatenate([numeric_features, cat_cols])
+        # Get column names
+        bin_cat_cols = binary_categorical
+        multi_cat_cols = preprocessor.named_transformers_["multi_cat"]["encoder"].get_feature_names_out(
+            multiclass_categorical)
+        all_transformed_cols = np.concatenate([numeric_features, bin_cat_cols, multi_cat_cols])
 
-        # Create new DataFrame from transformed features
+        # Create transformed DataFrame
         transformed_df = pd.DataFrame(X_transformed, columns=all_transformed_cols, index=df.index)
 
-        # Add any remaining columns (like 'Survived') back
-        remaining_cols = df.drop(columns=numeric_features + categorical_features)
+        # Add remaining columns (e.g., "Survived")
+        remaining_cols = df.drop(columns=numeric_features + binary_categorical + multiclass_categorical)
         final_df = pd.concat([transformed_df, remaining_cols], axis=1)
 
         return final_df
 
 
-# titanic = TitanicPandasDataset(1,2)
-# print(titanic.get_attribute_names())
+titanic = TitanicPandasDataset(1,2)
+print(titanic.get_attribute_names())
+print(titanic.get_attribute_names())
 # print(titanic.get_attributes('PassengerId','Sex'))

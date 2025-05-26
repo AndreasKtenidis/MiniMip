@@ -1,5 +1,3 @@
-
-
 from data.abstract_table import AbstractTable
 from abc import ABC,abstractmethod
 import pandas as pd
