@@ -11,11 +11,11 @@ import grpc_.aggregator_pb2_grpc as pb2_grpc
 from client.aggregation_client import AggregationClient
 # from data.experiment_datasets.blobs_dataset import BlobDataset
 # from data.experiment_datasets.calibration_dataset import CalibrationDataset
-# from data.experiment_datasets.iris_dataset import IrisDataset
+from data.experiment_datasets.iris_dataset import IrisDataset
 # from data.experiment_datasets.pandas_datasets.diabetes_dataset import DiabetesDataset
 # from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
 # from data.experiment_datasets.pandas_datasets.insurance_dataset import InsuranceDataset
-# from data.experiment_datasets.pandas_datasets.titanic_dataset import TitanicPandasDataset
+from data.experiment_datasets.pandas_datasets.titanic_dataset import TitanicPandasDataset
 
 import random
 import inspect
@@ -23,7 +23,7 @@ import inspect
 
 
 from function.abstract_function import AggFunc
-from library.bivariate_statistics import PearsonCorrelation, Covariance, LeastSquaresRegression, SumOfProducts
+from library.bivariate_statistics import PearsonCorrelation, Covariance, LeastSquaresRegression, SumOfProducts,StandardizedMeanDifferences
 from library.fd_models.linear_regression import FederatedLinearRegression
 # from library.fd_models.logistic_regression2 import FederatedLogisticRegression
 from library.fed_transformers.fed_encoders import FedOneHotEncoder
@@ -131,7 +131,7 @@ def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c,154)
     # answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
     # answer = client.map_and_execute(dataset=IrisDataset2, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
-    # answer = client.map_and_execute(dataset=IrisDataset, agg_class=Variance,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
+    answer = client.map_and_execute(dataset=IrisDataset, agg_class=StandardizedMeanDifferences, mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=BlobDataset, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
     # answer = client.map_and_execute(dataset=InsuranceDataset, agg_class=FederatedLinearRegression,
     #                                 mapping={'input': ['age', 'bmi', 'children', 'sex', 'smoker', 'region_northeast',
@@ -147,7 +147,7 @@ def run_client(client_id, client_c):
     # answer = client.map_and_execute(dataset=TitanicPandasDataset, agg_class=ChiSquared, mapping={'factor_to_outcome': ['Pclass','Survived']}, constants={}) #
 
     # FedOneHotEncoder
-    # print(answer)
+    print(answer)
 
 if __name__ == "__main__":
     # run_client(0,0)
