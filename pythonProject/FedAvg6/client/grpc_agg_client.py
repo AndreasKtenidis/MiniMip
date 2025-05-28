@@ -14,7 +14,7 @@ from client.aggregation_client import AggregationClient
 from data.experiment_datasets.iris_dataset import IrisDataset
 # from data.experiment_datasets.pandas_datasets.diabetes_dataset import DiabetesDataset
 # from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
-# from data.experiment_datasets.pandas_datasets.insurance_dataset import InsuranceDataset
+from data.experiment_datasets.pandas_datasets.insurance_dataset import InsuranceDataset
 from data.experiment_datasets.pandas_datasets.titanic_dataset import TitanicPandasDataset
 
 import random
@@ -25,6 +25,7 @@ import inspect
 from function.abstract_function import AggFunc
 from library.bivariate_statistics import PearsonCorrelation, Covariance, LeastSquaresRegression, SumOfProducts,StandardizedMeanDifferences
 from library.fd_models.linear_regression import FederatedLinearRegression
+from library.fd_models.ols_linear_regression import FedOLS
 # from library.fd_models.logistic_regression2 import FederatedLogisticRegression
 from library.fed_transformers.fed_encoders import FedOneHotEncoder
 from library.univariate_statistics import Variance
@@ -131,11 +132,14 @@ def run_client(client_id, client_c):
     client = GRPCClient(client_id, client_c,154)
     # answer = client.map_and_execute(dataset = IrisDataset,agg_class=LeastSquaresRegression,mapping={'x':'SepalWidthCm','y':'SepalLengthCm'},constants={})
     # answer = client.map_and_execute(dataset=IrisDataset2, agg_class=PearsonCorrelation,mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
-    answer = client.map_and_execute(dataset=IrisDataset, agg_class=StandardizedMeanDifferences, mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
+    # answer = client.map_and_execute(dataset=IrisDataset, agg_class=StandardizedMeanDifferences, mapping={'x': 'SepalWidthCm', 'y': 'SepalLengthCm'}, constants={})
     # answer = client.map_and_execute(dataset=BlobDataset, agg_class=KMeans, mapping={'x': ['x', 'y']}, constants={'k': 3})
     # answer = client.map_and_execute(dataset=InsuranceDataset, agg_class=FederatedLinearRegression,
     #                                 mapping={'input': ['age', 'bmi', 'children', 'sex', 'smoker', 'region_northeast',
     #    'region_northwest', 'region_southeast', 'region_southwest', 'charges'], 'output' :'charges'},constants={})
+    answer = client.map_and_execute(dataset=InsuranceDataset, agg_class=FedOLS,
+                                    mapping={'x': ['age', 'bmi', 'children', 'sex', 'smoker', 'region_northeast',
+       'region_northwest', 'region_southeast', 'region_southwest', 'charges'], 'y' :'charges'},constants={})
     # answer = client.map_and_execute(dataset=TitanicPandasDataset, agg_class=FederatedLogisticRegression,
     #                                 mapping={'input': ['Age', 'Fare', 'Sex', 'Pclass_1', 'Pclass_2', 'Pclass_3', 'Embarked_C', 'Embarked_Q', 'Embarked_S',
     #                                                    'SibSp_0', 'SibSp_1', 'SibSp_2', 'SibSp_3', 'SibSp_4', 'SibSp_5', 'SibSp_8', 'Parch_0', 'Parch_1',
