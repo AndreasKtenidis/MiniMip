@@ -28,5 +28,6 @@ class FedOLS(AggFunc):
     def __init__(self, client):
         super().__init__(client)
         self.aggregator = self.get_numpy_aggregator()
+        self.b_dot=None
 
 
