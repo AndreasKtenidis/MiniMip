@@ -1,13 +1,13 @@
-from library.stats._statistical_function import AggFunc
+from library.stats._statistical_function import StatisticalFunction
 import numpy as np
 
-class Dummy(AggFunc):
+class Dummy(StatisticalFunction):
     def compute(self, x):
         random_integers = np.random.randint(1, 11, size=3)
         print(random_integers)
         return 3
 
-class Variance(AggFunc):
+class Variance(StatisticalFunction):
     def compute(self, x:np.array):
         agg = self.get_numpy_aggregator()
         _count = agg.global_count(x)
@@ -16,21 +16,21 @@ class Variance(AggFunc):
         sum_of_squares = agg.global_avg(x ** 2)
         return sum_of_squares -(agg.global_avg(x)** 2)
 
-class StandardDeviation(AggFunc):
+class StandardDeviation(StatisticalFunction):
     def compute(self, x:np.array):
         return np.sqrt(Variance(self.client).compute(x))
 
-class SumOfSquares(AggFunc):
+class SumOfSquares(StatisticalFunction):
     def compute(self, x:np.array):
         agg = self.get_numpy_aggregator()
         return agg.global_sum(x ** 2)
 
-class Range(AggFunc):
+class Range(StatisticalFunction):
     def compute(self, x:np.array):
         agg = self.get_numpy_aggregator()
         return agg.global_max( x) - agg.global_min( x)
 
-class CoefficientOfVariation(AggFunc):
+class CoefficientOfVariation(StatisticalFunction):
     def compute(self, x:np.array):
         agg = self.get_numpy_aggregator()
         avg_data = agg.global_avg(x)
@@ -38,7 +38,7 @@ class CoefficientOfVariation(AggFunc):
             return 0
         StandardDeviation(self.client).compute(x)/avg_data
 
-class MeanAbsoluteDeviation(AggFunc):
+class MeanAbsoluteDeviation(StatisticalFunction):
     def compute(self, x:np.array):
         agg = self.get_numpy_aggregator()
         if agg.global_count(x)== 0:
@@ -46,14 +46,14 @@ class MeanAbsoluteDeviation(AggFunc):
         avg_data = agg.global_avg(x)
         return agg.global_avg(abs(x - avg_data))
 
-class RootMeanSquare(AggFunc):
+class RootMeanSquare(StatisticalFunction):
     def compute(self, x:np.array):
         agg = self.get_numpy_aggregator()
         if agg.global_count(x)== 0:
             return 0
         return agg.global_avg(np.sqrt(x ** 2))
 
-class MeanSquare(AggFunc):
+class MeanSquare(StatisticalFunction):
     def compute(self, x:np.array):
         agg = self.get_numpy_aggregator()
         y = agg.global_avg(x)

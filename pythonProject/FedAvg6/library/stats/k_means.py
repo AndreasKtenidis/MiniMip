@@ -2,9 +2,9 @@ import numpy as np
 from typing import Tuple
 
 from system.client.aggregation_client import AggregationClient
-from library.stats._statistical_function import AggFunc
+from library.stats._statistical_function import StatisticalFunction
 
-class KMeans(AggFunc):
+class KMeans(StatisticalFunction):
     def __init__(self, client: AggregationClient):
         super().__init__(client)
         self.aggregator = self.get_numpy_aggregator()

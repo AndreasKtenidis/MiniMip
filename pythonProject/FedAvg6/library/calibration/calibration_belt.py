@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from scipy.stats import chi2
 from statsmodels.tools import add_constant
 
-from library.stats._statistical_function import AggFunc
+from library.stats._statistical_function import StatisticalFunction
 from library.stat_models.fed_glm import Fed_GLM
 
 
-class CalibrationBelt(AggFunc):
+class CalibrationBelt(StatisticalFunction):
 
 
 
@@ -39,7 +39,7 @@ class CalibrationBelt(AggFunc):
             # Design matrix: [1, g_e, g_e^2, ..., g_e^m]
             x_vec = np.column_stack([g_e ** i for i in range(m + 1)])
             model = Fed_GLM(self.client)
-            model.train(input=add_constant(x_vec), output=o)
+            model.fit(x=add_constant(x_vec), y=o)
 
             # Likelihood-ratio test (compare to previous model)
             if m > 1:
@@ -59,7 +59,7 @@ class CalibrationBelt(AggFunc):
         p_pred = best_model.predict(add_constant(x_range))
 
         # Step 4: Compute confidence band
-        cov_matrix = best_model.cov_params()
+        cov_matrix = best_model._cov_params()
         se = np.sqrt(np.sum([x_range[:, i] * x_range[:, j] * cov_matrix[i, j]
                              for i in range(best_m + 1) for j in range(best_m + 1)], axis=0))
         chi2_val = chi2.ppf(confidence, df=2)

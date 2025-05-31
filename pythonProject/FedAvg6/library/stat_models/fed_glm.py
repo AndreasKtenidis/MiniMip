@@ -2,14 +2,10 @@
 from statsmodels.api import GLM, families
 
 from system.client.aggregation_client import AggregationClient
-from library.stats._statistical_function import AggFunc
+from library.stat_models._statistical_Model import StatisticalModel
 import numpy as np
 
-class Fed_GLM(AggFunc):
-
-
-    def compute(self, *args, **kwargs):
-        pass
+class Fed_GLM(StatisticalModel):
 
     def __init__(self,client:AggregationClient):
         super().__init__(client)
@@ -18,10 +14,10 @@ class Fed_GLM(AggFunc):
         self.llf = None
         self.model=None
 
-    def train(self, input, output, max_iter=50):
-        model = GLM(output, input, family=families.Binomial())
+    def fit(self, x, y, max_iter=50):
+        model = GLM(y, x, family=families.Binomial())
         result = model.fit(disp=0)
-        self.update(model,result)
+        self._update(model, result)
         # pred_probs = model.predict()  # Predicted probabilities
         # weights = pred_probs * (1 - pred_probs)  # W = diag(p*(1-p))
 
@@ -31,7 +27,6 @@ class Fed_GLM(AggFunc):
 
         # aggregator.fed_avg(result.params)
         return self
-
 
     def predict(self, x,which=None):
         """Predict probabilities using federated parameters."""
@@ -45,10 +40,10 @@ class Fed_GLM(AggFunc):
 
         # return y
 
-    def cov_params(self):
+    def _cov_params(self):
         return self._cov_params
 
-    def update(self,model,result):
+    def _update(self, model, result):
         # Adjust the parameters of the model
         aggregator = self.get_numpy_aggregator()
 
@@ -70,5 +65,3 @@ class Fed_GLM(AggFunc):
         else:
             combined_scale = aggregator.fed_sum(model.scale * n) / aggregator.fed_sum(n)
         self._cov_params = np.linalg.inv(aggregator.fed_sum(xtwx) * combined_scale)
-
-

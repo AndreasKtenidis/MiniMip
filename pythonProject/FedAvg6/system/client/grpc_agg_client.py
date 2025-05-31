@@ -14,8 +14,8 @@ from system.client.aggregation_client import AggregationClient
 # from data.experiment_datasets.calibration_dataset import CalibrationDataset
 # from data.experiment_datasets.pandas_datasets.diabetes_dataset import DiabetesDataset
 # from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
-from library.stats._statistical_function import AggFunc
-from library.stats.calibration_belt import CalibrationBelt
+from library.stats._statistical_function import StatisticalFunction
+from library.calibration.calibration_belt import CalibrationBelt
 
 import random
 import inspect
@@ -97,7 +97,7 @@ class GRPCClient(AggregationClient):
         return dataset(partition_id=partition_id, num_partitions=num_partitions)
 
 
-    def map_and_execute(self,dataset,agg_class:type[AggFunc], mapping: Dict[str, Union[str, List[str]]],constants: Dict[str,Any]):
+    def map_and_execute(self, dataset, agg_class:type[StatisticalFunction], mapping: Dict[str, Union[str, List[str]]], constants: Dict[str,Any]):
         aggregation_function = agg_class.__new__(agg_class)
         aggregation_function.__init__(self)
         dataset = GRPCClient.get_clientapp_dataset(dataset,self.client_id,self.client_count )

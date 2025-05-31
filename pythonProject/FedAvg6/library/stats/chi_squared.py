@@ -1,9 +1,9 @@
-from library.stats._statistical_function import AggFunc
+from library.stats._statistical_function import StatisticalFunction
 import pandas as pd
 from scipy.stats import chi2_contingency
 
 
-class ChiSquared(AggFunc):
+class ChiSquared(StatisticalFunction):
 
     def compute(self, factor_to_outcome):
         # TODO: Currently works only if the categories are numerical

@@ -4,7 +4,7 @@ from torchvision import datasets
 from torch.utils.data import DataLoader
 
 from system.client.grpc_agg_client import GRPCClient
-from library.stats._statistical_function import AggFunc
+from library.stats._statistical_function import StatisticalFunction
 
 import numpy as np
 from torch.utils.data import Subset
@@ -103,11 +103,11 @@ def prepare_data(client_num, num_clients,batch_size=32, ):
     return train_loader, test_loader
 
 # Logistic Regression Model
-class LogisticRegression(torch.nn.Module,AggFunc):
+class LogisticRegression(torch.nn.Module, StatisticalFunction):
 
     def __init__(self,client, n_inputs, n_outputs):
         torch.nn.Module.__init__(self)
-        AggFunc.__init__(self,client)
+        StatisticalFunction.__init__(self, client)
         self.linear = torch.nn.Linear(n_inputs, n_outputs)
         self.aggregator = self.get_numpy_aggregator()
 

@@ -1,15 +1,15 @@
 import numpy as np
-from library.stats._statistical_function import AggFunc
 
+from library.stat_models._statistical_Model import StatisticalModel
 
-class FedOLS(AggFunc):
+class FedOLS(StatisticalModel):
     """Ordinary Least Squares linear regression."""
 
-    def compute(self, x:np.ndarray, y:np.ndarray):
-        self.fit(x,y)
-        for i in range(len(x)):
-            out = self.predict(x[i])
-            print(y[i],'vs',out)
+    # def compute(self, x:np.ndarray, y:np.ndarray):
+    #     self.fit(x,y)
+    #     for i in range(len(x)):
+    #         out = self.predict(x[i])
+    #         print(y[i],'vs',out)
 
 
     def fit(self,x:np.ndarray, y:np.ndarray):

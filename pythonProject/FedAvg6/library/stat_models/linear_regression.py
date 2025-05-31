@@ -1,28 +1,26 @@
 import numpy as np
-from library.stats._statistical_function import AggFunc
+
+from library.stat_models._statistical_Model import StatisticalModel
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
 
-class FederatedLinearRegression(AggFunc):
+class FederatedLinearRegression(StatisticalModel):
+
     def __init__(self, client):
         super().__init__(client)
         self.model = None
         self.aggregator = self.get_numpy_aggregator()
 
-
-
-
-    def compute(self, input, output):
-        self.model = nn.Linear(input.shape[1], 1, bias=True)
+    def fit(self, x, y):
+        self.model = nn.Linear(x.shape[1], 1, bias=True)
         # TODO this step could be avoided if the server was sending the params at first step
         params = self._get_model_params()
         params2 = self.aggregator.fed_avg(params)
         self._set_model_params(params2)
         # End TODO
-        self.train(input, output)
-
+        self._train(x, y)
 
     def _get_model_params(self) -> np.ndarray:
         """Flatten and concatenate model weights and bias to numpy."""
@@ -43,7 +41,7 @@ class FederatedLinearRegression(AggFunc):
             self.model.weight.data = torch.tensor(weights, dtype=torch.float32)
             self.model.bias.data = torch.tensor(bias, dtype=torch.float32)
 
-    def train(self, x: np.ndarray, y: np.ndarray, lr: float = 0.05, epochs: int =500):
+    def _train(self, x: np.ndarray, y: np.ndarray, lr: float = 0.05, epochs: int =500):
         """Train the model locally and apply fed_avg after each epoch."""
 
         x_tensor = torch.tensor(x, dtype=torch.float32)
@@ -53,7 +51,7 @@ class FederatedLinearRegression(AggFunc):
         optimizer = optim.SGD(self.model.parameters(), lr=lr)
         local_params = self._get_model_params()
         for epoch in range(epochs):
-            self.model.train()
+            self.model.fit()
             optimizer.zero_grad()
             outputs = self.model(x_tensor)
             loss = criterion(outputs, y_tensor)
@@ -64,7 +62,6 @@ class FederatedLinearRegression(AggFunc):
             local_params = self._get_model_params()
             global_params = self.aggregator.fed_avg(local_params)
             self._set_model_params(global_params)
-
 
     def predict(self, x: np.ndarray) -> np.ndarray:
         """Generate predictions for input data."""

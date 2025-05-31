@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 from dataclasses import dataclass
 
 from system.client.aggregation_client import AggregationClient, NumpyAggClient
-from library.stats._statistical_function import AggFunc
+from library.stats._statistical_function import StatisticalFunction
 
 
 @dataclass
@@ -17,7 +17,7 @@ class ClientState:
     loss: float
 
 
-class FederatedLogisticRegressionLBFGS(AggFunc):
+class FederatedLogisticRegressionLBFGS(StatisticalFunction):
     def compute(self, x,y):
         self.fit(x,y)
 
