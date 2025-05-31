@@ -1,8 +1,7 @@
-import pandas as pd
 import numpy as np
 import pandas as pd
 
-from client.aggregation_client import AggregationClient
+from system.client.aggregation_client import AggregationClient
 
 class FedDataFrame(pd.DataFrame):
     _metadata = ['client']

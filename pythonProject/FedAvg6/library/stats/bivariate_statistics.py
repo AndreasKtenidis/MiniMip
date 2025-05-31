@@ -1,7 +1,7 @@
-from function.abstract_function import AggFunc
+from library.stats._statistical_function import AggFunc
 import math
 import numpy as np
-from library.univariate_statistics import StandardDeviation
+from library.stats.univariate_statistics import StandardDeviation
 class Covariance(AggFunc):
 
     def compute(self, x:np.array, y:np.array):

@@ -1,5 +1,4 @@
-from function.abstract_function import AggFunc
-import math
+from library.stats._statistical_function import AggFunc
 import numpy as np
 
 class Dummy(AggFunc):

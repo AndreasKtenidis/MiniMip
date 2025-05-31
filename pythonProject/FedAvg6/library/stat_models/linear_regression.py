@@ -1,10 +1,8 @@
 import numpy as np
-from function.abstract_function import AggFunc
+from library.stats._statistical_function import AggFunc
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
-from library.univariate_statistics import StandardDeviation
 
 
 class FederatedLinearRegression(AggFunc):

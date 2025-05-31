@@ -1,4 +1,4 @@
-from client.aggregation_client import AggregationClient, NumpyAggClient, PandasAggClient
+from system.client.aggregation_client import AggregationClient, NumpyAggClient, PandasAggClient
 from abc import ABC,abstractmethod
 
 
@@ -11,7 +11,7 @@ class AggFunc(ABC):
     def compute(self,*args, **kwargs):
         pass
 
-    def get_numpy_aggregator(self):
+    def get_numpy_aggregator(self)->NumpyAggClient:
         return NumpyAggClient(self.client)
 
     def get_pandas_aggregator(self):

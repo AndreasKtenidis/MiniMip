@@ -2,11 +2,9 @@ import torch
 import torchvision.transforms as transforms
 from torchvision import datasets
 from torch.utils.data import DataLoader
-import matplotlib.pyplot as plt
 
-
-from client.grpc_agg_client import GRPCClient
-from function.abstract_function import AggFunc
+from system.client.grpc_agg_client import GRPCClient
+from library.stats._statistical_function import AggFunc
 
 import numpy as np
 from torch.utils.data import Subset

@@ -1,10 +1,5 @@
 import numpy as np
-from function.abstract_function import AggFunc
-import torch
-import torch.nn as nn
-import torch.optim as optim
-
-from library.univariate_statistics import StandardDeviation
+from library.stats._statistical_function import AggFunc
 
 
 class FedOLS(AggFunc):

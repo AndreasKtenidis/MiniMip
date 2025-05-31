@@ -1,9 +1,7 @@
-from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing._encoders import _BaseEncoder, OneHotEncoder
+from sklearn.preprocessing._encoders import OneHotEncoder
 
-from client.aggregation_client import AggregationClient
-from function.abstract_function import AggFunc
+from system.client.aggregation_client import AggregationClient
+from library.stats._statistical_function import AggFunc
 
 
 class FedOneHotEncoder(AggFunc):

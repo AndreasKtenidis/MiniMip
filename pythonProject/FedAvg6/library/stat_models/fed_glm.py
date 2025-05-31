@@ -1,8 +1,8 @@
 
 from statsmodels.api import GLM, families
 
-from client.aggregation_client import AggregationClient
-from function.abstract_function import AggFunc
+from system.client.aggregation_client import AggregationClient
+from library.stats._statistical_function import AggFunc
 import numpy as np
 
 class Fed_GLM(AggFunc):

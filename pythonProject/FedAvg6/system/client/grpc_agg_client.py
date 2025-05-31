@@ -4,39 +4,30 @@ import grpc
 import concurrent.futures
 import numpy as np
 
+from data.experiment_datasets.calibration_dataset import CalibrationDataset
 
 from constants import AGG,client_count
-import grpc_.aggregator_pb2 as pb2
-import grpc_.aggregator_pb2_grpc as pb2_grpc
-from client.aggregation_client import AggregationClient
+import system._grpc.aggregator_pb2 as pb2
+import system._grpc.aggregator_pb2_grpc as pb2_grpc
+from system.client.aggregation_client import AggregationClient
 # from data.experiment_datasets.blobs_dataset import BlobDataset
 # from data.experiment_datasets.calibration_dataset import CalibrationDataset
-from data.experiment_datasets.iris_dataset import IrisDataset
 # from data.experiment_datasets.pandas_datasets.diabetes_dataset import DiabetesDataset
 # from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
-from data.experiment_datasets.pandas_datasets.insurance_dataset import InsuranceDataset
-from data.experiment_datasets.pandas_datasets.titanic_dataset import TitanicPandasDataset
+from library.stats._statistical_function import AggFunc
+from library.stats.calibration_belt import CalibrationBelt
 
 import random
 import inspect
 
 
 
-from function.abstract_function import AggFunc
-from library.bivariate_statistics import PearsonCorrelation, Covariance, LeastSquaresRegression, SumOfProducts,StandardizedMeanDifferences
-from library.fd_models.linear_regression import FederatedLinearRegression
-from library.fd_models.ols_linear_regression import FedOLS
+
+
 # from library.fd_models.logistic_regression2 import FederatedLogisticRegression
-from library.fed_transformers.fed_encoders import FedOneHotEncoder
-from library.univariate_statistics import Variance
-from library.calibration_belt import CalibrationBelt
-from library.k_means import KMeans
-from library.chi_squared import ChiSquared
 
 
 class GRPCClient(AggregationClient):
-
-
 
     def __init__(self,client_id,client_count2,seed):
         self.channel = grpc.insecure_channel("localhost:50051")
@@ -137,17 +128,17 @@ def run_client(client_id, client_c):
     # answer = client.map_and_execute(dataset=InsuranceDataset, agg_class=FederatedLinearRegression,
     #                                 mapping={'input': ['age', 'bmi', 'children', 'sex', 'smoker', 'region_northeast',
     #    'region_northwest', 'region_southeast', 'region_southwest', 'charges'], 'output' :'charges'},constants={})
-    answer = client.map_and_execute(dataset=InsuranceDataset, agg_class=FedOLS,
-                                    mapping={'x': ['age', 'bmi', 'children', 'sex', 'smoker', 'region_northeast',
-       'region_northwest', 'region_southeast', 'region_southwest', 'charges'], 'y' :'charges'},constants={})
+    # answer = client.map_and_execute(dataset=InsuranceDataset, agg_class=FedOLS,
+    #                                 mapping={'x': ['age', 'bmi', 'children', 'sex', 'smoker', 'region_northeast',
+    #    'region_northwest', 'region_southeast', 'region_southwest', 'charges'], 'y' :'charges'},constants={})
     # answer = client.map_and_execute(dataset=TitanicPandasDataset, agg_class=FederatedLogisticRegression,
     #                                 mapping={'input': ['Age', 'Fare', 'Sex', 'Pclass_1', 'Pclass_2', 'Pclass_3', 'Embarked_C', 'Embarked_Q', 'Embarked_S',
     #                                                    'SibSp_0', 'SibSp_1', 'SibSp_2', 'SibSp_3', 'SibSp_4', 'SibSp_5', 'SibSp_8', 'Parch_0', 'Parch_1',
     #                                                    'Parch_2', 'Parch_3', 'Parch_4', 'Parch_5', 'Parch_6'], 'output': ['Survived']}, constants={})
-    # answer = client.map_and_execute(dataset=DiabetesDataset, agg_class=FederatedLogisticRegression,
-    #                                 mapping={'input': ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age'],
-    #                                          'output': ['Outcome']}, constants={})
-    # answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'SVM'},constants={})
+    # answer = client.map_and_execute(dataset=DiabetesDataset, agg_class=FederatedLogisticRegressionLBFGS,
+    #                                 mapping={'x': ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age'],
+    #                                          'y': ['Outcome']}, constants={})
+    answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'SVM'},constants={})
     # answer = client.map_and_execute(dataset=TitanicPandasDataset, agg_class=ChiSquared, mapping={'factor_to_outcome': ['Pclass','Survived']}, constants={}) #
 
     # FedOneHotEncoder

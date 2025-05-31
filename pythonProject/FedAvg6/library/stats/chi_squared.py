@@ -1,10 +1,5 @@
+from library.stats._statistical_function import AggFunc
 import pandas as pd
-import numpy as np
-from urllib.request import urlopen
-
-from function.abstract_function import AggFunc
-import pandas as pd
-import random
 from scipy.stats import chi2_contingency
 
 

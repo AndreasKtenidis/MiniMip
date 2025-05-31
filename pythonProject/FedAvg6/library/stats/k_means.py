@@ -1,8 +1,8 @@
 import numpy as np
 from typing import Tuple
 
-from client.aggregation_client import AggregationClient
-from function.abstract_function import AggFunc
+from system.client.aggregation_client import AggregationClient
+from library.stats._statistical_function import AggFunc
 
 class KMeans(AggFunc):
     def __init__(self, client: AggregationClient):

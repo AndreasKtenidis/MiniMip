@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from scipy.stats import chi2
 from statsmodels.tools import add_constant
 
-from function.abstract_function import AggFunc
-from library.fd_models.fed_glm import Fed_GLM
+from library.stats._statistical_function import AggFunc
+from library.stat_models.fed_glm import Fed_GLM
 
 
 class CalibrationBelt(AggFunc):

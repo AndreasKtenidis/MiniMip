@@ -1,8 +1,4 @@
 from abc import ABC, abstractmethod
-from numbers import Number  # To handle numeric types like int, float
-from typing import List
-
-from client.aggregation_client import AggregationClient
 
 
 class AbstractTable(ABC):
