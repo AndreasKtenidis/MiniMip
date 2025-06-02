@@ -9,6 +9,9 @@ from data.experiment_datasets.calibration_dataset import CalibrationDataset
 from constants import AGG,client_count
 import system._grpc.aggregator_pb2 as pb2
 import system._grpc.aggregator_pb2_grpc as pb2_grpc
+from data.experiment_datasets.pandas_datasets.insurance_dataset import InsuranceDataset
+from library.stats.histogram import StandardHistogram
+from library.stats.median import MedianBasedOnHistogram
 from system.client.aggregation_client import AggregationClient
 # from data.experiment_datasets.blobs_dataset import BlobDataset
 # from data.experiment_datasets.calibration_dataset import CalibrationDataset
@@ -138,8 +141,10 @@ def run_client(client_id, client_c):
     # answer = client.map_and_execute(dataset=DiabetesDataset, agg_class=FederatedLogisticRegressionLBFGS,
     #                                 mapping={'x': ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age'],
     #                                          'y': ['Outcome']}, constants={})
-    answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'SVM'},constants={})
+    # answer = client.map_and_execute(dataset=CalibrationDataset, agg_class=CalibrationBelt, mapping={'o':'target','e': 'SVM'},constants={})
     # answer = client.map_and_execute(dataset=TitanicPandasDataset, agg_class=ChiSquared, mapping={'factor_to_outcome': ['Pclass','Survived']}, constants={}) #
+    answer = client.map_and_execute(dataset=InsuranceDataset, agg_class=MedianBasedOnHistogram,
+                                    mapping={'x': 'age'},constants={'num_bins':20})
 
     # FedOneHotEncoder
     print(answer)

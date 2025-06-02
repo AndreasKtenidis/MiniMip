@@ -74,3 +74,6 @@ class InsuranceDataset(FederatedPandasDataset):
 
         return transformed_df
 
+dataset = InsuranceDataset(0,1)
+age = dataset.get_attribute('age')
+print(np.median(age))
