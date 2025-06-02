@@ -4,7 +4,7 @@ from torchvision import datasets
 from torch.utils.data import DataLoader
 
 from system.client.grpc_agg_client import GRPCClient
-from library.stats._statistical_function import StatisticalFunction
+from library.stats.statistical_function import StatisticalFunction
 
 import numpy as np
 from torch.utils.data import Subset

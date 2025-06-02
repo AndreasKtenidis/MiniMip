@@ -1,4 +1,4 @@
-from library.stats._statistical_function import StatisticalFunction
+from library.stats.statistical_function import StatisticalFunction
 import pandas as pd
 from scipy.stats import chi2_contingency
 

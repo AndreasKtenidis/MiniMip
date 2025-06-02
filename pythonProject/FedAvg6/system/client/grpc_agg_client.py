@@ -14,7 +14,7 @@ from system.client.aggregation_client import AggregationClient
 # from data.experiment_datasets.calibration_dataset import CalibrationDataset
 # from data.experiment_datasets.pandas_datasets.diabetes_dataset import DiabetesDataset
 # from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
-from library.stats._statistical_function import StatisticalFunction
+from library.stats.statistical_function import StatisticalFunction
 from library.group_comparisons.chi_squared import ChiSquared
 
 import random

@@ -1,6 +1,6 @@
 import numpy as np
 
-from library.stat_models._statistical_Model import StatisticalModel
+from library.stat_models.statistical_Model import StatisticalModel
 import torch
 import torch.nn as nn
 import torch.optim as optim

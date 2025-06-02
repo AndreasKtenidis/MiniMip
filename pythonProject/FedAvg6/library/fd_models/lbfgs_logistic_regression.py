@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 from dataclasses import dataclass
 
 from system.client.aggregation_client import AggregationClient, NumpyAggClient
-from library.stats._statistical_function import StatisticalFunction
+from library.stats.statistical_function import StatisticalFunction
 
 
 @dataclass

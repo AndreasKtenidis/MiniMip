@@ -17,6 +17,10 @@ class FederatedPandasDataset(AbstractTable,ABC):
     def get_dataset(self)-> pd.DataFrame:
         pass
 
+
+    def get_local_dataset(self) -> pd.DataFrame:
+        return self.dataset
+
     def get_attribute(self, attribute):
         return self.dataset[attribute].values
 
