@@ -73,6 +73,6 @@ class DiabetesDataset(FederatedPandasDataset):
         return X_df
 
 
-titanic = DiabetesDataset(0,1)
-print(titanic.get_attribute_names())
-print(titanic.get_attribute_names())
+# titanic = DiabetesDataset(0,1)
+# print(titanic.get_attribute_names())
+# print(titanic.get_attribute_names())

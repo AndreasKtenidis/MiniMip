@@ -14,7 +14,6 @@ class InsuranceDataset(FederatedPandasDataset):
         df = pd.read_csv(url)
         # One-hot encode categorical features
         df_encoded=self.preprocess_insurance_data(df)
-        print(df.columns)
         return df_encoded
 
 
@@ -74,6 +73,6 @@ class InsuranceDataset(FederatedPandasDataset):
 
         return transformed_df
 
-dataset = InsuranceDataset(0,1)
-age = dataset.get_attribute('age')
-print(np.median(age))
+# dataset = InsuranceDataset(0,1)
+# age = dataset.get_attribute('age')
+# print(np.median(age))
