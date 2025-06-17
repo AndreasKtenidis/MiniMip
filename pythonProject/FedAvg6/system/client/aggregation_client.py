@@ -91,7 +91,7 @@ class NumpyAggClient( ABC):
         """
         _shape, _flattened = NumpyAggClient._transform(array)
         # Append weight for weighted averaging
-        weighted_array = np.append(_flattened * weight, weight)
+        weighted_array = np.append(_flattened , 1)* weight
         _ans = self.client.__global_sum__(weighted_array)
         tmp = np.array(_ans[:-1]) / _ans[-1]  # weighted sum / total weight
         return NumpyAggClient._inv_transform(_shape, tmp)
