@@ -23,7 +23,7 @@ config = {
 
 def compute(client_num):
     # Creating Client
-    client = GRPCClient(client_num, config['num_clients'], 1)
+    client = GRPCClient(client_num, config['num_clients'], client_num)
 
 
 
