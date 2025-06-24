@@ -38,7 +38,7 @@
 # # Evaluation
 # print("Classification Report:\n")
 # print(classification_report(y_test, y_pred, zero_division=0))
-from library.stat_models.statistical_Model import StatisticalModel
+from library.templates.statistical_model import StatisticalModel
 import numpy as np
 
 from sklearn import  metrics

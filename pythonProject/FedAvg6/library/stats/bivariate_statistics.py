@@ -1,4 +1,4 @@
-from library.stats.statistical_function import StatisticalFunction
+from library.templates.statistical_function import StatisticalFunction
 import math
 import numpy as np
 from library.stats.univariate_statistics import StandardDeviation

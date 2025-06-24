@@ -1,6 +1,3 @@
-from library.stats.statistical_function import StatisticalFunction
-
-
 # class PropensityScore(StatisticalFunction):
 #
 #     def compute(self, *args, **kwargs):

@@ -2,7 +2,7 @@
 from statsmodels.api import GLM, families
 
 from system.client.aggregation_client import AggregationClient
-from library.stat_models.statistical_Model import StatisticalModel
+from library.templates.statistical_model import StatisticalModel
 import numpy as np
 
 class Fed_GLM(StatisticalModel):

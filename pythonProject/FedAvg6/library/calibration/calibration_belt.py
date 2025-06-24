@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.stats import chi2
 from statsmodels.tools import add_constant
 
-from library.stats.statistical_function import StatisticalFunction
+from library.templates.statistical_function import StatisticalFunction
 from library.stat_models.fed_glm import Fed_GLM
 
 

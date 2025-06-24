@@ -2,7 +2,7 @@ import numpy as np
 from typing import Tuple
 
 from system.client.aggregation_client import AggregationClient
-from library.stats.statistical_function import StatisticalFunction
+from library.templates.statistical_function import StatisticalFunction
 
 class KMeans(StatisticalFunction):
     def __init__(self, client: AggregationClient):

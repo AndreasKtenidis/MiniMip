@@ -1,5 +1,5 @@
-from library.stat_models.statistical_Model import StatisticalModel
-from library.stats.statistical_function import StatisticalFunction
+from library.templates.statistical_model import StatisticalModel
+from library.templates.statistical_function import StatisticalFunction
 
 
 class PropensityScore(StatisticalFunction):

@@ -1,6 +1,6 @@
 import numpy as np
 
-from library.stat_models.statistical_Model import StatisticalModel
+from library.templates.statistical_model import StatisticalModel
 
 class FedOLS(StatisticalModel):
     """Ordinary Least Squares linear regression."""
@@ -24,5 +24,3 @@ class FedOLS(StatisticalModel):
         super().__init__(client)
         self.aggregator = self.get_numpy_aggregator()
         self.b_dot=None
-
-

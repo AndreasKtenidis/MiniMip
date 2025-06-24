@@ -1,9 +1,5 @@
-
-import statsmodels.api as sm
-import pandas as pd
-
 from library.stat_models.fed_glm import Fed_GLM
-from library.stats.statistical_function import StatisticalFunction
+from library.templates.statistical_function import StatisticalFunction
 
 
 class IPWT(StatisticalFunction):

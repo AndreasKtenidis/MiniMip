@@ -1,4 +1,4 @@
-from library.stats.statistical_function import StatisticalFunction
+from library.templates.statistical_function import StatisticalFunction
 import numpy as np
 import matplotlib.pyplot as plt
 

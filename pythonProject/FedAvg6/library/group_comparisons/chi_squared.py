@@ -1,6 +1,5 @@
 from library.group_comparisons._cross_tab_table import CrossTabTable
-from library.stats.statistical_function import StatisticalFunction
-import pandas as pd
+from library.templates.statistical_function import StatisticalFunction
 from scipy.stats import chi2_contingency
 
 

@@ -1,4 +1,4 @@
-from library.stat_models.statistical_Model import StatisticalModel
+from library.templates.statistical_model import StatisticalModel
 from system.client.grpc_agg_client import GRPCClient
 import pandas as pd
 from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
