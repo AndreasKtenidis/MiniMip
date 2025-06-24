@@ -2,6 +2,7 @@ import numpy as np
 
 from library.templates.statistical_model import StatisticalModel
 
+
 class FedOLS(StatisticalModel):
     """Ordinary Least Squares linear regression."""
 
@@ -18,7 +19,7 @@ class FedOLS(StatisticalModel):
         self.b_dot = np.linalg.inv(xtx) @ xty
 
     def predict(self,x:np.ndarray):
-        return np.sum(self.b_dot * x)
+        return np.sum(self.b_dot * x,axis=1)
 
     def __init__(self, client):
         super().__init__(client)
