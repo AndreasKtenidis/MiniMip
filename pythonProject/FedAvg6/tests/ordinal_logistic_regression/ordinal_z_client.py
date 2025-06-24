@@ -1,5 +1,5 @@
 
-from library.fd_models.ordinal_logistic_regression_version1 import FedOrdinalLogisticRegression
+from library.stat_models.ordinal_logistic_regression import FedOrdinalLogisticRegression
 from system.client.grpc_agg_client import GRPCClient
 import pandas as pd
 from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset

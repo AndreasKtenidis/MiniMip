@@ -43,7 +43,7 @@ import numpy as np
 
 from sklearn import  metrics
 from sklearn.utils.validation import check_X_y
-from olr_helper._minimize import minimize
+from library.stat_models.olr_helper._minimize import minimize
 from system.client.aggregation_client import AggregationClient
 
 
