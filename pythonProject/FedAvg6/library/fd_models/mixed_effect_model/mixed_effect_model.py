@@ -296,6 +296,7 @@ class _PanelModelBase:
         self.weights = self._adapt_weights(weights)
         self._not_null = np.ones(self.dependent.values2d.shape[0], dtype=bool)
         self._cov_estimators = CovarianceManager(
+            # TODO These varianve estimators are not federated estimators
             self.__class__.__name__,
             HomoskedasticCovariance,
             HeteroskedasticCovariance,
@@ -973,6 +974,7 @@ class RandomEffects(_PanelModelBase):
         """
         w = self.weights.values2d
         root_w = cast(Float64Array, np.sqrt(w))
+        # TODO demean won't work in a federated environment
         demeaned_dep = self.dependent.demean("entity", weights=self.weights)
         demeaned_exog = self.exog.demean("entity", weights=self.weights)
         assert isinstance(demeaned_dep, PanelData)
@@ -985,6 +987,7 @@ class RandomEffects(_PanelModelBase):
             x_gm = (w * self.exog.values2d).sum(0) / w_sum
             y += root_w * y_gm
             x += root_w * x_gm
+        # Adjust
         params = _lstsq(x, y, rcond=None)[0]
         weps = y - x @ params
 
