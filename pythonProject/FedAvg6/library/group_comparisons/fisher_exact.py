@@ -1,7 +1,7 @@
 from scipy.stats import fisher_exact
 
-from library.group_comparisons._cross_tab_table import CrossTabTable
-from library.templates.statistical_function import StatisticalFunction
+from pythonProject.FedAvg6.library.group_comparisons._cross_tab_table import CrossTabTable
+from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
 
 class FisherExact(StatisticalFunction):
 

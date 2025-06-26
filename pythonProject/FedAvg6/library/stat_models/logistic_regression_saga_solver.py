@@ -1,8 +1,8 @@
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 
-from library.templates.statistical_model import StatisticalModel
-from system.client.grpc_agg_client import GRPCClient
+from pythonProject.FedAvg6.library.templates.statistical_model import StatisticalModel
+from pythonProject.FedAvg6.system.client.grpc_agg_client import GRPCClient
 
 class FederatedLogisticRegressionClientSaSo(StatisticalModel):
 

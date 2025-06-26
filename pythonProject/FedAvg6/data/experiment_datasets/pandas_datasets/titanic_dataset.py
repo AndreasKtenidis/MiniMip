@@ -1,4 +1,4 @@
-from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
+from pythonProject.FedAvg6.data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
 import pandas as pd
 import pandas as pd
 import numpy as np

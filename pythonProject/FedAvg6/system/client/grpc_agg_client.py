@@ -4,17 +4,17 @@ import grpc
 import concurrent.futures
 import numpy as np
 
-from constants import AGG,client_count
-import system._grpc.aggregator_pb2 as pb2
-import system._grpc.aggregator_pb2_grpc as pb2_grpc
-from data.experiment_datasets.pandas_datasets.titanic_dataset import TitanicPandasDataset
-from library.group_comparisons.fisher_exact import FisherExact
-from system.client.aggregation_client import AggregationClient
+from pythonProject.FedAvg6.constants import AGG,client_count
+import pythonProject.FedAvg6.system._grpc.aggregator_pb2 as pb2
+import pythonProject.FedAvg6.system._grpc.aggregator_pb2_grpc as pb2_grpc
+from pythonProject.FedAvg6.data.experiment_datasets.pandas_datasets.titanic_dataset import TitanicPandasDataset
+from pythonProject.FedAvg6.library.group_comparisons.fisher_exact import FisherExact
+from pythonProject.FedAvg6.system.client.aggregation_client import AggregationClient
 # from data.experiment_datasets.blobs_dataset import BlobDataset
 # from data.experiment_datasets.calibration_dataset import CalibrationDataset
 # from data.experiment_datasets.pandas_datasets.diabetes_dataset import DiabetesDataset
 # from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
-from library.templates.statistical_function import StatisticalFunction
+from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
 
 import random
 import inspect

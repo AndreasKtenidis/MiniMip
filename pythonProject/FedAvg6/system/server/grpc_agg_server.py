@@ -1,8 +1,8 @@
 import grpc
-import system._grpc.aggregator_pb2 as pb2
-import system._grpc.aggregator_pb2_grpc as pb2_grpc
-from system.server.aggregation_server import NumpyAggregationServer
-from constants import AGG,client_count
+import pythonProject.FedAvg6.system._grpc.aggregator_pb2 as pb2
+import pythonProject.FedAvg6.system._grpc.aggregator_pb2_grpc as pb2_grpc
+from pythonProject.FedAvg6.system.server.aggregation_server import NumpyAggregationServer
+from pythonProject.FedAvg6.constants import AGG, client_count
 import asyncio  # Import asyncio to use asyncio.sleep
 import traceback
 

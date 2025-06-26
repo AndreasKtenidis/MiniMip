@@ -1,0 +1,291 @@
+oracle:
+  types:
+    remove_parenthesis: True
+    limit: limit
+    int: INTEGER(12)
+    str: VARCHAR2(12)
+    float: FLOAT(12)
+    bool: BOOLEAN
+    cursor: CURSOR $$var$$ IS $$qry$$
+    ZeroDivisionError: Zero_Divide
+  funcs:
+    math.sqrt: sqrt($$params$$)
+    len: length($$params$$)
+    print: set serveroutput on; / dbms_output.put_line($$code$$);
+  createfunction_sql: $$pre$$ CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) RETURN $$returntype$$ IS $$code$$
+
+postgresql:
+  types:
+    int: INTEGER
+    str: TEXT
+    float: FLOAT8
+    bool: BOOLEAN
+    list: $$datatype$$[]
+    cursor: $$var$$ CURSOR FOR $$qry$$
+    ZeroDivisionError: division_by_zero
+  funcs:
+    math.sqrt: sqrt($$params$$)
+    len: length($$params$$)
+    print_str: raise notice '$$code$$';
+    print_var: raise notice '%', $$code$$;
+  limit: limit
+  createfunction_py: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) RETURNS $$returntype$$ AS $$ //$$code$$$$ LANGUAGE plpython3u;
+  createfunction_sql: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) RETURNS $$returntype$$ AS $$ DECLARE $$code$$ $$ LANGUAGE plpgsql;
+  externaltable: 
+    - CREATE SERVER IF NOT EXISTS import FOREIGN DATA WRAPPER $$fdw_extension_name$$
+    - DROP FOREIGN TABLE IF EXISTS $$name$$
+    - CREATE FOREIGN TABLE $$name$$ ($$schema$$) SERVER import OPTIONS ( $$postgresoptions$$ )
+  TORCH_code: |
+      import random
+      import torch
+
+      $$modelclassdef$$
+
+      $$helpers$$
+      $$encoder$$
+      if not hasattr(random, "model_$$modelpathhash$$"):
+        #random.model_$$modelpathhash$$ = torch.load("$$modelpath$$")
+        
+        random.model_$$modelpathhash$$ = $$modelclassname$$($$modelclassparameters$$)
+        random.model_$$modelpathhash$$.load_state_dict(torch.load("$$modelpath$$"))
+        
+        random.model_$$modelpathhash$$.eval()
+
+        random.outputDict_$$modelpathhash$$ = $$outputdict$$
+
+      model = random.model_$$modelpathhash$$
+      hidden = model.initHidden()
+
+      tensor = torch.autograd.Variable($$encoderfuncname$$(invalue))
+      for i in range(tensor.size()[0]):
+        output, hidden = model(tensor[i], hidden)
+
+      topv, topi = output.data.topk(n_predictions, 1, True)
+
+      #return str(topi[0][i])+" "+str(topv[0][i])
+      predictions = []
+      for i in range(n_predictions):
+        #value = topv[0][i]
+        cat_index = topi[0][i]
+        out = random.outputDict_$$modelpathhash$$[cat_index]
+        predictions.append(str(out))
+
+      return "\n".join(predictions)
+  ONNX_code: |
+    import onnxruntime
+    import random
+    def apply$$inputs$$ -> $$returntype$$:
+      $$input_to_tensor_func$$
+
+      $$tensor_to_output_func$$
+
+      def apply_model($$input_names$$):
+        if not hasattr(random, "onnx_session"):
+            random.onnx_session = onnxruntime.InferenceSession("$$onnx_file_path$$")
+        inputs = $$input_to_tensor_func_name$$($$input_names$$)
+        ret = random.onnx_session.run(None, inputs)
+        return($$tensor_to_output_func_name$$(ret))
+      return apply_model($$input_names$$)
+    return apply($$input_names$$)
+  schema_query: select column_name,data_type from information_schema.columns where table_name = '$$tablename$$';
+  colname_column: 0
+  coltype_column: 1
+
+sqlite:
+  types:
+    str: text
+  limit: limit
+
+  schema_query: PRAGMA table_info($$tablename$$)
+  colname_column: 1
+  coltype_column: 2
+
+mysql:
+  types:
+    str: text
+  limit: limit
+
+duckdb:
+  types:
+    int: INTEGER
+    str: VARCHAR
+    float: FLOAT
+    bool: BOOLEAN
+    list: $$datatype$$[]
+  funcs:
+    math.sqrt: sqrt($$params$$)
+    len: length($$params$$)
+  limit: limit
+  createfunction_sql: SELECT $$code$$ AS $$name$$
+  schema_query: SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '$$tablename$$';
+  colname_column: 0
+  coltype_column: 1
+  externaltable:
+    - DROP VIEW IF EXISTS $$name$$
+    - CREATE VIEW $$name$$ AS SELECT * FROM read_csv('$$filenames$$', delim='$$delimiter$$', header=$$header$$, columns={$$schema$$});
+  createfunction_threads: |
+    def $$name$$($$params_arrow$$):
+      
+      from concurrent.futures import ThreadPoolExecutor
+      $$code$$
+
+      $$params_lists$$ = $$empty_lists$$
+      for ($$chunks$$) in zip($$params_arrow_chunks$$):
+        $$extend_lists$$
+      
+      with ThreadPoolExecutor($$pool_arguments$$) as pool:
+        results = list(pool.map($$lambda_code$$, zip($$params_lists$$)))
+    
+      return results
+  createfunction_multiprocess: |
+    from multiprocessing import Pool
+    $$code$$
+
+    def my_adapter(arg_tuple):
+      return $$name$$_arrow(*arg_tuple)
+
+    def $$name$$($$params_arrow$$):
+      
+      $$params_lists$$ = $$empty_lists$$
+      for ($$chunks$$) in zip($$params_arrow_chunks$$):
+        $$extend_lists$$
+      
+      with Pool($$pool_arguments$$) as pool:
+        results = pool.map(my_adapter, zip($$params_lists$$))
+      
+      return results
+
+
+monetdb:
+  types:
+    str: string
+
+  limit: limit
+  # createvectorizedfunction: |
+  #   CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) RETURNS $$returntype$$ LANGUAGE python { 
+  #   $$code$$ 
+  #   }; 
+  vectorized_udfs: True
+  createfunction_py: | 
+    CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) RETURNS $$returntype$$ LANGUAGE python { 
+    $$code$$ 
+    };   
+  externaltable:
+    - DROP LOADER IF EXISTS csv_loader;
+    - CREATE TEMPORARY TABLE $$name$$($$schema$$) 
+    - COPY OFFSET $$monetdboffset$$ INTO $$name$$  FROM '$$filenames$$'
+    # - | 
+    #   CREATE LOADER csv_loader(filename STRING) LANGUAGE PYTHON {
+    #     import csv
+    #     with open(filename, newline='') as csvfile:
+    #       spamreader = csv.reader(csvfile, delimiter=' ', quotechar='|')
+    #       for row in spamreader:
+    #         _emit.emit(row)
+    #   };
+  ONNX_code: |
+    import onnxruntime
+    import random
+    
+    $$input_to_tensor_func$$
+
+    $$tensor_to_output_func$$
+
+    def apply_model(inp) -> $$returntype$$:
+      inputs = $$input_to_tensor_func_name$$(inp)
+      ret = random.onnx_session.run(None, inputs)
+      return($$tensor_to_output_func_name$$(ret))
+
+    
+    if not hasattr(random, "onnx_session"):
+      random.onnx_session = onnxruntime.InferenceSession("$$onnx_file_path$$")
+        
+    return [apply_model(e) for e in $$input_names$$]
+  schema_query: select c.name, c.type from sys.tables t inner join sys.columns c on t.id = c.table_id where t.name = '$$tablename$$'
+  colname_column: 0
+  coltype_column: 1  
+    
+
+vector:
+  types:
+    str: varchar(1024)
+  limit: top
+  createfunction_py: CREATE OR REPLACE FUNCTION $$name$$($$inparams$$) RETURN ($$returntype$$) AS LANGUAGE PYTHON SOURCE='$$code$$'
+  externaltable: 
+    - DROP TABLE IF EXISTS $$name$$
+    - CREATE EXTERNAL TABLE $$name$$($$schema$$) USING SPARK WITH REFERENCE='$$filenames$$', FORMAT='$$format$$' $$vectoroptions$$
+  TF_code: |
+    import tensorflow.compat.v1 as tf
+    import numpy as np
+    from tensorflow.contrib import learn
+    import random
+    import os
+    def apply(a: str) -> int:
+      checkpoint_file = "$$tf_checkpoint_file$$"
+      network_input_names = $$network_input_names$$
+      constants = $$constants$$
+      vocab_file = "$$vocab_file$$"
+      def vocab_needs_reload():
+        ts = os.path.getmtime(vocab_file)
+        return (not hasattr(random, "vocab_timestamp") or (ts != random.vocab_timestamp))
+
+      def model_needs_reload():
+        ts = os.path.getmtime(checkpoint_file + ".meta")
+        return (not hasattr(random, "model_timestamp") or (ts != random.model_timestamp))
+
+      def vocab_load():
+        ts = os.path.getmtime(vocab_file)
+        random.vocab_timestamp = ts
+        random.vocab_processor = learn.preprocessing.VocabularyProcessor.restore(vocab_file)
+
+      def model_load():
+        ts = os.path.getmtime(checkpoint_file + ".meta")
+        random.graph = tf.Graph()
+        random.model_timestamp = ts
+        with random.graph.as_default():
+          random.sess=tf.Session()
+          saver = tf.train.import_meta_graph(checkpoint_file + ".meta")
+          saver.restore(random.sess, checkpoint_file)
+          random.type_dict = {}
+          for i in range(len(network_input_names)):
+            random.type_dict[i] = random.graph.get_operation_by_name(network_input_names[i]).outputs[0]
+          random.type_dict["output"] = random.graph.get_operation_by_name("output/predictions").outputs[0]
+
+      def apply_model(values):
+        if (vocab_needs_reload()): vocab_load()
+        if (model_needs_reload()): model_load()
+        vocab_load()
+        model_load()
+        with random.graph.as_default() and random.sess.as_default():
+          feed_dict = {}
+          for i in range(len(values)):
+            if constants == [] or constants[i] is None:
+              raw = [values[i]]
+              if random.vocab_processor is not None:
+                x = np.array(list(random.vocab_processor.transform(raw)))
+              else:
+                x = raw
+            else:
+              x = [constants[i]]
+            feed_dict[random.type_dict[i]] = x
+          return random.sess.run(random.type_dict["output"], feed_dict)[0].item()
+      return apply_model([a.lower(), None])
+    return apply(a)
+  ONNX_code: |
+    import onnxruntime
+    import random
+    def apply$$inputs$$ -> $$returntype$$:
+      $$input_to_tensor_func$$
+
+      $$tensor_to_output_func$$
+
+      def apply_model($$input_names$$):
+        if not hasattr(random, "onnx_session"):
+            random.onnx_session = onnxruntime.InferenceSession("$$onnx_file_path$$")
+        inputs = $$input_to_tensor_func_name$$($$input_names$$)
+        ret = random.onnx_session.run(None, inputs)
+        return($$tensor_to_output_func_name$$(ret))
+      return apply_model($$input_names$$)
+    return apply($$input_names$$)
+  schema_query: select column_name, column_datatype from iicolumns where table_name = '$$tablename$$';
+  colname_column: 0
+  coltype_column: 1

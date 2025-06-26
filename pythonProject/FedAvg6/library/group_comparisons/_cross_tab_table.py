@@ -1,4 +1,4 @@
-from library.templates.statistical_function import StatisticalFunction
+from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
 import pandas as pd
 
 

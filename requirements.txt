@@ -1,0 +1,16 @@
+torch
+torchvision
+flwr-datasets
+scipy
+statsmodels
+flask
+grpcio
+protobuf
+pandas
+duckdb
+scikit-learn
+tdigest
+crick
+pyyaml
+beautifultable 
+antlr4-python3-runtime==4.9.3
