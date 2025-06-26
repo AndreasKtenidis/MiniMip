@@ -41,11 +41,12 @@ class LeastSquaresRegression(StatisticalFunction):
 from  pandas import DataFrame
 
 class CovariancePandas(StatisticalFunction):
-    def compute(self, data:DataFrame, x,y):
+    def compute(self, data:DataFrame,*, x,y):
         aggregator = self.get_pandas_aggregator()
-        avg_data1 = aggregator.global_avg(data[x])
-        avg_data2 = aggregator.global_avg(data[y])
-        return aggregator.global_sum(((data[x] - avg_data1) * (data[y] - avg_data2)))
+        avg_data_x_y = aggregator.global_avg(data[[x,y]])
+        tmp = data[[x, y]] - avg_data_x_y.values
+        tmp2 = tmp.prod(axis=1).to_frame('__covariance'+x+y)
+        return aggregator.global_sum(tmp2)
 
 class StandardizedMeanDifferences(StatisticalFunction):
     def compute(self, x:np.array, y:np.array):

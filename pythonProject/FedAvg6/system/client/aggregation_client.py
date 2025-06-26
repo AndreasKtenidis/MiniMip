@@ -255,7 +255,7 @@ class PandasAggClient( ABC):
     def global_avg(self,dataframe:DataFrame):
         _agg = DataFrame([dataframe.mean()])
         _shape, _flattened = PandasAggClient.transform(_agg)
-        _flattened= np.append(_flattened, dataframe.count().values)
+        _flattened= np.append(_flattened, dataframe.count())
         _ans = self.client.__global_sum__(_flattened)
         _ans =np.array(_ans[0:len(_ans)//2]) / _ans[len(_ans)//2:]
         _ans = DataFrame(PandasAggClient.inv_transform(_shape,_ans))

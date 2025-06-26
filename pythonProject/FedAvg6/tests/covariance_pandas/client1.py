@@ -1,2 +1,2 @@
-from tests.data_frames.client_impl import compute
+from tests.covariance_pandas.client_impl import compute
 compute(0)
