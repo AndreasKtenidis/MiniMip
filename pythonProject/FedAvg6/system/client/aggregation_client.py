@@ -237,7 +237,7 @@ class PandasAggClient( ABC):
     def global_min(self,dataframe:DataFrame):
         _agg = DataFrame([dataframe.min()])
         _shape, _flattened = PandasAggClient.transform(_agg)
-        _ans = self.client.__global_sum__(_flattened)
+        _ans = self.client.__global_min__(_flattened)
         _ans = DataFrame(PandasAggClient.inv_transform(_shape, _ans))
         rename_mapping = {old: new for old, new in zip(_ans.columns, dataframe.columns)}
         _ans.rename(columns=rename_mapping, inplace=True)
@@ -246,17 +246,19 @@ class PandasAggClient( ABC):
     def global_max(self,dataframe:DataFrame):
         _agg = DataFrame([dataframe.max()])
         _shape, _flattened = PandasAggClient.transform(_agg)
-        _ans = self.client.__global_sum__(_flattened)
+        _ans = self.client.__global_max__(_flattened)
         _ans = DataFrame(PandasAggClient.inv_transform(_shape, _ans))
         rename_mapping = {old: new for old, new in zip(_ans.columns, dataframe.columns)}
         _ans.rename(columns=rename_mapping, inplace=True)
         return _ans
 
     def global_avg(self,dataframe:DataFrame):
-        _shape, _flattened = PandasAggClient.transform(np.sum(dataframe, axis=0))
-        _flattened = np.append(_flattened, dataframe.shape[0])
+        _agg = DataFrame([dataframe.mean()])
+        _shape, _flattened = PandasAggClient.transform(_agg)
+        _flattened= np.append(_flattened, dataframe.count().values)
         _ans = self.client.__global_sum__(_flattened)
-        _ans = DataFrame(PandasAggClient.inv_transform(_shape, _ans[:-1]) / _ans[-1])
+        _ans =np.array(_ans[0:len(_ans)//2]) / _ans[len(_ans)//2:]
+        _ans = DataFrame(PandasAggClient.inv_transform(_shape,_ans))
         rename_mapping = {old: new for old, new in zip(_ans.columns, dataframe.columns)}
         _ans.rename(columns=rename_mapping, inplace=True)
         return _ans

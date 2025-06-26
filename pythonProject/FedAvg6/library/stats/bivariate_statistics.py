@@ -31,12 +31,21 @@ class LeastSquaresRegression(StatisticalFunction):
         intercept = avg_data2 - slope * avg_data1
         return slope, intercept
 
-class SumOfProducts(StatisticalFunction):
-    def compute(self, x:np.array, y:np.array):
-        aggregator = self.get_numpy_aggregator()
-        avg_data1 = aggregator.global_avg(x)
-        avg_data2 = aggregator.global_avg(y)
-        return aggregator.global_sum(((x - avg_data1) * (y - avg_data2)))
+# class SumOfProducts(StatisticalFunction):
+#     def compute(self, x:np.array, y:np.array):
+#         aggregator = self.get_numpy_aggregator()
+#         avg_data1 = aggregator.global_avg(x)
+#         avg_data2 = aggregator.global_avg(y)
+#         return aggregator.global_sum(((x - avg_data1) * (y - avg_data2)))
+
+from  pandas import DataFrame
+
+class CovariancePandas(StatisticalFunction):
+    def compute(self, data:DataFrame, x,y):
+        aggregator = self.get_pandas_aggregator()
+        avg_data1 = aggregator.global_avg(data[x])
+        avg_data2 = aggregator.global_avg(data[y])
+        return aggregator.global_sum(((data[x] - avg_data1) * (data[y] - avg_data2)))
 
 class StandardizedMeanDifferences(StatisticalFunction):
     def compute(self, x:np.array, y:np.array):
