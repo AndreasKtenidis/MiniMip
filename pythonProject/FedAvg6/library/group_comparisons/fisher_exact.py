@@ -5,7 +5,7 @@ from pythonProject.FedAvg6.library.templates.statistical_function import Statist
 
 class FisherExact(StatisticalFunction):
 
-    def compute(self, factor_to_outcome):
-        cross_tab_table = CrossTabTable(self.client).compute(factor_to_outcome)
+    def compute(self, dataset,*,factor,outcome):
+        cross_tab_table = CrossTabTable(self.client).compute(dataset,factor=factor,outcome=outcome)
         odds_ratio, p_value = fisher_exact(cross_tab_table)
         return odds_ratio, p_value
