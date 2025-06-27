@@ -47,8 +47,8 @@ class Expr(object):
     if not other:
       return None
 
-    import grizzly.dataframes.frame
-    if isinstance(other, Expr) or isinstance(other, grizzly.dataframes.frame.DataFrame):
+    import pythonProject.grizzly.dataframes.frame
+    if isinstance(other, Expr) or isinstance(other, pythonProject.grizzly.dataframes.frame.DataFrame):
       return other
 
     return Constant(other)

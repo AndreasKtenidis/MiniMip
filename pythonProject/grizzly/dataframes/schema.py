@@ -273,7 +273,7 @@ class Schema(object):
 
   @staticmethod
   def _inferType(col, schema = None):
-    from grizzly.dataframes.frame import DataFrame
+    from pythonProject.grizzly.dataframes.frame import DataFrame
 
     if isinstance(col, ColRef):
       # might happen when inferring type from function call

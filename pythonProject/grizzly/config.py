@@ -16,7 +16,7 @@ class Config:
     localRepoDir = Path.cwd().joinpath("grizzly")
     locations = [localRepoDir, Path.cwd(), configDir]
 
-    confFileName = "grizzly/grizzly.yml"
+    confFileName = "grizzly.yml"
 
     path = None
     for loc in locations:

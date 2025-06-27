@@ -1,31 +1,22 @@
-from pythonProject.FedAvg6.library.stat_models.logistic_regression_saga_solver import FederatedLogisticRegressionClientSaSo
+import pandas as pd
+import os
+
 from pythonProject.FedAvg6.library.stats.bivariate_statistics import CovariancePandas
 from pythonProject.FedAvg6.system.client.grpc_agg_client import GRPCClient
-import pandas as pd
-from pythonProject.FedAvg6.data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
-from sklearn.datasets import load_iris
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-import numpy as np
 from pythonProject.FedAvg6.system.client.aggregation_client import PandasAggClient
 
-class TmpDataset(FederatedPandasDataset):
+class TmpDataset:
+    def __init__(self, partition_id, num_partitions):
+        csv_path = os.path.join(os.path.dirname(__file__), '../../data/grizzly_pandas_test/covariance_100mb.csv')
+        df = pd.read_csv(csv_path)[['x', 'y']]
+        n = len(df)
+        size = n // num_partitions
+        start = partition_id * size
+        end = (partition_id + 1) * size if partition_id < num_partitions - 1 else n
+        self.dataset = df.iloc[start:end]
 
-    def get_dataset(self) -> pd.DataFrame:
-        iris = load_iris()
-        rng = np.random.RandomState(42)  # For reproducibility
-        shuffled_indices = rng.permutation(len(iris.data))
-
-        iris.data = iris.data[shuffled_indices]
-        iris.target = iris.target[shuffled_indices]
-
-
-        df = pd.DataFrame(data=iris.data, columns=iris.feature_names)
-        df['target'] = iris.target
-
-        # Filter to only use two classes (0 and 1)
-        df = df[df['target'] != 2]
-        return df
+    def get_local_dataset(self):
+        return self.dataset
 
 
 config = {
@@ -39,7 +30,7 @@ def compute(client_num):
     dataset = TmpDataset(client_num,config['num_clients']).get_local_dataset()
     agg = PandasAggClient(client)
 
-    cov=CovariancePandas(client).compute(dataset,x='sepal length (cm)',y= 'sepal width (cm)')
-    print(cov)
+    cov=CovariancePandas(client).compute(dataset,x='x',y= 'y')
+    print(f"Computed covariance from client {client_num}:\n{cov}")
 
 

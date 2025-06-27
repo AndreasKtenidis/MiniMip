@@ -1,4 +1,4 @@
-from pythonProject.FedAvg6.system.client.aggregation_client import AggregationClient, NumpyAggClient, PandasAggClient
+from pythonProject.FedAvg6.system.client.aggregation_client import AggregationClient, NumpyAggClient, PandasAggClient, GrizzlyAggClient
 from abc import ABC,abstractmethod
 
 
@@ -17,3 +17,5 @@ class StatisticalFunction(ABC):
     def get_pandas_aggregator(self):
         return PandasAggClient(self.client)
 
+    def get_grizzly_aggregator(self):
+        return GrizzlyAggClient(self.client)

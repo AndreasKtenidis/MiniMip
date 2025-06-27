@@ -1,3 +1,4 @@
+from pythonProject.FedAvg6 import data
 from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
 import math
 import numpy as np
@@ -47,6 +48,16 @@ class CovariancePandas(StatisticalFunction):
         tmp = data[[x, y]] - avg_data_x_y.values
         tmp2 = tmp.prod(axis=1).to_frame('__covariance'+x+y)
         return aggregator.global_sum(tmp2)
+
+class CovarianceGrizzly(StatisticalFunction):
+    def compute(self, data:DataFrame,*, x,y):
+        aggregator = self.get_grizzly_aggregator()
+
+        # Calculate global averages and subtract them from the data
+        avg_data_x_y = aggregator.global_avg(data[[x, y]])
+        data['product'] = (data[x] - avg_data_x_y[0]) * (data[y] - avg_data_x_y[1])
+
+        return aggregator.global_sum(data[['product']])
 
 class StandardizedMeanDifferences(StatisticalFunction):
     def compute(self, x:np.array, y:np.array):
