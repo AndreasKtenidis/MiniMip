@@ -39,6 +39,6 @@ def compute(client_num):
     agg = PandasAggClient(client)
 
     cov = CovarianceGrizzly(client).compute(dataset, x='x', y='y')
-    print(f"[Covariance] Computed covariance from client {client_num}:\n{cov}")
+    print(f"Computed covariance from client {client_num}:\n{cov}")
 
 
