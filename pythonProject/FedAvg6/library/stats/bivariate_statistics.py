@@ -44,10 +44,18 @@ from  pandas import DataFrame
 class CovariancePandas(StatisticalFunction):
     def compute(self, data:DataFrame,*, x,y):
         aggregator = self.get_pandas_aggregator()
+
+        # Calculate global averages and subtract them from the data
         avg_data_x_y = aggregator.global_avg(data[[x,y]])
         tmp = data[[x, y]] - avg_data_x_y.values
         tmp2 = tmp.prod(axis=1).to_frame('__covariance'+x+y)
-        return aggregator.global_sum(tmp2)
+
+        # Get sum of cross-products and total count
+        sum_of_products = aggregator.global_sum(tmp2)
+        total_count = aggregator.global_count(data[[x]])
+
+        covariance = sum_of_products.iloc[0, 0] / (total_count.iloc[0, 0] - 1)
+        return covariance
 
 class CovarianceGrizzly(StatisticalFunction):
     def compute(self, data:DataFrame,*, x,y):
@@ -57,7 +65,12 @@ class CovarianceGrizzly(StatisticalFunction):
         avg_data_x_y = aggregator.global_avg(data[[x, y]])
         data['product'] = (data[x] - avg_data_x_y[0]) * (data[y] - avg_data_x_y[1])
 
-        return aggregator.global_sum(data[['product']])
+        # Get sum of cross-products and total count
+        sum_of_products = aggregator.global_sum(data[['product']])
+        total_count = aggregator.global_count(data[[x]])
+        
+        covariance = sum_of_products[0] / (total_count - 1)
+        return covariance
 
 class StandardizedMeanDifferences(StatisticalFunction):
     def compute(self, x:np.array, y:np.array):

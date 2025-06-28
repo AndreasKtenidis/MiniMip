@@ -294,3 +294,8 @@ class GrizzlyAggClient( ABC):
         _ans = self.client.__global_sum__(means_with_count)
         _ans = np.array(_ans[0:len(_ans)//2]) / _ans[len(_ans)//2:]
         return _ans
+
+    def global_count(self, dataframe):
+        local_count = dataframe.count()
+        total_count = self.client.__global_sum__([local_count])
+        return total_count[0]

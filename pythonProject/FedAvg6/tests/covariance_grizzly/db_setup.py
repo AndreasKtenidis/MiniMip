@@ -17,7 +17,7 @@ def ensure_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
-def rows_for_size(size_mb: int, bytes_per_row: int = 44) -> int:
+def rows_for_size(size_mb: int, bytes_per_row: int = 8) -> int:
     """
     Roughly estimate number of rows that will yield a CSV of `size_mb`.
     Default `bytes_per_row` is an empirical average for two float32 values
@@ -41,7 +41,7 @@ def generate_csv(csv_path: Path, size_mb: int = 100, seed: int = 42) -> None:
     df.to_csv(csv_path, index=False)
 
     actual = csv_path.stat().st_size / 1024 ** 2
-    print(f"✔ CSV saved to {csv_path}  ({actual:.2f} MB, {len(df):,} rows)")
+    print(f"CSV saved to {csv_path}  ({actual:.2f} MB, {len(df):,} rows)")
 
 
 def make_duckdb_files(csv_path: Path, output_dir: Path, num_clients: int = 2) -> None:
@@ -63,7 +63,7 @@ def make_duckdb_files(csv_path: Path, output_dir: Path, num_clients: int = 2) ->
         con.execute("CREATE OR REPLACE TABLE covariance AS SELECT * FROM client_data")
         con.close()
 
-        print(f"✔ Client {i + 1}: {db_path}  ({end - start:,} rows)")
+        print(f"Client {i + 1}: {db_path}  ({end - start:,} rows)")
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Generate 100 MB CSV and split to DuckDBs.")
