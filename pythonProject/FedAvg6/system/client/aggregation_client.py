@@ -1,5 +1,6 @@
 import numpy as np
 from abc import ABC,abstractmethod
+import pandas as pd
 from pandas import DataFrame
 
 class AggregationClient(ABC):
@@ -211,6 +212,8 @@ class NumpyAggClient( ABC):
     def _inv_transform(original_shape, answer):
         return np.asarray(answer).reshape(original_shape)
 
+from typing import Union, Tuple
+
 class PandasAggClient( ABC):
 
     def __init__(self,client:AggregationClient):
@@ -252,6 +255,39 @@ class PandasAggClient( ABC):
         _ans.rename(columns=rename_mapping, inplace=True)
         return _ans
 
+    def fed_union(self, categories: Union[pd.Series, pd.DataFrame, np.ndarray]):
+        """
+        Compute the union of categories across all federated clients.
+        """
+        _original_type, _original_shape, _original_columns, _original_index, _flattened, _dtype = \
+            PandasAggClient._transform_for_union(categories)
+
+        print(f"Info: _original_type --> {_original_type}, _original_shape --> {_original_shape}, _original_columns --> {_original_columns}, _original_index --> {_original_index}, _flattened --> {_flattened}, _dtype --> {_dtype}")
+        # Determine c_type for GRPCClient based on inferred dtype
+        if np.issubdtype(_dtype, np.integer):
+            _c_type = np.int64
+        elif np.issubdtype(_dtype, np.floating):
+            _c_type = np.float64
+        else:
+            _c_type = str
+
+        _ans = self.client.__global_union__(_flattened, _c_type)
+        print(f"Global union:\n {_ans}")
+        return PandasAggClient._inv_transform_from_union(_original_type, _original_shape, _original_columns, _original_index, _ans, _dtype)
+
+
+    def fed_sum(self, data: Union[pd.Series, pd.DataFrame, np.ndarray]) -> Union[pd.Series, pd.DataFrame, np.ndarray]:
+        """
+        Compute the federated sum of data across all clients.
+        """
+        _original_type, _original_shape, _original_columns, _original_index, _flattened, _dtype = \
+            PandasAggClient._transform(data)
+
+        print(f"Info: _original_type --> {_original_type}, _original_shape --> {_original_shape}, _original_columns --> {_original_columns}, _original_index --> {_original_index}, _flattened --> {_flattened}, _dtype --> {_dtype}")
+        _ans = self.client.__global_sum__(_flattened)
+        print(f"Global sum:\n {_ans}")
+        return PandasAggClient._inv_transform(_original_type, _original_shape, _original_columns, _original_index, _ans, _dtype)
+
     def global_avg(self,dataframe:DataFrame):
         _agg = DataFrame([dataframe.mean()])
         _shape, _flattened = PandasAggClient.transform(_agg)
@@ -271,6 +307,83 @@ class PandasAggClient( ABC):
     @staticmethod
     def inv_transform(original_shape, answer):
         return np.asarray(answer).reshape(original_shape)
+
+    @staticmethod
+    def _transform(data: Union[pd.Series, pd.DataFrame, np.ndarray]) -> Tuple[str, Tuple, Union[list, str], list, list, np.dtype]:
+        """
+        Transforms a pandas Series/DataFrame or numpy array into a flattened list for gRPC transmission,
+        and returns metadata for reconstruction. Used primarily for sum/min/max, expecting numerical data.
+        """
+        if isinstance(data, pd.Series):
+            return 'series', data.shape, data.name, data.index.tolist(), data.astype(float).tolist(), data.dtype
+        elif isinstance(data, pd.DataFrame):
+            return 'dataframe', data.shape, data.columns.tolist(), data.index.tolist(), data.values.astype(float).flatten().tolist(), data.values.dtype
+        elif isinstance(data, np.ndarray):
+            return 'ndarray', data.shape, None, None, data.astype(float).flatten().tolist(), data.dtype
+        else:
+            raise TypeError(f"Unsupported data type for transformation: {type(data)}. Must be pandas Series, DataFrame, or numpy array.")
+
+    @staticmethod
+    def _transform_for_union(data: Union[pd.Series, pd.DataFrame, np.ndarray]):
+        """
+        Transforms data for union operations, which can handle mixed types (numerical or categorical).
+        It determines the appropriate c_type for GRPCClient based on the data's dtype.
+        """
+        if isinstance(data, pd.Series):
+            return 'series', data.shape, data.name, data.index.tolist(), data.tolist(), data.dtype
+        elif isinstance(data, pd.DataFrame):
+            return 'dataframe', data.shape, data.columns.tolist(), data.index.tolist(), data.values.flatten().tolist(), data.values.dtype
+        elif isinstance(data, np.ndarray):
+            return 'ndarray', data.shape, None, None, data.flatten().tolist(), data.dtype
+        else:
+            raise TypeError(f"Unsupported data type for transformation for union: {type(data)}. Must be pandas Series, DataFrame, or numpy array.")
+
+
+    @staticmethod
+    def _inv_transform(original_type: str, original_shape: Tuple, original_columns: Union[list, str], original_index: list, answer: list, dtype: np.dtype) -> Union[pd.Series, pd.DataFrame, np.ndarray]:
+        """
+        Inverse transforms a list received from gRPC back into the original pandas Series/DataFrame or numpy array.
+        Used for sum/min/max.
+        """
+        if original_type == 'series':
+            return pd.Series(answer, index=original_index, name=original_columns, dtype=dtype)
+        elif original_type == 'dataframe':
+            try:
+                reshaped_array = np.asarray(answer, dtype=dtype).reshape(original_shape)
+                return pd.DataFrame(reshaped_array, columns=original_columns, index=original_index)
+            except ValueError:
+                print(f"Warning: Could not reshape array to original DataFrame shape {original_shape}. Returning Series.")
+                return pd.Series(answer, name='aggregated_data', dtype=dtype)
+        elif original_type == 'ndarray':
+            try:
+                return np.asarray(answer, dtype=dtype).reshape(original_shape)
+            except ValueError:
+                print(f"Warning: Could not reshape array to original NumPy shape {original_shape}. Returning 1D array.")
+                return np.asarray(answer, dtype=dtype)
+        return answer
+
+    @staticmethod
+    def _inv_transform_from_union(original_type: str, original_shape: Tuple, original_columns: Union[list, str], original_index: list, answer: list, dtype: np.dtype) -> Union[pd.Series, pd.DataFrame, np.ndarray]:
+        """
+        Inverse transforms a list from gRPC back into the original pandas Series/DataFrame or numpy array.
+        Used for union operations.
+        """
+        if original_type == 'series':
+            return pd.Series(answer, name='union_categories', dtype=dtype)
+        elif original_type == 'dataframe':
+            return pd.Series(answer, name='union_items', dtype=dtype)
+        elif original_type == 'ndarray':
+            # This is primarily for centroids. If the union operation for centroids results
+            # in a 1D list, try to reshape it back to a 2D array, assuming the original
+            # number of features is preserved.
+            if original_shape and original_shape[1] > 0 and len(answer) % original_shape[1] == 0:
+                try:
+                    return np.asarray(answer, dtype=dtype).reshape(-1, original_shape[1])
+                except ValueError:
+                    print(f"Warning: Could not reshape union result to original centroid shape {original_shape}. Returning 1D array.")
+                    return np.asarray(answer, dtype=dtype)
+            return np.asarray(answer, dtype=dtype)
+        return answer
 
 class GrizzlyAggClient( ABC):
     """A client for performing federated operations on Grizzly DataFrames.
