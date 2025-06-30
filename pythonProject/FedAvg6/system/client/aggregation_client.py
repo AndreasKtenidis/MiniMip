@@ -403,7 +403,9 @@ class GrizzlyAggClient( ABC):
     def global_avg(self, dataframe):
         _agg = dataframe.mean()
         means = [row[1] for row in _agg.collect()]
-        means_with_count = means + [dataframe.count().collect()[0][1]]
+        counts_df = dataframe.count()
+        counts = [row[1] for row in counts_df.collect()]
+        means_with_count = means + counts
         _ans = self.client.__global_sum__(means_with_count)
         _ans = np.array(_ans[0:len(_ans)//2]) / _ans[len(_ans)//2:]
         return _ans

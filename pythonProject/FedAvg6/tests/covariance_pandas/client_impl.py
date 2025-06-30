@@ -2,6 +2,8 @@ import pandas as pd
 import os
 
 from pythonProject.FedAvg6.library.stats.bivariate_statistics import CovariancePandas
+from pythonProject.FedAvg6.library.stats.bivariate_statistics import PearsonCorrelationPandas
+from pythonProject.FedAvg6.library.stats.bivariate_statistics import LeastSquaresRegressionPandas
 from pythonProject.FedAvg6.system.client.grpc_agg_client import GRPCClient
 from pythonProject.FedAvg6.system.client.aggregation_client import PandasAggClient
 
@@ -32,5 +34,8 @@ def compute(client_num):
 
     cov=CovariancePandas(client).compute(dataset,x='x',y= 'y')
     print(f"Computed covariance from client {client_num}:\n{cov}")
-
+    pearson = PearsonCorrelationPandas(client).compute(dataset, x='x', y='y')
+    print(f"Computed Pearson correlation from client {client_num}:\n{pearson}")
+    slope, intercept = LeastSquaresRegressionPandas(client).compute(dataset, x='x', y='y')
+    print(f"Computed least squares regression from client {client_num}:\n{slope}, {intercept}")
 

@@ -2,6 +2,8 @@ import duckdb
 import os
 
 from pythonProject.FedAvg6.library.stats.bivariate_statistics import CovarianceGrizzly
+from pythonProject.FedAvg6.library.stats.bivariate_statistics import PearsonCorrelationGrizzly
+from pythonProject.FedAvg6.library.stats.bivariate_statistics import LeastSquaresRegressionGrizzly
 from pythonProject.FedAvg6.system.client.grpc_agg_client import GRPCClient
 from pythonProject.FedAvg6.system.client.aggregation_client import PandasAggClient
 
@@ -40,5 +42,7 @@ def compute(client_num):
 
     cov = CovarianceGrizzly(client).compute(dataset, x='x', y='y')
     print(f"Computed covariance from client {client_num}:\n{cov}")
-
-
+    pearson = PearsonCorrelationGrizzly(client).compute(dataset, x='x', y='y')
+    print(f"Computed Pearson correlation from client {client_num}:\n{pearson}")
+    slope, intercept = LeastSquaresRegressionGrizzly(client).compute(dataset, x='x', y='y')
+    print(f"Computed least squares regression from client {client_num}:\n{slope}, {intercept}")
