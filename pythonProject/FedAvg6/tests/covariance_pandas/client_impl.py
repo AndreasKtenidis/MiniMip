@@ -26,16 +26,29 @@ config = {
     }
 
 
+import time
 def compute(client_num):
     # Creating Client
     client:GRPCClient = GRPCClient(client_num, config['num_clients'], client_num)
+    start_global_time = time.time()
     dataset = TmpDataset(client_num,config['num_clients']).get_local_dataset()
     agg = PandasAggClient(client)
 
+    start_time = time.time()
     cov=CovariancePandas(client).compute(dataset,x='x',y= 'y')
+    end_time = time.time()
+    print(f"Time taken for covariance computation on client {client_num}: {end_time - start_time:.5f} seconds")
     print(f"Computed covariance from client {client_num}:\n{cov}")
+    start_time = time.time()
     pearson = PearsonCorrelationPandas(client).compute(dataset, x='x', y='y')
+    end_time = time.time()
+    print(f"Time taken for Pearson correlation computation on client {client_num}: {end_time - start_time:.5f} seconds")
     print(f"Computed Pearson correlation from client {client_num}:\n{pearson}")
+    start_time = time.time()
     slope, intercept = LeastSquaresRegressionPandas(client).compute(dataset, x='x', y='y')
+    end_time = time.time()
+    print(f"Time taken for least squares regression computation on client {client_num}: {end_time - start_time:.5f} seconds")
     print(f"Computed least squares regression from client {client_num}:\n{slope}, {intercept}")
+    end_global_time = time.time()
+    print(f"Time taken with data loading, for all three algorithms from client {client_num}: {end_global_time - start_global_time:.5f} seconds")
 
