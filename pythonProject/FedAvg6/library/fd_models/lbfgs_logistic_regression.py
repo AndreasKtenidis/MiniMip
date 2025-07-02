@@ -18,10 +18,10 @@ class ClientState:
 
 
 class FederatedLogisticRegressionLBFGS(StatisticalFunction):
-    def compute(self, x,y):
-        self.fit(x,y)
+    def compute(self, x, y):
+        self.fit(x, y)
 
-    def __init__(self, client:AggregationClient, penalty='l2', C=1.0, max_iter=100, tol=1e-4,
+    def __init__(self, client: AggregationClient, penalty='l2', C=1.0, max_iter=100, tol=1e-4,
                  n_rounds=10, warm_start=False, random_state=None, verbose=0):
         """
         Improved Federated Logistic Regression with proper L-BFGS aggregation.
@@ -49,7 +49,7 @@ class FederatedLogisticRegressionLBFGS(StatisticalFunction):
         self.classes_ = None
         self.n_classes_ = None
         self.global_loss_history_ = []
-        self.aggregator:NumpyAggClient = self.get_numpy_aggregator()
+        self.aggregator: NumpyAggClient = self.get_numpy_aggregator()
 
     def fit(self, X: np.ndarray, y: np.ndarray, sample_weight: Optional[np.ndarray] = None):
         """Fit the model with federated L-BFGS optimization."""
@@ -228,7 +228,7 @@ class FederatedLogisticRegressionLBFGS(StatisticalFunction):
 
         return loss
 
-    def _server_aggregate(self, state:ClientState):
+    def _server_aggregate(self, state: ClientState):
         """Aggregate client updates using federated L-BFGS."""
         # 1. Aggregate losses and compute global loss
 
@@ -244,7 +244,6 @@ class FederatedLogisticRegressionLBFGS(StatisticalFunction):
         new_coef = np.zeros_like(state.coefficients)
         new_intercept = np.zeros_like(state.intercept)
 
-
         weight = state.n_samples / total_samples
         new_coef += weight * state.coefficients
         new_intercept += weight * state.intercept
@@ -253,8 +252,7 @@ class FederatedLogisticRegressionLBFGS(StatisticalFunction):
         # (In practice you'd want to properly maintain the L-BFGS history)
 
         avg_gradient = self.aggregator.fed_sum(weight * state.gradient)
-        avg_hessian =self.aggregator.fed_sum( weight * state.hessian)
-
+        avg_hessian = self.aggregator.fed_sum(weight * state.hessian)
 
         # Update model parameters
         self.model.coef_ = new_coef

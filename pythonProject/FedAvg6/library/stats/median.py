@@ -6,13 +6,13 @@ from library.stats.histogram import StandardHistogram
 
 class MedianBasedOnHistogram(StatisticalFunction):
 
-    def compute(self, x:np.array, num_bins):
-        hist=StandardHistogram(self.client)
-        counts, bin_edges=hist.compute(x, num_bins)
-        return MedianBasedOnHistogram.compute_median_from_histogram(counts,bin_edges)
+    def compute(self, x: np.array, num_bins):
+        hist = StandardHistogram(self.client)
+        counts, bin_edges = hist.compute(x, num_bins)
+        return MedianBasedOnHistogram.compute_median_from_histogram(counts, bin_edges)
 
     @staticmethod
-    def compute_median_from_histogram(counts,bin_edges):
+    def compute_median_from_histogram(counts, bin_edges):
         """
         Compute the median from a histogram given bin_edges and counts.
 

@@ -1,18 +1,18 @@
-
 from statsmodels.api import GLM, families
 
 from system.client.aggregation_client import AggregationClient
 from library.templates.statistical_model import StatisticalModel
 import numpy as np
 
+
 class Fed_GLM(StatisticalModel):
 
-    def __init__(self,client:AggregationClient):
+    def __init__(self, client: AggregationClient):
         super().__init__(client)
         self.params = None
         self.xtwx = None
         self.llf = None
-        self.model=None
+        self.model = None
 
     def fit(self, x, y, max_iter=50):
         model = GLM(y, x, family=families.Binomial())
@@ -21,18 +21,18 @@ class Fed_GLM(StatisticalModel):
         # pred_probs = model.predict()  # Predicted probabilities
         # weights = pred_probs * (1 - pred_probs)  # W = diag(p*(1-p))
 
-        #aggregator.global_sum(result.llf)
+        # aggregator.global_sum(result.llf)
 
-        #aggregator.fed_sum(np.dot(input.T, input * weights[:, np.newaxis]))
+        # aggregator.fed_sum(np.dot(input.T, input * weights[:, np.newaxis]))
 
         # aggregator.fed_avg(result.params)
         return self
 
-    def predict(self, x,which=None):
+    def predict(self, x, which=None):
         """Predict probabilities using federated parameters."""
         linear_pred = np.dot(x, self.params)
         # return 1 / (1 + np.exp(-linear_pred))
-        y=None
+        y = None
         if which == "linear":
             return linear_pred
         elif which is None:
@@ -59,7 +59,7 @@ class Fed_GLM(StatisticalModel):
         )
 
         # 3. Update covariance
-        n=len(model.endog)
+        n = len(model.endog)
         if isinstance(model.family, (families.Binomial, families.Poisson)):
             combined_scale = 1  # No dispersion
         else:

@@ -13,6 +13,7 @@ print(contingency_table)
 
 print("Contingency Table:\n", contingency_table, "\n")
 
+
 # Step 2: Implement Chi-squared test from scratch
 def chi_squared_test(observed):
     observed = np.array(observed)
@@ -24,6 +25,7 @@ def chi_squared_test(observed):
     dof = (observed.shape[0] - 1) * (observed.shape[1] - 1)
     return chi2_stat, dof, expected
 
+
 chi2, dof, expected = chi_squared_test(contingency_table.values)
 
 print("Chi-squared Statistic:", round(chi2, 4))
@@ -33,5 +35,5 @@ print(contingency_table)
 
 print('\n')
 print(df['Pclass'])
-print('---->',df['Survived'])
-print('?????',pd.crosstab(df['Pclass'], df['Survived']))
+print('---->', df['Survived'])
+print('?????', pd.crosstab(df['Pclass'], df['Survived']))

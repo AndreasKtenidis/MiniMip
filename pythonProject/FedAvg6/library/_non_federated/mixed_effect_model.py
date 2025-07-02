@@ -12,7 +12,6 @@ import numpy as np
 from pandas import Categorical, DataFrame, Index, MultiIndex, Series
 from scipy.linalg import lstsq as sp_lstsq
 
-
 from linearmodels.panel.covariance import (
     ACCovariance,
     ClusteredCovariance,
@@ -63,7 +62,7 @@ CovarianceEstimatorType = Union[
 
 
 def _lstsq(
-    x: Float64Array, y: Float64Array, rcond: float | None = None
+        x: Float64Array, y: Float64Array, rcond: float | None = None
 ) -> tuple[Float64Array, Float64Array, int, Float64Array]:
     if rcond is None:
         eps = np.finfo(np.float64).eps
@@ -88,7 +87,7 @@ class FInfo(NamedTuple):
 
 
 def _deferred_f(
-    params: Series, cov: DataFrame, debiased: bool, df_resid: int, f_info: FInfo
+        params: Series, cov: DataFrame, debiased: bool, df_resid: int, f_info: FInfo
 ) -> InvalidTestStatistic | WaldTestStatistic:
     if f_info.is_invalid:
         assert f_info.invalid_test_stat is not None
@@ -128,11 +127,11 @@ class PanelFormulaParser:
     """
 
     def __init__(
-        self,
-        formula: str,
-        data: PanelDataLike,
-        eval_env: int = 2,
-        context: Mapping[str, Any] | None = None,
+            self,
+            formula: str,
+            data: PanelDataLike,
+            eval_env: int = 2,
+            context: Mapping[str, Any] | None = None,
     ) -> None:
         self._formula = formula
         self._data = PanelData(data, convert_dummies=False, copy=False)
@@ -240,7 +239,6 @@ __all__ = [
     "RandomEffects",
 ]
 
-
 # Likely
 # TODO: Formal test of other outputs
 # Future
@@ -279,12 +277,12 @@ class _PanelModelBase:
     """
 
     def __init__(
-        self,
-        dependent: PanelDataLike,
-        exog: PanelDataLike,
-        *,
-        weights: PanelDataLike | None = None,
-        check_rank: bool = True,
+            self,
+            dependent: PanelDataLike,
+            exog: PanelDataLike,
+            *,
+            weights: PanelDataLike | None = None,
+            check_rank: bool = True,
     ) -> None:
         self.dependent = PanelData(dependent, "Dep")
         self.exog = PanelData(exog, "Exog")
@@ -385,9 +383,9 @@ class _PanelModelBase:
                 "equal. You must use an 2-d array to avoid ambiguity."
             )
         if (
-            isinstance(weights, (Series, DataFrame))
-            and isinstance(weights.index, MultiIndex)
-            and weights.shape[0] == self.dependent.dataframe.shape[0]
+                isinstance(weights, (Series, DataFrame))
+                and isinstance(weights.index, MultiIndex)
+                and weights.shape[0] == self.dependent.dataframe.shape[0]
         ):
             frame = DataFrame(weights)
         elif weights.shape[0] == nobs:
@@ -438,9 +436,9 @@ class _PanelModelBase:
 
         all_missing = np.any(np.isnan(y), axis=1) & np.all(np.isnan(x), axis=1)
         missing = (
-            np.any(np.isnan(y), axis=1)
-            | np.any(np.isnan(x), axis=1)
-            | np.any(np.isnan(w), axis=1)
+                np.any(np.isnan(y), axis=1)
+                | np.any(np.isnan(x), axis=1)
+                | np.any(np.isnan(w), axis=1)
         )
 
         missing_warning(np.asarray(all_missing ^ missing), stacklevel=4)
@@ -475,12 +473,12 @@ class _PanelModelBase:
         return self._constant
 
     def _f_statistic(
-        self,
-        weps: Float64Array,
-        y: Float64Array,
-        x: Float64Array,
-        root_w: Float64Array,
-        df_resid: int,
+            self,
+            weps: Float64Array,
+            y: Float64Array,
+            x: Float64Array,
+            root_w: Float64Array,
+            df_resid: int,
     ) -> WaldTestStatistic | InvalidTestStatistic:
         """Compute model F-statistic"""
         weps_const = y
@@ -510,8 +508,8 @@ class _PanelModelBase:
         )
 
     def _f_statistic_robust(
-        self,
-        params: Float64Array,
+            self,
+            params: Float64Array,
     ) -> FInfo:
         """Compute Wald test that all parameters are 0, ex. constant"""
         sel = np.ones(params.shape[0], dtype=bool)
@@ -568,10 +566,10 @@ class _PanelModelBase:
         if y.std() > 0 and xb.std() > 0:
             r2w = np.corrcoef(y.T, xb.T)[0, 1]
 
-        return r2o**2, r2w**2, r2b**2
+        return r2o ** 2, r2w ** 2, r2b ** 2
 
     def _rsquared(
-        self, params: Float64Array, reweight: bool = False
+            self, params: Float64Array, reweight: bool = False
     ) -> tuple[float, float, float]:
         """Compute alternative measures of R2"""
         if self.has_constant and self.exog.nvar == 1:
@@ -594,7 +592,7 @@ class _PanelModelBase:
         if self.has_constant:
             e = y - (w * y).sum() / w.sum()
 
-        total_ss = float(np.squeeze(w.T @ (e**2)))
+        total_ss = float(np.squeeze(w.T @ (e ** 2)))
         r2b = 1 - residual_ss / total_ss if total_ss > 0.0 else 0.0
 
         #############################################
@@ -638,15 +636,15 @@ class _PanelModelBase:
         return r2o, r2w, r2b
 
     def _postestimation(
-        self,
-        params: Float64Array,
-        cov: CovarianceEstimator,
-        debiased: bool,
-        df_resid: int,
-        weps: Float64Array,
-        y: Float64Array,
-        x: Float64Array,
-        root_w: Float64Array,
+            self,
+            params: Float64Array,
+            cov: CovarianceEstimator,
+            debiased: bool,
+            df_resid: int,
+            weps: Float64Array,
+            y: Float64Array,
+            x: Float64Array,
+            root_w: Float64Array,
     ) -> AttrDict:
         """Common post-estimation values"""
         f_info = self._f_statistic_robust(params)
@@ -699,8 +697,8 @@ class _PanelModelBase:
         return self._not_null
 
     def _setup_clusters(
-        self,
-        cov_config: Mapping[str, bool | float | str | IntArray | DataFrame | PanelData],
+            self,
+            cov_config: Mapping[str, bool | float | str | IntArray | DataFrame | PanelData],
     ) -> dict[str, bool | float | str | IntArray | DataFrame | PanelData]:
         cov_config_upd = dict(cov_config)
         cluster_types = ("clusters", "cluster_entity", "cluster_time")
@@ -749,13 +747,13 @@ class _PanelModelBase:
         return cov_config_upd
 
     def predict(
-        self,
-        params: ArrayLike,
-        *,
-        exog: PanelDataLike | None = None,
-        data: PanelDataLike | None = None,
-        eval_env: int = 1,
-        context: Mapping[str, Any] | None = None,
+            self,
+            params: ArrayLike,
+            *,
+            exog: PanelDataLike | None = None,
+            data: PanelDataLike | None = None,
+            eval_env: int = 1,
+            context: Mapping[str, Any] | None = None,
     ) -> DataFrame:
         """
         Predict values for additional data
@@ -819,6 +817,7 @@ class _PanelModelBase:
 
         return pred
 
+
 class RandomEffects(_PanelModelBase):
     r"""
     One-way Random Effects model for panel data
@@ -847,23 +846,23 @@ class RandomEffects(_PanelModelBase):
     """
 
     def __init__(
-        self,
-        dependent: PanelDataLike,
-        exog: PanelDataLike,
-        *,
-        weights: PanelDataLike | None = None,
-        check_rank: bool = True,
+            self,
+            dependent: PanelDataLike,
+            exog: PanelDataLike,
+            *,
+            weights: PanelDataLike | None = None,
+            check_rank: bool = True,
     ) -> None:
         super().__init__(dependent, exog, weights=weights, check_rank=check_rank)
 
     @classmethod
     def from_formula(
-        cls,
-        formula: str,
-        data: PanelDataLike,
-        *,
-        weights: PanelDataLike | None = None,
-        check_rank: bool = True,
+            cls,
+            formula: str,
+            data: PanelDataLike,
+            *,
+            weights: PanelDataLike | None = None,
+            check_rank: bool = True,
     ) -> RandomEffects:
         """
         Create a model from a formula
@@ -913,12 +912,12 @@ class RandomEffects(_PanelModelBase):
         return mod
 
     def fit(
-        self,
-        *,
-        small_sample: bool = False,
-        cov_type: str = "unadjusted",
-        debiased: bool = True,
-        **cov_config: bool | float | str | IntArray | DataFrame | PanelData,
+            self,
+            *,
+            small_sample: bool = False,
+            cov_type: str = "unadjusted",
+            debiased: bool = True,
+            **cov_config: bool | float | str | IntArray | DataFrame | PanelData,
     ) -> RandomEffectsResults:
         """
         Estimate model parameters
@@ -1090,4 +1089,3 @@ class RandomEffects(_PanelModelBase):
         )
 
         return RandomEffectsResults(res)
-

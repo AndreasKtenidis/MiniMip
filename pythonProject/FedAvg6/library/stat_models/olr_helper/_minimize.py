@@ -9,17 +9,16 @@ Functions
 
 __all__ = ['minimize', 'minimize_scalar']
 
-
 from warnings import warn
 
 import numpy as np
 
 # unconstrained minimization
 from scipy.optimize._optimize import (_minimize_neldermead, _minimize_powell, _minimize_cg,
-                        _minimize_bfgs, _minimize_newtoncg,
-                        _minimize_scalar_brent, _minimize_scalar_bounded,
-                        _minimize_scalar_golden, MemoizeJac, OptimizeResult,
-                        _wrap_callback, _recover_from_bracket_error)
+                                      _minimize_bfgs, _minimize_newtoncg,
+                                      _minimize_scalar_brent, _minimize_scalar_bounded,
+                                      _minimize_scalar_golden, MemoizeJac, OptimizeResult,
+                                      _wrap_callback, _recover_from_bracket_error)
 from scipy.optimize._trustregion_dogleg import _minimize_dogleg
 from scipy.optimize._trustregion_ncg import _minimize_trust_ncg
 from scipy.optimize._trustregion_krylov import _minimize_trust_krylov
@@ -33,9 +32,9 @@ from scipy.optimize._cobyla_py import _minimize_cobyla
 from scipy.optimize._cobyqa_py import _minimize_cobyqa
 from scipy.optimize._slsqp_py import _minimize_slsqp
 from scipy.optimize._constraints import (old_bound_to_new, new_bounds_to_old,
-                           old_constraint_to_new, new_constraint_to_old,
-                           NonlinearConstraint, LinearConstraint, Bounds,
-                           PreparedConstraint)
+                                         old_constraint_to_new, new_constraint_to_old,
+                                         NonlinearConstraint, LinearConstraint, Bounds,
+                                         PreparedConstraint)
 from scipy.optimize._differentiable_functions import FD_METHODS
 
 MINIMIZE_METHODS = ['nelder-mead', 'powell', 'cg', 'bfgs', 'newton-cg',
@@ -49,6 +48,7 @@ MINIMIZE_METHODS_NEW_CB = ['nelder-mead', 'powell', 'cg', 'bfgs', 'newton-cg',
                            'trust-exact', 'trust-krylov', 'cobyqa']
 
 MINIMIZE_SCALAR_METHODS = ['brent', 'bounded', 'golden']
+
 
 def minimize(fun, x0, args=(), method=None, jac=None, hess=None,
              hessp=None, bounds=None, constraints=(), tol=None,
@@ -591,7 +591,7 @@ def minimize(fun, x0, args=(), method=None, jac=None, hess=None,
     # - hessp
     if meth not in ('newton-cg', 'trust-ncg', 'trust-constr',
                     'trust-krylov', '_custom') \
-       and hessp is not None:
+            and hessp is not None:
         warn(f'Method {method} does not use Hessian-vector product'
              ' information (hessp).',
              RuntimeWarning, stacklevel=2)
@@ -1002,6 +1002,7 @@ def _remove_from_bounds(bounds, i_fixed):
 
 def _remove_from_func(fun_in, i_fixed, x_fixed, min_dim=None, remove=0):
     """Wraps a function such that fixed variables need not be passed in"""
+
     def fun_out(x_in, *args, **kwargs):
         x_out = np.zeros_like(i_fixed, dtype=x_in.dtype)
         x_out[i_fixed] = x_fixed
@@ -1020,6 +1021,7 @@ def _remove_from_func(fun_in, i_fixed, x_fixed, min_dim=None, remove=0):
             y_out = y_out[~i_fixed, ~i_fixed]
 
         return y_out
+
     return fun_out
 
 
@@ -1049,6 +1051,7 @@ def _validate_bounds(bounds, x0, meth):
         raise ValueError(msg) from e
 
     return bounds
+
 
 def standardize_bounds(bounds, x0, meth):
     """Converts bounds to the form required by the solver."""

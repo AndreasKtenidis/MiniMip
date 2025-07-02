@@ -2,27 +2,31 @@ from pythonProject.FedAvg6 import data
 from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
 import math
 import numpy as np
-from pythonProject.FedAvg6.library.stats.univariate_statistics import StandardDeviation
+from library.stats.univariate_statistics import StandardDeviation
+
+
 class Covariance(StatisticalFunction):
 
-    def compute(self, x:np.array, y:np.array):
+    def compute(self, x: np.array, y: np.array):
         aggregator = self.get_numpy_aggregator()
         avg_x = aggregator.global_avg(x)
         avg_y = aggregator.global_avg(y)
         return aggregator.global_avg(((x - avg_x) * (y - avg_y)))
 
+
 class PearsonCorrelation(StatisticalFunction):
-    def compute(self, x:np.array, y:np.array):
+    def compute(self, x: np.array, y: np.array):
         aggregator = self.get_numpy_aggregator()
         cov = Covariance(self.client).compute(x, y)
-        avg_data1=aggregator.global_avg(x)
+        avg_data1 = aggregator.global_avg(x)
         avg_data2 = aggregator.global_avg(y)
         stddev1 = math.sqrt(aggregator.global_avg(((x - avg_data1) ** 2)))
         stddev2 = math.sqrt(aggregator.global_avg(((y - avg_data2) ** 2)))
         return cov / (stddev1 * stddev2) if stddev1 > 0 and stddev2 > 0 else 0
 
+
 class LeastSquaresRegression(StatisticalFunction):
-    def compute(self, x:np.array, y:np.array):
+    def compute(self, x: np.array, y: np.array):
         cov = Covariance(self.client).compute(x, y)
         aggregator = self.get_numpy_aggregator()
         avg_data1 = aggregator.global_avg(x)
@@ -32,6 +36,7 @@ class LeastSquaresRegression(StatisticalFunction):
         intercept = avg_data2 - slope * avg_data1
         return slope, intercept
 
+
 # class SumOfProducts(StatisticalFunction):
 #     def compute(self, x:np.array, y:np.array):
 #         aggregator = self.get_numpy_aggregator()
@@ -39,10 +44,11 @@ class LeastSquaresRegression(StatisticalFunction):
 #         avg_data2 = aggregator.global_avg(y)
 #         return aggregator.global_sum(((x - avg_data1) * (y - avg_data2)))
 
-from  pandas import DataFrame
+from pandas import DataFrame
+
 
 class CovariancePandas(StatisticalFunction):
-    def compute(self, data:DataFrame,*, x,y):
+    def compute(self, data: DataFrame, *, x, y):
         aggregator = self.get_pandas_aggregator()
 
         # Calculate global averages and subtract them from the data
@@ -134,8 +140,9 @@ class LeastSquaresRegressionGrizzly(StatisticalFunction):
         intercept = avg_data_x_y[1] - slope * avg_data_x_y[0]
         return slope, intercept
 
+
 class StandardizedMeanDifferences(StatisticalFunction):
-    def compute(self, x:np.array, y:np.array):
+    def compute(self, x: np.array, y: np.array):
         aggregator = self.get_numpy_aggregator()
         # Calculate means
         mean1 = aggregator.global_avg(x)

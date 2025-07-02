@@ -4,10 +4,10 @@ import pandas as pd
 
 class CrossTabTable(StatisticalFunction):
 
-    def compute(self, dataset,*,factor,outcome):
+    def compute(self, dataset, *, factor, outcome):
         agg = self.get_numpy_aggregator()
         df = pd.DataFrame(dataset, columns=[factor, outcome])
-        cross_tab = pd.crosstab(df[factor],df[outcome])
+        cross_tab = pd.crosstab(df[factor], df[outcome])
         rows_ = cross_tab.index.values
         columns_ = cross_tab.columns.values
         rows = rows_

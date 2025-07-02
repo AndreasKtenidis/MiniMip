@@ -9,8 +9,6 @@ from library.stat_models.fed_glm import Fed_GLM
 
 class CalibrationBelt(StatisticalFunction):
 
-
-
     def compute(self, e, o, confidence=0.99, max_poly_degree=5):
         """
         Compute and plot the calibration belt for predicted (e) vs. observed (o) binary outcomes.
@@ -53,7 +51,7 @@ class CalibrationBelt(StatisticalFunction):
             best_ll = model.llf
 
         # Step 3: Compute calibration curve
-        agg=self.get_numpy_aggregator()
+        agg = self.get_numpy_aggregator()
         g_e_range = np.linspace(agg.global_min(g_e), agg.global_max(g_e), 50)
         x_range = np.column_stack([g_e_range ** i for i in range(best_m + 1)])
         p_pred = best_model.predict(add_constant(x_range))

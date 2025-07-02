@@ -4,6 +4,7 @@ from typing import Tuple
 from pythonProject.FedAvg6.system.client.aggregation_client import AggregationClient
 from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
 
+
 class KMeans(StatisticalFunction):
     def __init__(self, client: AggregationClient):
         super().__init__(client)

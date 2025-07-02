@@ -24,6 +24,5 @@ X = sm.add_constant(X)
 # Fit the multivariable regression model
 model = sm.OLS(y, X).fit()
 
-
 # Print the summary of the regression
 print(model.summary())

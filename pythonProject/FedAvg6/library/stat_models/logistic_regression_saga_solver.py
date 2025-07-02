@@ -4,9 +4,10 @@ from sklearn.linear_model import LogisticRegression
 from pythonProject.FedAvg6.library.templates.statistical_model import StatisticalModel
 from pythonProject.FedAvg6.system.client.grpc_agg_client import GRPCClient
 
+
 class FederatedLogisticRegressionClientSaSo(StatisticalModel):
 
-    def __init__(self, client: GRPCClient,  model_params=None):
+    def __init__(self, client: GRPCClient, model_params=None):
 
         super().__init__(client)
         self.agg = self.get_numpy_aggregator()
@@ -15,8 +16,6 @@ class FederatedLogisticRegressionClientSaSo(StatisticalModel):
             'max_iter': 100, 'warm_start': True
         }
         self.model = LogisticRegression(**self.model_params)
-
-
 
     def get_weights(self):
         """Return model weights (coef_ and intercept_) as flattened array."""
@@ -31,8 +30,6 @@ class FederatedLogisticRegressionClientSaSo(StatisticalModel):
         intercept = weights[n_features:]
         self.model.coef_ = coef
         self.model.intercept_ = intercept
-
-
 
     def fit(self, X: np.ndarray, y: np.ndarray, num_epochs: int = 100):
         self.x_shape = X.shape[1]

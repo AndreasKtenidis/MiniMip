@@ -9,6 +9,7 @@ from library.templates.statistical_function import StatisticalFunction
 import numpy as np
 from torch.utils.data import Subset
 
+
 def split_mnist_to_clients(dataset, client_num, num_clients, seed=42):
     """
     Split MNIST dataset for federated learning clients.
@@ -50,7 +51,8 @@ def split_mnist_to_clients(dataset, client_num, num_clients, seed=42):
 
     return Subset(dataset, client_indices[client_num])
 
-def prepare_data(client_num, num_clients,batch_size=32, ):
+
+def prepare_data(client_num, num_clients, batch_size=32, ):
     """
     Prepare MNIST dataset and create data loaders
     Args:
@@ -58,7 +60,6 @@ def prepare_data(client_num, num_clients,batch_size=32, ):
     Returns:
         tuple: (train_loader, test_loader)
     """
-
 
     # Define transformations
     transform = transforms.Compose([
@@ -74,7 +75,6 @@ def prepare_data(client_num, num_clients,batch_size=32, ):
         download=True
     )
 
-
     test_dataset = datasets.MNIST(
         root='./data',
         train=False,
@@ -83,7 +83,6 @@ def prepare_data(client_num, num_clients,batch_size=32, ):
 
     train_dataset = split_mnist_to_clients(train_dataset, client_num, num_clients)
     test_dataset = split_mnist_to_clients(test_dataset, client_num, num_clients)
-
 
     print(train_dataset)
     print(test_dataset)
@@ -102,10 +101,11 @@ def prepare_data(client_num, num_clients,batch_size=32, ):
 
     return train_loader, test_loader
 
+
 # Logistic Regression Model
 class LogisticRegression(torch.nn.Module, StatisticalFunction):
 
-    def __init__(self,client, n_inputs, n_outputs):
+    def __init__(self, client, n_inputs, n_outputs):
         torch.nn.Module.__init__(self)
         StatisticalFunction.__init__(self, client)
         self.linear = torch.nn.Linear(n_inputs, n_outputs)
@@ -220,16 +220,16 @@ class LogisticRegression(torch.nn.Module, StatisticalFunction):
 def compute(client_num):
     # Configuration
 
-
     # Device setup
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Prepare data
-    train_loader, test_loader = prepare_data(client_num,num_clients =config['num_clients'] ,batch_size=config['batch_size'])
+    train_loader, test_loader = prepare_data(client_num, num_clients=config['num_clients'],
+                                             batch_size=config['batch_size'])
 
     # Initialize model
-    client = GRPCClient(client_num,config['num_clients'],1)
-    model = LogisticRegression(client,28 * 28, 10)
+    client = GRPCClient(client_num, config['num_clients'], 1)
+    model = LogisticRegression(client, 28 * 28, 10)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=config['learning_rate'])
 
@@ -243,6 +243,8 @@ def compute(client_num):
         device=device,
         eval_every=config['eval_every']
     )
+
+
 #
 #     # Plot results
 #     plot_training_history(train_history, eval_history)
@@ -280,9 +282,9 @@ def compute(client_num):
 
 
 config = {
-        'batch_size': 64,
-        'learning_rate': 0.01,
-        'num_epochs': 20,
-        'eval_every': 2,  # Evaluate every 2 epochs
-        'num_clients':2
-    }
+    'batch_size': 64,
+    'learning_rate': 0.01,
+    'num_epochs': 20,
+    'eval_every': 2,  # Evaluate every 2 epochs
+    'num_clients': 2
+}

@@ -41,7 +41,7 @@ class FederatedLinearRegression(StatisticalModel):
             self.model.weight.data = torch.tensor(weights, dtype=torch.float32)
             self.model.bias.data = torch.tensor(bias, dtype=torch.float32)
 
-    def _train(self, x: np.ndarray, y: np.ndarray, lr: float = 0.05, epochs: int =500):
+    def _train(self, x: np.ndarray, y: np.ndarray, lr: float = 0.05, epochs: int = 500):
         """Train the model locally and apply fed_avg after each epoch."""
 
         x_tensor = torch.tensor(x, dtype=torch.float32)

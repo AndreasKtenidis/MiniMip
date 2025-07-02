@@ -22,13 +22,13 @@ data['Propensity'] = result.predict(X)
 
 # Step 3: Calculate IPTW weights
 data['Weight'] = data.apply(
-    lambda row: 1/row['Propensity'] if row['Treatment']==1 else 1/(1-row['Propensity']),
+    lambda row: 1 / row['Propensity'] if row['Treatment'] == 1 else 1 / (1 - row['Propensity']),
     axis=1
 )
 
 # Step 4: Calculate weighted treatment effect
-treated = data.loc[data['Treatment']==1]
-untreated = data.loc[data['Treatment']==0]
+treated = data.loc[data['Treatment'] == 1]
+untreated = data.loc[data['Treatment'] == 0]
 
 treated_mean = (treated['Outcome'] * treated['Weight']).sum() / treated['Weight'].sum()
 untreated_mean = (untreated['Outcome'] * untreated['Weight']).sum() / untreated['Weight'].sum()

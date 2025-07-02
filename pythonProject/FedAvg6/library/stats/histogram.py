@@ -6,10 +6,10 @@ import matplotlib.pyplot as plt
 class StandardHistogram(StatisticalFunction):
 
     def compute(self, x, num_bins):
-        agg=self.get_numpy_aggregator()
+        agg = self.get_numpy_aggregator()
         min_val = agg.global_min(x)
         max_val = agg.global_max(x)
-        counts, bin_edges = np.histogram(x, bins=num_bins,range=(min_val, max_val))
+        counts, bin_edges = np.histogram(x, bins=num_bins, range=(min_val, max_val))
         # StandardHistogram.plot_histogram(counts, bin_edges)
         counts = agg.fed_sum(counts)
         # StandardHistogram.plot_histogram(counts, bin_edges)

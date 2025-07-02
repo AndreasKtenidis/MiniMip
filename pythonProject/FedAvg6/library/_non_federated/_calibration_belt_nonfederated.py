@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 from scipy.stats import chi2
 from statsmodels.tools import add_constant
 
+
 class CalibrationBelt:
-    def __init__(self,e, o, confidence=0.95, max_poly_degree=5):
+    def __init__(self, e, o, confidence=0.95, max_poly_degree=5):
         """
         Compute and plot the calibration belt for predicted (e) vs. observed (o) binary outcomes.
 
@@ -50,7 +51,6 @@ class CalibrationBelt:
         x_range = np.column_stack([g_e_range ** i for i in range(best_m + 1)])
         p_pred = best_model.predict(add_constant(x_range))
 
-
         # Step 4: Compute confidence band
         cov_matrix = best_model.cov_params()
         se = np.sqrt(np.sum([x_range[:, i] * x_range[:, j] * cov_matrix[i, j]
@@ -85,14 +85,13 @@ class CalibrationBelt:
         # }
 
 
-
-
 # Example usage
 
 from data.experiment_datasets.calibration_dataset import CalibrationDataset
-dataset = CalibrationDataset(0,1)
 
-e1 = dataset.get_attribute('SVM') # Predicted probabilities
+dataset = CalibrationDataset(0, 1)
+
+e1 = dataset.get_attribute('SVM')  # Predicted probabilities
 o1 = dataset.get_attribute('target')
 
 # Run calibration belt analysis

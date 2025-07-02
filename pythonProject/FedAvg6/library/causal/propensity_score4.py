@@ -3,8 +3,6 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import NearestNeighbors
 
-
-
 # Sample data
 data = pd.DataFrame({
     'ID': [1, 2, 3, 4, 5, 6],
@@ -18,9 +16,10 @@ data = pd.DataFrame({
 X2 = data[['Age', 'BMI']].values
 y2 = data['Treated'].values
 
+
 class PropensityScore():
 
-    def compute(self, X:np.array,y:np.array):
+    def compute(self, X: np.array, y: np.array):
         model = LogisticRegression()
         model.fit(X, y)
         propensity_scores = model.predict_proba(X)[:, 1]  # Probability of treatment
@@ -61,6 +60,3 @@ class PropensityScore():
 
 propScore = PropensityScore()
 propScore.compute(X2, y2)
-
-
-

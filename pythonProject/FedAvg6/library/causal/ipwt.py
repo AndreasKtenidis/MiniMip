@@ -14,17 +14,17 @@ class IPWT(StatisticalFunction):
         agg = self.get_numpy_aggregator()
 
         glm = Fed_GLM(self.client)
-        glm.fit(confounders,treatment)
+        glm.fit(confounders, treatment)
 
         # Predict propensity scores
         propensity = glm.predict(confounders)
 
         # predict weights
-        weights = treatment/propensity+(1-treatment)/(1-propensity)
+        weights = treatment / propensity + (1 - treatment) / (1 - propensity)
 
-        treated_mean = agg.global_sum(outcome * weights*treatment) / agg.global_sum((weights*treatment))
-        untreated_mean = agg.global_sum((outcome * weights * (1-treatment))) / agg.global_sum((weights * (1-treatment)))
+        treated_mean = agg.global_sum(outcome * weights * treatment) / agg.global_sum((weights * treatment))
+        untreated_mean = agg.global_sum((outcome * weights * (1 - treatment))) / agg.global_sum(
+            (weights * (1 - treatment)))
 
         treatment_effect = treated_mean - untreated_mean
         return treatment_effect
-

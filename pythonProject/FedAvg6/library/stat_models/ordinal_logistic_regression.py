@@ -41,7 +41,7 @@
 from library.templates.statistical_model import StatisticalModel
 import numpy as np
 
-from sklearn import  metrics
+from sklearn import metrics
 from sklearn.utils.validation import check_X_y
 from library.stat_models.olr_helper._minimize import minimize
 from system.client.aggregation_client import AggregationClient
@@ -70,7 +70,8 @@ class FedOrdinalLogisticRegression(StatisticalModel):
             Regression with Discrete Ordered Labels," in Proceedings of the IJCAI
             Multidisciplinary Workshop on Advances in Preference Handling, 2005.
             """
-    def __init__(self,client:AggregationClient=None, alpha=1., verbose = False, max_iter=1000):
+
+    def __init__(self, client: AggregationClient = None, alpha=1., verbose=False, max_iter=1000):
         super().__init__(client)
         self.alpha = alpha
         self.verbose = verbose
@@ -79,8 +80,7 @@ class FedOrdinalLogisticRegression(StatisticalModel):
         self.n_class_ = None
         self.coef_ = None
         self.theta_ = None
-        self.agg=self.get_numpy_aggregator()
-
+        self.agg = self.get_numpy_aggregator()
 
     def fit(self, X, y, sample_weight=None):
         _y = np.array(y).astype(int)
@@ -93,23 +93,14 @@ class FedOrdinalLogisticRegression(StatisticalModel):
         self.n_class_ = self.agg.global_max(self.classes_) - _min + 1
         # Change to int
         self.n_class_ = np.array(self.n_class_, dtype=int)
-        y_tmp = y - _min # we need classes that start at zero
+        y_tmp = y - _min  # we need classes that start at zero
         self.coef_, self.theta_ = self.threshold_fit(
             X, y_tmp, self.alpha, self.n_class_,
             mode='0-1', verbose=self.verbose, max_iter=self.max_iter,
             sample_weight=sample_weight)
         return self
 
-
-
-
-
-
-
-
-
-
-    def obj_margin(self,x0, X, y, alpha, n_class, weights, L, sample_weight):
+    def obj_margin(self, x0, X, y, alpha, n_class, weights, L, sample_weight):
         """
         Objective function for the general margin-based formulation
         """
@@ -129,8 +120,7 @@ class FedOrdinalLogisticRegression(StatisticalModel):
         obj += alpha * 0.5 * (np.dot(w, w))
         return obj
 
-
-    def grad_margin(self,x0, X, y, alpha, n_class, weights, L, sample_weight):
+    def grad_margin(self, x0, X, y, alpha, n_class, weights, L, sample_weight):
         """
         Gradient for the general margin-based formulation
         """
@@ -155,8 +145,7 @@ class FedOrdinalLogisticRegression(StatisticalModel):
         grad_c = L.T.dot(grad_theta)
         return np.concatenate((grad_w, grad_c), axis=0)
 
-
-    def threshold_fit(self,x, y, alpha, n_class, mode='AE',
+    def threshold_fit(self, x, y, alpha, n_class, mode='AE',
                       max_iter=1000, verbose=False, tol=1e-12,
                       sample_weight=None):
         # """
@@ -180,26 +169,26 @@ class FedOrdinalLogisticRegression(StatisticalModel):
 
         # convert from c to theta
         _L = np.zeros((n_class - 1, n_class - 1))
-        _L[np.tril_indices(n_class-1)] = 1.
+        _L[np.tril_indices(n_class - 1)] = 1.
 
         if mode == 'AE':
             # loss forward difference
             loss_fd = np.ones((n_class, n_class - 1))
         elif mode == '0-1':
             loss_fd = np.diag(np.ones(n_class - 1)) + \
-                np.diag(np.ones(n_class - 2), k=-1)
+                      np.diag(np.ones(n_class - 2), k=-1)
             loss_fd = np.vstack((loss_fd, np.zeros(n_class - 1)))
             loss_fd[-1, -1] = 1  # border case
         elif mode == 'SE':
-            a = np.arange(n_class-1)
+            a = np.arange(n_class - 1)
             b = np.arange(n_class)
-            loss_fd = np.abs((a - b[:, None])**2 - (a - b[:, None]+1)**2)
+            loss_fd = np.abs((a - b[:, None]) ** 2 - (a - b[:, None] + 1) ** 2)
         else:
             raise NotImplementedError
 
         x0 = np.zeros(n_features + n_class - 1)
         x0[x.shape[1]:] = np.arange(n_class - 1)
-        options = {'maxiter' : max_iter, 'disp': verbose}
+        options = {'maxiter': max_iter, 'disp': verbose}
         if n_class > 2:
             bounds = [(None, None)] * (n_features + 1) + \
                      [(0, None)] * (n_class - 2)
@@ -207,9 +196,9 @@ class FedOrdinalLogisticRegression(StatisticalModel):
             bounds = None
 
         sol = minimize(self.obj_margin, x0, method='L-BFGS-B',
-                                jac=self.grad_margin, bounds=bounds, options=options,
-                                args=(x, y, alpha, n_class, loss_fd, _L, sample_weight),
-                                tol=tol)
+                       jac=self.grad_margin, bounds=bounds, options=options,
+                       args=(x, y, alpha, n_class, loss_fd, _L, sample_weight),
+                       tol=tol)
         if verbose and not sol.success:
             print(sol.message)
 
@@ -231,6 +220,7 @@ class FedOrdinalLogisticRegression(StatisticalModel):
             y,
             sample_weight=sample_weight)
 
+
 def log_loss(Z):
     # stable computation of the logistic loss
     idx = Z > 0
@@ -238,6 +228,7 @@ def log_loss(Z):
     out[idx] = np.log(1 + np.exp(-Z[idx]))
     out[~idx] = (-Z[~idx] + np.log(1 + np.exp(Z[~idx])))
     return out
+
 
 def sigmoid(t):
     # sigmoid function, 1 / (1 + exp(-t))
@@ -248,6 +239,7 @@ def sigmoid(t):
     exp_t = np.exp(t[~idx])
     out[~idx] = exp_t / (1. + exp_t)
     return out
+
 
 def threshold_predict(X, w, theta):
     """

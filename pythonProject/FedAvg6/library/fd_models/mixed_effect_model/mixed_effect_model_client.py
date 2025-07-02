@@ -1,8 +1,8 @@
-
 from system.client.grpc_agg_client import GRPCClient
 import pandas as pd
 from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
 from library.fd_models.mixed_effect_model.mixed_effect_model import RandomEffects
+
 
 class TmpDataset(FederatedPandasDataset):
 
@@ -13,18 +13,19 @@ class TmpDataset(FederatedPandasDataset):
 
 
 config = {
-        'batch_size': 64,
-        'learning_rate': 0.01,
-        'num_epochs': 20,
-        'eval_every': 2,  # Evaluate every 2 epochs
-        'num_clients':2
-    }
+    'batch_size': 64,
+    'learning_rate': 0.01,
+    'num_epochs': 20,
+    'eval_every': 2,  # Evaluate every 2 epochs
+    'num_clients': 2
+}
+
 
 def compute(client_num):
     # Creating Client
     client = GRPCClient(client_num, config['num_clients'], client_num)
     #  Creating the Data
-    data = TmpDataset(client_num,config['num_clients']).get_local_dataset()
+    data = TmpDataset(client_num, config['num_clients']).get_local_dataset()
     #
     # Clean and prepare data
     data = data.rename(columns={'inv': 'invest'})  # Rename 'inv' to 'invest' for clarity
@@ -41,7 +42,3 @@ def compute(client_num):
     print(model)
 
     print(model.params)  # Returns a pandas Series
-
-
-
-
