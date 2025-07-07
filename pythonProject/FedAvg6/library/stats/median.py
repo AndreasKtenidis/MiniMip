@@ -1,18 +1,20 @@
 from library.templates.statistical_function import StatisticalFunction
 import numpy as np
+from pandas.core.series import Series
 
 from library.stats.histogram import StandardHistogram
 
 
 class MedianBasedOnHistogram(StatisticalFunction):
 
-    def compute(self, x: np.array, num_bins):
+    def compute(self, x: Series,*, num_bins=10):
+
         hist = StandardHistogram(self.client)
-        counts, bin_edges = hist.compute(x, num_bins)
-        return MedianBasedOnHistogram.compute_median_from_histogram(counts, bin_edges)
+        counts, bin_edges = hist.compute(x.values, num_bins)
+        return MedianBasedOnHistogram._compute_median_from_histogram(counts, bin_edges)
 
     @staticmethod
-    def compute_median_from_histogram(counts, bin_edges):
+    def _compute_median_from_histogram(counts, bin_edges):
         """
         Compute the median from a histogram given bin_edges and counts.
 
@@ -35,6 +37,5 @@ class MedianBasedOnHistogram(StatisticalFunction):
                 median_offset = (half_total - cumulative_before_bin) / count
 
                 median = bin_start + median_offset * bin_width
-                print(median)
                 return median
         return None
