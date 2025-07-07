@@ -1,29 +1,34 @@
-import numpy as np
-
 from library.causal.ipwt import IPWT
 from system.client.grpc_agg_client import GRPCClient
 import pandas as pd
-from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
 from sklearn.preprocessing import LabelEncoder
-
 import seaborn as sns
 
-class TmpDataset(FederatedPandasDataset):
+from tests.ipwt.test import ipwt_non_federated
+from tests.testing_dataset.partitioned_table import PartitionedPandasTable
+
+
+class TmpDataset(PartitionedPandasTable):
+
+
     def get_dataset(self) -> pd.DataFrame:
         return sns.load_dataset('titanic')
 
-
-config = {
-        'num_clients':2
-    }
-
 def compute(client_num):
+
     # Creating Client
     client:GRPCClient = GRPCClient(client_num, config['num_clients'], client_num)
     # Federated Dataset
-    data = TmpDataset(client_num,config['num_clients']).get_local_dataset()
+    data =dataset.get_local_dataset(client_num,config['num_clients'])
     data['sex'] = LabelEncoder().fit_transform(data['sex'])
     ipwt = IPWT(client)
-    output = ipwt.compute(data,treatment='sex',outcome='survived',confounders = ['pclass', 'age', 'sibsp', 'parch', 'fare'] )
+    federated_output = ipwt.compute(data,treatment='sex',outcome='survived',confounders = ['pclass', 'age', 'sibsp', 'parch', 'fare'] )
+    # Creating a global output from local outputs
+    non_federated_output = ipwt_non_federated(sns.load_dataset('titanic'))
+    print(federated_output)
+    print(non_federated_output)
 
-    print(output)
+dataset = TmpDataset()
+config = {'num_clients':2}
+
+

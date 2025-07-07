@@ -13,7 +13,6 @@ class IPWT(StatisticalFunction):
         '''
         all_attributes = confounders + [treatment, outcome]
         data=data[all_attributes].dropna()
-
         # **********************************************
         _coufounders=data[confounders].values
         _treatment=data[[treatment]].values

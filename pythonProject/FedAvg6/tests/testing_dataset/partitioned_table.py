@@ -1,0 +1,31 @@
+
+from abc import ABC,abstractmethod
+import pandas as pd
+from system.client.aggregation_client import NumpyAggClient
+import numpy as np
+
+class PartitionedPandasTable(ABC):
+
+    output = dict()
+
+    def __init__(self):
+        # Initialize the data only once
+        self.dataset = self.get_dataset()
+
+    @abstractmethod
+    def get_dataset(self)-> pd.DataFrame:
+        pass
+
+    def get_local_dataset(self,partition_id, num_partitions) -> pd.DataFrame:
+        n = len(self.dataset)
+        _size = n // num_partitions  # number of rows per partition (ignores remainder)
+        start = partition_id * _size
+        end = (
+                      partition_id + 1) * _size if partition_id < num_partitions - 1 else n  # last partition may include remainder
+        local_dataset = self.dataset.iloc[start:end].copy()
+        return local_dataset
+
+
+
+
+

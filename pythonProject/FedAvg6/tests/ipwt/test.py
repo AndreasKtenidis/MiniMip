@@ -12,7 +12,7 @@ import seaborn as sns
 
 
 
-def ipwt(df):
+def ipwt_non_federated(df):
     print("\nOriginal columns:")
     print(df.columns)
     # Use columns:
@@ -24,9 +24,7 @@ def ipwt(df):
     df['Outcome'] = df['survived']
     # Confounders
     confounders = ['pclass', 'age', 'sibsp', 'parch', 'fare']
-    print("\nSample data:")
-    print(df.head())
-    # -------------------------------
+        # -------------------------------
     # 2. Estimate propensity scores: P(Treatment | Confounders)
     # -------------------------------
     X = df[confounders]
@@ -34,8 +32,7 @@ def ipwt(df):
     logistic = LogisticRegression(max_iter=1000)
     logistic.fit(X, y)
     df['ps'] = logistic.predict_proba(X)[:, 1]
-    print("\nSample propensity scores:")
-    print(df[['Treatment', 'ps']].head())
+
     # -------------------------------
     # 3. Compute IPTW weights
     # -------------------------------
@@ -44,7 +41,7 @@ def ipwt(df):
         1 / df['ps'],
         1 / (1 - df['ps'])
     )
-    print(df)
+    return df
 
 df = sns.load_dataset('titanic')
-ipwt(df)
+ipwt_non_federated(df)
