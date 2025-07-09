@@ -1,9 +1,8 @@
-from library.causal.ipwt import IPWT
 from system.client.grpc_agg_client import GRPCClient
 import pandas as pd
 
 
-from tests.testing_dataset.partitioned_table import PartitionedPandasTable
+from library.templates.partitioned_table import PartitionedPandasTable
 import statsmodels.api as sm
 
 from library.stats.median import MedianBasedOnHistogram

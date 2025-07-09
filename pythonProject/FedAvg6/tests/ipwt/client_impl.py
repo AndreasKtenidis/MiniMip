@@ -5,7 +5,7 @@ from sklearn.preprocessing import LabelEncoder
 import seaborn as sns
 
 from tests.ipwt.test import ipwt_non_federated
-from tests.testing_dataset.partitioned_table import PartitionedPandasTable
+from library.templates.partitioned_table import PartitionedPandasTable
 
 
 class TmpDataset(PartitionedPandasTable):

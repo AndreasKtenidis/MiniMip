@@ -1,11 +1,8 @@
-from library.causal.ipwt import IPWT
 from system.client.grpc_agg_client import GRPCClient
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
-import seaborn as sns
 
 from tests.propensity_score.test import propensity_score_non_fd
-from tests.testing_dataset.partitioned_table import PartitionedPandasTable
+from library.templates.partitioned_table import PartitionedPandasTable
 import statsmodels.api as sm
 from library.causal.propensity_score2 import PropensityScore
 

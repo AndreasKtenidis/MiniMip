@@ -23,6 +23,7 @@ crick = "^0.0.8"
 antlr4-python3-runtime = "4.9.3"
 psycopg2-binary = "^2.9.10"
 
+kagglehub = "*"
 
 
 [build-system]
