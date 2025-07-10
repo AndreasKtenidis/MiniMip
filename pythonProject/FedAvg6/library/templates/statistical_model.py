@@ -18,5 +18,5 @@ class StatisticalModel(ABC):
     def get_numpy_aggregator(self) -> NumpyAggClient:
         return NumpyAggClient(self.client)
 
-    def get_pandas_aggregator(self):
+    def get_pandas_aggregator(self)->PandasAggClient:
         return PandasAggClient(self.client)

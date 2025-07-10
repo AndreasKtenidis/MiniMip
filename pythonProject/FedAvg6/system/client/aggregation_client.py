@@ -21,6 +21,12 @@ class AggregationClient(ABC):
     def __global_union__(self, categories,c_type):
         pass
 
+    def get_numpy_aggregator(self):
+        return NumpyAggClient(self)
+
+    def get_pandas_aggregator(self):
+        return PandasAggClient(self)
+
 class NumpyAggClient( ABC):
     """A client for performing federated operations on numpy arrays.
 
@@ -307,110 +313,3 @@ class PandasAggClient( ABC):
     @staticmethod
     def inv_transform(original_shape, answer):
         return np.asarray(answer).reshape(original_shape)
-
-    @staticmethod
-    def _transform(data: Union[pd.Series, pd.DataFrame, np.ndarray]) -> Tuple[str, Tuple, Union[list, str], list, list, np.dtype]:
-        """
-        Transforms a pandas Series/DataFrame or numpy array into a flattened list for gRPC transmission,
-        and returns metadata for reconstruction. Used primarily for sum/min/max, expecting numerical data.
-        """
-        if isinstance(data, pd.Series):
-            return 'series', data.shape, data.name, data.index.tolist(), data.astype(float).tolist(), data.dtype
-        elif isinstance(data, pd.DataFrame):
-            return 'dataframe', data.shape, data.columns.tolist(), data.index.tolist(), data.values.astype(float).flatten().tolist(), data.values.dtype
-        elif isinstance(data, np.ndarray):
-            return 'ndarray', data.shape, None, None, data.astype(float).flatten().tolist(), data.dtype
-        else:
-            raise TypeError(f"Unsupported data type for transformation: {type(data)}. Must be pandas Series, DataFrame, or numpy array.")
-
-    @staticmethod
-    def _transform_for_union(data: Union[pd.Series, pd.DataFrame, np.ndarray]):
-        """
-        Transforms data for union operations, which can handle mixed types (numerical or categorical).
-        It determines the appropriate c_type for GRPCClient based on the data's dtype.
-        """
-        if isinstance(data, pd.Series):
-            return 'series', data.shape, data.name, data.index.tolist(), data.tolist(), data.dtype
-        elif isinstance(data, pd.DataFrame):
-            return 'dataframe', data.shape, data.columns.tolist(), data.index.tolist(), data.values.flatten().tolist(), data.values.dtype
-        elif isinstance(data, np.ndarray):
-            return 'ndarray', data.shape, None, None, data.flatten().tolist(), data.dtype
-        else:
-            raise TypeError(f"Unsupported data type for transformation for union: {type(data)}. Must be pandas Series, DataFrame, or numpy array.")
-
-
-    @staticmethod
-    def _inv_transform(original_type: str, original_shape: Tuple, original_columns: Union[list, str], original_index: list, answer: list, dtype: np.dtype) -> Union[pd.Series, pd.DataFrame, np.ndarray]:
-        """
-        Inverse transforms a list received from gRPC back into the original pandas Series/DataFrame or numpy array.
-        Used for sum/min/max.
-        """
-        if original_type == 'series':
-            return pd.Series(answer, index=original_index, name=original_columns, dtype=dtype)
-        elif original_type == 'dataframe':
-            try:
-                reshaped_array = np.asarray(answer, dtype=dtype).reshape(original_shape)
-                return pd.DataFrame(reshaped_array, columns=original_columns, index=original_index)
-            except ValueError:
-                print(f"Warning: Could not reshape array to original DataFrame shape {original_shape}. Returning Series.")
-                return pd.Series(answer, name='aggregated_data', dtype=dtype)
-        elif original_type == 'ndarray':
-            try:
-                return np.asarray(answer, dtype=dtype).reshape(original_shape)
-            except ValueError:
-                print(f"Warning: Could not reshape array to original NumPy shape {original_shape}. Returning 1D array.")
-                return np.asarray(answer, dtype=dtype)
-        return answer
-
-    @staticmethod
-    def _inv_transform_from_union(original_type: str, original_shape: Tuple, original_columns: Union[list, str], original_index: list, answer: list, dtype: np.dtype) -> Union[pd.Series, pd.DataFrame, np.ndarray]:
-        """
-        Inverse transforms a list from gRPC back into the original pandas Series/DataFrame or numpy array.
-        Used for union operations.
-        """
-        if original_type == 'series':
-            return pd.Series(answer, name='union_categories', dtype=dtype)
-        elif original_type == 'dataframe':
-            return pd.Series(answer, name='union_items', dtype=dtype)
-        elif original_type == 'ndarray':
-            # This is primarily for centroids. If the union operation for centroids results
-            # in a 1D list, try to reshape it back to a 2D array, assuming the original
-            # number of features is preserved.
-            if original_shape and original_shape[1] > 0 and len(answer) % original_shape[1] == 0:
-                try:
-                    return np.asarray(answer, dtype=dtype).reshape(-1, original_shape[1])
-                except ValueError:
-                    print(f"Warning: Could not reshape union result to original centroid shape {original_shape}. Returning 1D array.")
-                    return np.asarray(answer, dtype=dtype)
-            return np.asarray(answer, dtype=dtype)
-        return answer
-
-class GrizzlyAggClient( ABC):
-    """A client for performing federated operations on Grizzly DataFrames.
-
-    This class provides an interface for common federated aggregation operations
-    that communicate with a central aggregation server through an AggregationClient.
-    """
-
-    def __init__(self,client:AggregationClient):
-        self.client = client
-    
-    def global_sum(self, dataframe):
-        _agg = dataframe.sum()
-        _ans = self.client.__global_sum__([_agg])
-        return _ans
-    
-    def global_avg(self, dataframe):
-        _agg = dataframe.mean()
-        means = [row[1] for row in _agg.collect()]
-        counts_df = dataframe.count()
-        counts = [row[1] for row in counts_df.collect()]
-        means_with_count = means + counts
-        _ans = self.client.__global_sum__(means_with_count)
-        _ans = np.array(_ans[0:len(_ans)//2]) / _ans[len(_ans)//2:]
-        return _ans
-
-    def global_count(self, dataframe):
-        local_count = dataframe.count()
-        total_count = self.client.__global_sum__([local_count])
-        return total_count[0]

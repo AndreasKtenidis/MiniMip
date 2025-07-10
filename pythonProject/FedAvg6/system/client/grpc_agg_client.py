@@ -21,14 +21,9 @@ import inspect
 
 
 
-
-
-# from library.fd_models.logistic_regression2 import FederatedLogisticRegression
-
-
 class GRPCClient(AggregationClient):
 
-    def __init__(self,client_id,client_count2,seed):
+    def __init__(self,client_id,client_count2,seed=1234):
         self.channel = grpc.insecure_channel("localhost:50051")
         self.stub = pb2_grpc.AggregatorStub(self.channel)
         self.agg_round = 0

@@ -1,0 +1,3 @@
+from tests.library_tests.logistic_regression.lr_client import compute
+
+compute(0)
