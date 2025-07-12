@@ -24,6 +24,7 @@ antlr4-python3-runtime = "4.9.3"
 psycopg2-binary = "^2.9.10"
 
 kagglehub = "*"
+pytest = "^7.4.2"
 
 
 [build-system]

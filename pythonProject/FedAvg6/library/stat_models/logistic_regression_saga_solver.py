@@ -17,22 +17,11 @@ class FederatedLogisticRegressionClientSaSo(StatisticalModel):
         }
         self.model = LogisticRegression(**self.model_params)
 
-    def get_weights(self):
-        """Return model weights (coef_ and intercept_) as flattened array."""
-        coef = self.model.coef_.flatten()
-        intercept = self.model.intercept_
-        return np.concatenate([coef, intercept])
 
-    def set_weights(self, weights: np.ndarray):
-        """Set model weights from a flattened array."""
-        n_features = self.x_shape
-        coef = weights[:n_features].reshape(1, -1)
-        intercept = weights[n_features:]
-        self.model.coef_ = coef
-        self.model.intercept_ = intercept
+
 
     def fit(self, X: np.ndarray, y: np.ndarray, num_epochs: int = 100):
-        self.x_shape = X.shape[1]
+
         """
         Federated training loop. Performs one epoch of local training followed
         by federated aggregation after each epoch.
@@ -57,16 +46,16 @@ class FederatedLogisticRegressionClientSaSo(StatisticalModel):
                 self.model.fit(X, y)
 
             # Extract weights (coef_ and intercept_)
-            local_weights = self.get_weights()
+            print('before', self.model.coef_)
+            self.model.coef_ = self.agg.fed_weighted_avg(self.model.coef_, X.shape[0])
+            self.model.intercept_ = self.agg.fed_weighted_avg(self.model.intercept_, X.shape[0])
+            print('after', self.model.coef_)
 
             # Federated weighted average
-            avg_weights = self.agg.fed_weighted_avg(local_weights, weight=n_samples)
 
-            # Update local model weights to the aggregated version
-            self.set_weights(avg_weights)
 
     def predict(self, x):
         return self.model.predict(x)
 
-    def predict_proba(self, X: np.ndarray) -> np.ndarray:
-        return self.model.predict_proba(X)
+    def predict_proba(self, x: np.ndarray) -> np.ndarray:
+        return self.model.predict_proba(x)

@@ -1,3 +1,3 @@
-from tests.library_tests.logistic_regression.lr_client import compute
+from tests.library_tests.logistic_regression.logistic_regression_tests import LogisticRegressionTest
 
-compute(0)
+LogisticRegressionTest(0,2)

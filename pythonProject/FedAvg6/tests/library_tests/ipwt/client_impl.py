@@ -6,6 +6,39 @@ import seaborn as sns
 
 from tests.library_tests.ipwt.test import ipwt_non_federated
 from library.templates.partitioned_table import PartitionedPandasTable
+from tests.test_template.test_template import FederationTestTemplate
+
+
+class IPWTTest(FederationTestTemplate):
+
+    def federated_computation(self):
+        pass
+
+    def centralized_computation(self):
+        pass
+        # confounders = ['pclass', 'age', 'sibsp', 'parch', 'fare']
+        # X = self.global_dataset[confounders]
+        # y = df['Treatment']
+        # logistic = LogisticRegression(max_iter=200)
+        # logistic.fit(X, y)
+        # df['ps'] = logistic.predict_proba(X)[:, 1]
+        #
+        # # -------------------------------
+        # # 3. Compute IPTW weights
+        # # -------------------------------
+        # df['weight'] = np.where(
+        #     df['Treatment'] == 1,
+        #     1 / df['ps'],
+        #     1 / (1 - df['ps'])
+        # )
+        # print(df)
+        # return df
+
+    def get_partitioned_pandas_table(self) -> PartitionedPandasTable:
+        pass
+
+    def compare(self, local_output, global_output):
+        pass
 
 
 class TmpDataset(PartitionedPandasTable):

@@ -3,7 +3,7 @@ import pandas as pd
 from library.templates.partitioned_table import PartitionedPandasTable
 import numpy as np
 
-class AucDataset(PartitionedPandasTable):
+class MetricDataset(PartitionedPandasTable):
     def get_dataset(self) -> pd.DataFrame:
         np.random.seed(42)
         # Generate 100 binary true labels (0 or 1)

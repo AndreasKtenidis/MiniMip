@@ -7,20 +7,22 @@ class FederationTestTemplate(ABC):
     def __init__(self, partition_id, number_of_partitions):
         self.client:GRPCClient = GRPCClient(partition_id, number_of_partitions)
         pt_dataset:PartitionedPandasTable= self.get_partitioned_pandas_table()
-        self.local_dataset = pt_dataset.get_local_dataset(partition_id, number_of_partitions)
-        self.global_dataset = self.get_partitioned_pandas_table().get_dataset()
+        # Creating the federated and the centralized versions of the same dataset
+        local_dataset = pt_dataset.get_local_dataset(partition_id, number_of_partitions)
+        global_dataset = self.get_partitioned_pandas_table().get_dataset()
+        # Executing computations in federated and centralized mode
+        local_output = self.federated_computation(local_dataset)
+        global_output = self.centralized_computation(global_dataset)
+        # Comparing results in federated and centralized mode
+        self.compare(local_output, global_output)
 
-    def __call__(self):
-        local_output = self.local_computation()
-        global_output = self.global_computation()
-        self.compare(local_output,global_output)
 
     @abstractmethod
-    def local_computation(self):
+    def federated_computation(self, local_dataset):
         pass
 
     @abstractmethod
-    def global_computation(self):
+    def centralized_computation(self, centralized_dataset):
         pass
 
     @abstractmethod
@@ -30,4 +32,3 @@ class FederationTestTemplate(ABC):
     @abstractmethod
     def compare(self, local_output,global_output):
         pass
-

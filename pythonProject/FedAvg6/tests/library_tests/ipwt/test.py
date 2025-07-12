@@ -29,7 +29,7 @@ def ipwt_non_federated(df):
     # -------------------------------
     X = df[confounders]
     y = df['Treatment']
-    logistic = LogisticRegression(max_iter=1000)
+    logistic = LogisticRegression(max_iter=200)
     logistic.fit(X, y)
     df['ps'] = logistic.predict_proba(X)[:, 1]
 
@@ -41,6 +41,7 @@ def ipwt_non_federated(df):
         1 / df['ps'],
         1 / (1 - df['ps'])
     )
+    print(df)
     return df
 
 df = sns.load_dataset('titanic')

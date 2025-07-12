@@ -1,5 +1,5 @@
 from metrics.federated_metrics import FederatedMetrics
-from tests.help_datasets.auc_dataset import AucDataset
+from tests.help_datasets.metric_dataset import MetricDataset
 from tests.test_template.test_template import FederationTestTemplate
 from sklearn.metrics import roc_auc_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
@@ -11,10 +11,10 @@ class MetricTest(FederationTestTemplate):
         print('local output:', local_output)
         print('global output:', global_output)
 
-    def local_computation(self):
-        y_true = self.local_dataset['y_true'].values
-        y_prob = self.local_dataset['y_prob'].values
-        y_pred = self.local_dataset['y_pred'].values
+    def federated_computation(self, local_dataset):
+        y_true = local_dataset['y_true'].values
+        y_prob = local_dataset['y_prob'].values
+        y_pred = local_dataset['y_pred'].values
         # Compute metrics
         metrics = FederatedMetrics(self.client)
         accuracy = metrics.accuracy(y_true, y_pred)
@@ -25,10 +25,10 @@ class MetricTest(FederationTestTemplate):
         return accuracy,precision,recall,f1,auc_score
 
 
-    def global_computation(self):
-        y_true = self.global_dataset['y_true'].values
-        y_prob = self.global_dataset['y_prob'].values
-        y_pred = self.global_dataset['y_pred'].values
+    def centralized_computation(self, centralized_dataset):
+        y_true = centralized_dataset['y_true'].values
+        y_prob = centralized_dataset['y_prob'].values
+        y_pred = centralized_dataset['y_pred'].values
         # Compute metrics
         accuracy = accuracy_score(y_true, y_pred)
         precision = precision_score(y_true, y_pred)
@@ -38,4 +38,4 @@ class MetricTest(FederationTestTemplate):
         return accuracy,precision,recall,f1,auc_score
 
     def get_partitioned_pandas_table(self):
-        return AucDataset()
+        return MetricDataset()
