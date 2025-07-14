@@ -1,2 +1,3 @@
-from tests.library_tests.linear_regression.client_impl import compute
-compute(0)
+from tests.library_tests.linear_regression.linear_regression_test import LinearRegressionTest
+
+LinearRegressionTest(0,2)

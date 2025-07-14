@@ -1,17 +1,17 @@
 import numpy as np
 from system.client.aggregation_client import AggregationClient
 
-class FederatedMetrics:
+class LogisticRegressionFedMetrics:
 
     def __init__(self, client: AggregationClient):
         self.numpy_aggregator = client.get_numpy_aggregator()
 
-    def accuracy(self,y_true:np.ndarray, y_pred:np.ndarray):
+    def accuracy(self,*,y_true:np.ndarray, y_pred:np.ndarray):
         total_correct = self.numpy_aggregator.global_sum(y_true == y_pred)
         total_samples = self.numpy_aggregator.global_count(y_true)
         return total_correct / total_samples
 
-    def precision(self, y_true: np.ndarray, y_pred: np.ndarray):
+    def precision(self,*, y_true: np.ndarray, y_pred: np.ndarray):
         # True Positives
         tp = self.numpy_aggregator.global_sum((y_pred == 1) & (y_true == 1))
         # Predicted Positives
@@ -20,7 +20,7 @@ class FederatedMetrics:
         precision = tp / predicted_positives if predicted_positives > 0 else 0.0
         return precision
 
-    def recall(self, y_true: np.ndarray, y_pred: np.ndarray):
+    def recall(self,*, y_true: np.ndarray, y_pred: np.ndarray):
         # True Positives
         tp = self.numpy_aggregator.global_sum((y_pred == 1) & (y_true == 1))
         # Actual Positives
@@ -29,14 +29,14 @@ class FederatedMetrics:
         recall = tp / actual_positives if actual_positives > 0 else 0.0
         return recall
 
-    def f1_score(self, y_true: np.ndarray, y_pred: np.ndarray):
-        precision = self.precision(y_true, y_pred)
-        recall = self.recall(y_true, y_pred)
+    def f1_score(self,*, y_true: np.ndarray, y_pred: np.ndarray):
+        precision = self.precision(y_true=y_true,y_pred= y_pred)
+        recall = self.recall(y_true=y_true,y_pred= y_pred)
         if precision + recall == 0:
             return 0.0
         return 2 * (precision * recall) / (precision + recall)
 
-    def log_loss(self, y_true: np.ndarray, y_prob: np.ndarray, eps=1e-15):
+    def log_loss(self,*, y_true: np.ndarray, y_prob: np.ndarray, eps=1e-15):
         # Clip probabilities for numerical stability
         y_prob = np.clip(y_prob, eps, 1 - eps)
         # Compute per-sample log loss
@@ -52,7 +52,6 @@ class FederatedMetrics:
         Args:
             y_true: np.ndarray - true binary labels for this client.
             y_prob: np.ndarray - predicted probabilities for this client.
-            agg_client: NumpyAggClient - aggregation client with federated methods.
 
         Returns:
             float - the global AUC score.
@@ -93,3 +92,32 @@ class FederatedMetrics:
         auc = np.trapz(tpr_sorted, fpr_sorted)
         return auc
 
+
+class LinearRegressionFedMetrics:
+
+    def __init__(self, client: AggregationClient):
+        self.numpy_aggregator = client.get_numpy_aggregator()
+
+    def mean_squared_error(self,*, y_true:np.ndarray, y_pred:np.ndarray):
+        mse = self.numpy_aggregator.global_avg((y_true - y_pred) ** 2)
+        return mse
+
+    def mean_absolute_error(self,*, y_true:np.ndarray, y_pred:np.ndarray):
+        mae = self.numpy_aggregator.global_avg(np.abs(y_true - y_pred))
+        return mae
+
+    def r2_score(self,*, y_true, y_pred):
+        """
+        Compute R² Score (coefficient of determination) between true and predicted values.
+
+        Parameters:
+            y_true (array-like): True target values
+            y_pred (array-like): Predicted values
+
+        Returns:
+            float: R² Score
+        """
+        ss_res = self.numpy_aggregator.global_sum((y_true - y_pred) ** 2)  # Residual sum of squares
+        ss_tot = self.numpy_aggregator.global_sum((y_true - self.numpy_aggregator.fed_avg(y_true)) ** 2)  # Total sum of squares
+        #
+        return 1 - (ss_res / ss_tot)

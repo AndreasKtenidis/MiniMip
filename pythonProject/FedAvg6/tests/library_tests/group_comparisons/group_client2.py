@@ -1,3 +1,3 @@
-from tests.library_tests.group_comparisons.group_client import compute
+from tests.library_tests.group_comparisons.chisquared_fisher_test import ChiSquaredAndFisherTest
 
-compute(1)
+ChiSquaredAndFisherTest(1,2)

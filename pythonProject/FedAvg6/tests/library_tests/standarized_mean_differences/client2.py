@@ -1,3 +1,3 @@
-from tests.library_tests.standarized_mean_differences.client import compute
+from tests.library_tests.standarized_mean_differences.smd_test import SmdTest
 
-compute(1)
+SmdTest(1,2)

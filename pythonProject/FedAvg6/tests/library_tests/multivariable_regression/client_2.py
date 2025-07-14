@@ -1,2 +1,3 @@
-from tests.library_tests.multivariable_regression.client_impl import compute
-compute(1)
+from tests.library_tests.multivariable_regression.multivariable_regression_test import MultivariableRegressionTest
+
+MultivariableRegressionTest(1,2)

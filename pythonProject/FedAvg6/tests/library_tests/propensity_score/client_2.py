@@ -1,2 +1,3 @@
-from tests.library_tests.propensity_score.client_impl import compute
-compute(1)
+from tests.library_tests.propensity_score.propensity_score_test import PropensityScoreTest
+
+PropensityScoreTest(1,2)

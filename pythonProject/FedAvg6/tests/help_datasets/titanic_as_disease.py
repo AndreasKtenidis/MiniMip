@@ -12,6 +12,3 @@ class TitanicAsDisease(PartitionedPandasTable):
         # Outcome: survived
         df['Outcome'] = df['survived']
         return df
-
-dataset = TitanicAsDisease()
-print(dataset.get_dataset())

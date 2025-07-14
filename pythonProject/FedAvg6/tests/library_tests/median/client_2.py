@@ -1,2 +1,3 @@
-from tests.library_tests.median.client_impl import compute
-compute(1)
+from tests.library_tests.median.MedianTest import MediaTest
+
+MediaTest(0,2)

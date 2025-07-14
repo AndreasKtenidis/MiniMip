@@ -43,22 +43,25 @@ class FederatedLinearRegression(StatisticalModel):
 
     def _train(self, x: np.ndarray, y: np.ndarray, lr: float = 0.05, epochs: int = 500):
         """Train the model locally and apply fed_avg after each epoch."""
-
+        x = np.array(x, dtype=np.float32)
         x_tensor = torch.tensor(x, dtype=torch.float32)
-        y_tensor = torch.tensor(y, dtype=torch.float32).view(-1, 1)
+        y_tensor = torch.tensor(y, dtype=torch.float32).view(-1, 1)  # Ensure shape (n_samples, 1)
 
         criterion = nn.MSELoss()
         optimizer = optim.SGD(self.model.parameters(), lr=lr)
         local_params = self._get_model_params()
+
         for epoch in range(epochs):
-            self.model.fit()
-            optimizer.zero_grad()
-            outputs = self.model(x_tensor)
-            loss = criterion(outputs, y_tensor)
-            loss.backward()
-            optimizer.step()
+            # Remove self.model.fit() - PyTorch doesn't need this
+            optimizer.zero_grad()  # Clear gradients
+            outputs = self.model(x_tensor)  # Forward pass
+            loss = criterion(outputs, y_tensor)  # Compute loss
+            loss.backward()  # Backpropagation
+            optimizer.step()  # Update weights
+
             print(f"Epoch {epoch + 1}/{epochs}, Loss: {loss.item():.4f}")
-            # Perform federated averaging
+
+            # Perform federated averaging (if needed)
             local_params = self._get_model_params()
             global_params = self.aggregator.fed_avg(local_params)
             self._set_model_params(global_params)

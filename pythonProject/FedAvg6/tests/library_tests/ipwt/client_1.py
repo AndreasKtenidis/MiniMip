@@ -1,2 +1,3 @@
-from tests.library_tests.ipwt.client_impl import compute
-compute(0)
+from tests.library_tests.ipwt.ipwt import IPWTTest
+
+IPWTTest(0,2)

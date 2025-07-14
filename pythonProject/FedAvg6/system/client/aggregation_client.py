@@ -295,7 +295,7 @@ class PandasAggClient( ABC):
         return PandasAggClient._inv_transform(_original_type, _original_shape, _original_columns, _original_index, _ans, _dtype)
 
     def global_avg(self,dataframe:DataFrame):
-        _agg = DataFrame([dataframe.mean()])
+        _agg = DataFrame([dataframe.sum()])
         _shape, _flattened = PandasAggClient.transform(_agg)
         _flattened= np.append(_flattened, dataframe.count())
         _ans = self.client.__global_sum__(_flattened)

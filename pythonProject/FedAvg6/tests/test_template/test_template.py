@@ -30,5 +30,5 @@ class FederationTestTemplate(ABC):
         pass
 
     @abstractmethod
-    def compare(self, local_output,global_output):
+    def compare(self, federated_output, global_output):
         pass
