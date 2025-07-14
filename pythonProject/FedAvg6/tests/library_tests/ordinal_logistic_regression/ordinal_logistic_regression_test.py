@@ -7,7 +7,7 @@ from tests.help_datasets.job_training import JobTrainingDataset
 from tests.help_datasets.wine_quality import WineQuality
 from tests.test_template.test_template import FederationTestTemplate
 import pandas as pd
-from library.causal.propensity_score2 import PropensityScore
+from library.causal.propensity_score import PropensityScore
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 

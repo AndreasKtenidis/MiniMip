@@ -4,7 +4,7 @@ from library.templates.partitioned_table import PartitionedPandasTable
 from tests.help_datasets.job_training import JobTrainingDataset
 from tests.test_template.test_template import FederationTestTemplate
 import pandas as pd
-from library.causal.propensity_score2 import PropensityScore
+from library.causal.propensity_score import PropensityScore
 from sklearn.linear_model import LogisticRegression
 
 class PropensityScoreTest(FederationTestTemplate):

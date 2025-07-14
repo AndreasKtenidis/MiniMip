@@ -77,7 +77,6 @@ class GRPCServer(pb2_grpc.AggregatorServicer, NumpyAggregationServer):
         print(f"Sending response: {response}")
         return response
 
-
     async def GetServerResponse(self, request, context):
         print("GetServerResponse", request)
         triple = (request.operation_id, request.agg_func, request.agg_round)
@@ -110,8 +109,6 @@ class GRPCServer(pb2_grpc.AggregatorServicer, NumpyAggregationServer):
         print(f"Sending response: {response}")
         return response
 
-
-
 async def serve():
     server = grpc.aio.server()
     pb2_grpc.add_AggregatorServicer_to_server(GRPCServer(client_count), server)
@@ -119,7 +116,6 @@ async def serve():
     print("gRPC Server running on port 50051...")
     await server.start()
     await server.wait_for_termination()
-
 
 if __name__ == "__main__":
     asyncio.run(serve())

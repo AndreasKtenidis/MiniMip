@@ -17,9 +17,6 @@ class FederatedLogisticRegressionClientSaSo(StatisticalModel):
         }
         self.model = LogisticRegression(**self.model_params)
 
-
-
-
     def fit(self, X: np.ndarray, y: np.ndarray, num_epochs: int = 100):
 
         """
@@ -46,13 +43,8 @@ class FederatedLogisticRegressionClientSaSo(StatisticalModel):
                 self.model.fit(X, y)
 
             # Extract weights (coef_ and intercept_)
-            print('before', self.model.coef_)
             self.model.coef_ = self.agg.fed_weighted_avg(self.model.coef_, X.shape[0])
             self.model.intercept_ = self.agg.fed_weighted_avg(self.model.intercept_, X.shape[0])
-            print('after', self.model.coef_)
-
-            # Federated weighted average
-
 
     def predict(self, x):
         return self.model.predict(x)
