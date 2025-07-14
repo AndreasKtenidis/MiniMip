@@ -6,12 +6,12 @@ class LogisticRegressionFedMetrics:
     def __init__(self, client: AggregationClient):
         self.numpy_aggregator = client.get_numpy_aggregator()
 
-    def accuracy(self,*,y_true:np.ndarray, y_pred:np.ndarray):
+    def accuracy_score(self, *, y_true:np.ndarray, y_pred:np.ndarray):
         total_correct = self.numpy_aggregator.global_sum(y_true == y_pred)
         total_samples = self.numpy_aggregator.global_count(y_true)
         return total_correct / total_samples
 
-    def precision(self,*, y_true: np.ndarray, y_pred: np.ndarray):
+    def precision_score(self, *, y_true: np.ndarray, y_pred: np.ndarray):
         # True Positives
         tp = self.numpy_aggregator.global_sum((y_pred == 1) & (y_true == 1))
         # Predicted Positives
@@ -20,7 +20,7 @@ class LogisticRegressionFedMetrics:
         precision = tp / predicted_positives if predicted_positives > 0 else 0.0
         return precision
 
-    def recall(self,*, y_true: np.ndarray, y_pred: np.ndarray):
+    def recall_score(self, *, y_true: np.ndarray, y_pred: np.ndarray):
         # True Positives
         tp = self.numpy_aggregator.global_sum((y_pred == 1) & (y_true == 1))
         # Actual Positives
@@ -30,8 +30,8 @@ class LogisticRegressionFedMetrics:
         return recall
 
     def f1_score(self,*, y_true: np.ndarray, y_pred: np.ndarray):
-        precision = self.precision(y_true=y_true,y_pred= y_pred)
-        recall = self.recall(y_true=y_true,y_pred= y_pred)
+        precision = self.precision_score(y_true=y_true, y_pred= y_pred)
+        recall = self.recall_score(y_true=y_true, y_pred= y_pred)
         if precision + recall == 0:
             return 0.0
         return 2 * (precision * recall) / (precision + recall)

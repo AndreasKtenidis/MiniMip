@@ -26,9 +26,9 @@ class LogisticRegressionTest(FederationTestTemplate):
 
         # Compute metrics
         metrics = LogisticRegressionFedMetrics(self.client)
-        accuracy = metrics.accuracy(y_true=y_pred,y_pred= y_pred)
-        precision = metrics.precision(y_true=y_pred,y_pred= y_pred)
-        recall = metrics.recall(y_true=y_pred,y_pred= y_pred)
+        accuracy = metrics.accuracy_score(y_true=y_pred, y_pred= y_pred)
+        precision = metrics.precision_score(y_true=y_pred, y_pred= y_pred)
+        recall = metrics.recall_score(y_true=y_pred, y_pred= y_pred)
         f1 = metrics.f1_score(y_true=y_pred,y_pred= y_pred)
         auc_score = metrics.auc_score(y_true=y_pred, y_prob=y_prob[:, 1])
         return accuracy, precision, recall, f1, auc_score
