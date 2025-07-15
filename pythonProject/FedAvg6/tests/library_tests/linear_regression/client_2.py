@@ -1,3 +1,0 @@
-from tests.library_tests.linear_regression.linear_regression_test import LinearRegressionTest
-
-LinearRegressionTest(1,2)

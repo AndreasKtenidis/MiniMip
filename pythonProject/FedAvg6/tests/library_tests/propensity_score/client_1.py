@@ -1,3 +1,0 @@
-from tests.library_tests.propensity_score.propensity_score_test import PropensityScoreTest
-
-PropensityScoreTest(0,2)

@@ -1,3 +1,0 @@
-from tests.library_tests.group_comparisons.chisquared_fisher_test import ChiSquaredAndFisherTest
-
-ChiSquaredAndFisherTest(1,2)

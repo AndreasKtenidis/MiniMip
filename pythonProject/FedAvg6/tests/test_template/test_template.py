@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 
 class FederationTestTemplate(ABC):
 
-    def __init__(self, partition_id, number_of_partitions):
-        self.client:GRPCClient = GRPCClient(partition_id, number_of_partitions)
+    def __init__(self, partition_id, number_of_partitions,*,operation_id=0):
+        self.client:GRPCClient = GRPCClient(partition_id, number_of_partitions,operation_id=operation_id)
         pt_dataset:PartitionedPandasTable= self.get_partitioned_pandas_table()
         # Creating the federated and the centralized versions of the same dataset
         local_dataset = pt_dataset.get_local_dataset(partition_id, number_of_partitions)

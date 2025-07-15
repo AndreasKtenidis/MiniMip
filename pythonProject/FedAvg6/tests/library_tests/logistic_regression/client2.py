@@ -1,3 +1,0 @@
-from tests.library_tests.logistic_regression.logistic_regression_tests import LogisticRegressionTest
-
-LogisticRegressionTest(1,2)

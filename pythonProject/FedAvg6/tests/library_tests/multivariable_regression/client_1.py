@@ -1,3 +1,0 @@
-from tests.library_tests.multivariable_regression.multivariable_regression_test import MultivariableRegressionTest
-
-MultivariableRegressionTest(0,2)
