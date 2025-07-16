@@ -11,14 +11,20 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 class LogisticRegressionTest(FederationTestTemplate):
 
+    def __init__(self, client_id, client_count, *, dataset, operation_id=0, features, target):
+        self.features = features
+        self.target = target
+        super().__init__(client_id, client_count, dataset=dataset, operation_id=operation_id)
+
+
+
     def federated_computation(self, local_dataset):
-        iris =local_dataset
-        x = iris.drop('target', axis=1).values
-        y_pred = iris['target'].values
+        x = local_dataset[self.features].values
+        y = local_dataset[self.target].values
 
         # Train logistic regression model
         model = FederatedLogisticRegressionClientSaSo(self.client)
-        model.fit(x, y_pred)
+        model.fit(x, y)
 
         # Predict and evaluate
         y_pred = model.predict(x)
@@ -26,17 +32,16 @@ class LogisticRegressionTest(FederationTestTemplate):
 
         # Compute metrics
         metrics = LogisticRegressionFedMetrics(self.client)
-        accuracy = metrics.accuracy_score(y_true=y_pred, y_pred= y_pred)
-        precision = metrics.precision_score(y_true=y_pred, y_pred= y_pred)
-        recall = metrics.recall_score(y_true=y_pred, y_pred= y_pred)
-        f1 = metrics.f1_score(y_true=y_pred,y_pred= y_pred)
-        auc_score = metrics.auc_score(y_true=y_pred, y_prob=y_prob[:, 1])
+        accuracy = metrics.accuracy_score(y_true=y, y_pred= y_pred)
+        precision = metrics.precision_score(y_true=y, y_pred= y_pred)
+        recall = metrics.recall_score(y_true=y, y_pred= y_pred)
+        f1 = metrics.f1_score(y_true=y,y_pred= y_pred)
+        auc_score = metrics.auc_score(y_true=y, y_prob=y_prob[:, 1])
         return accuracy, precision, recall, f1, auc_score
 
     def centralized_computation(self, centralized_dataset):
-        iris = centralized_dataset
-        x = iris.drop('target', axis=1).values
-        y = iris['target'].values
+        x = centralized_dataset[self.features].values
+        y = centralized_dataset[self.target].values
 
         # Train logistic regression model
         model = LogisticRegression()
@@ -53,9 +58,6 @@ class LogisticRegressionTest(FederationTestTemplate):
         f1 = f1_score(y, y_pred)
         auc_score = roc_auc_score(y, y_prob[:, 1])
         return accuracy, precision, recall, f1, auc_score
-
-    def get_partitioned_pandas_table(self) -> PartitionedPandasTable:
-        return IrisDataset()
 
     def compare(self, federated_output, global_output):
         print(federated_output)

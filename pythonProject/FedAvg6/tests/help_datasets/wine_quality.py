@@ -3,7 +3,7 @@ import pandas as pd
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 
-class WineQuality(PartitionedPandasTable):
+class WineQualityDataset(PartitionedPandasTable):
 
     def get_dataset(self) -> pd.DataFrame:
         url = "https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"

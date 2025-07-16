@@ -3,7 +3,7 @@ import pandas as pd
 import seaborn as sns
 from sklearn.preprocessing import LabelEncoder
 
-class TitanicAsDisease(PartitionedPandasTable):
+class TitanicAsDiseaseDataset(PartitionedPandasTable):
     def get_dataset(self) -> pd.DataFrame:
         df = sns.load_dataset('titanic')
         df = df[['pclass', 'survived', 'sex', 'age', 'sibsp', 'parch', 'fare']].dropna()

@@ -1,14 +1,7 @@
 from mord import LogisticIT
-from sklearn.neighbors import NearestNeighbors
 
 from library.stat_models.ordinal_logistic_regression import FedOrdinalLogisticRegression
-from library.templates.partitioned_table import PartitionedPandasTable
-from tests.help_datasets.job_training import JobTrainingDataset
-from tests.help_datasets.wine_quality import WineQuality
 from tests.test_template.test_template import FederationTestTemplate
-import pandas as pd
-from library.causal.propensity_score import PropensityScore
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report
 
 class OrdinalLogisticRegressionTest(FederationTestTemplate):
@@ -48,9 +41,6 @@ class OrdinalLogisticRegressionTest(FederationTestTemplate):
         # Evaluation
         print("Classification Report:\n")
         print(classification_report(y, y_pred, zero_division=0))
-
-    def get_partitioned_pandas_table(self) -> PartitionedPandasTable:
-        return WineQuality()
 
     def compare(self, federated_output, global_output):
         print(federated_output)

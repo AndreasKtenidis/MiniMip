@@ -8,7 +8,7 @@ from system.client.aggregation_client import PandasAggClient
 from tests.help_datasets.iris import IrisDataset
 from tests.help_datasets.job_training import JobTrainingDataset
 from tests.help_datasets.metric import MetricDataset
-from tests.help_datasets.wine_quality import WineQuality
+from tests.help_datasets.wine_quality import WineQualityDataset
 from tests.test_template.test_template import FederationTestTemplate
 
 
@@ -21,9 +21,6 @@ class PandasCovarianceTest(FederationTestTemplate):
 
     def centralized_computation(self, centralized_dataset):
         return centralized_dataset['sepal length (cm)'].cov(centralized_dataset['sepal width (cm)'])
-
-    def get_partitioned_pandas_table(self) -> PartitionedPandasTable:
-        return IrisDataset()
 
     def compare(self, federated_output, global_output):
         print('fed',federated_output)

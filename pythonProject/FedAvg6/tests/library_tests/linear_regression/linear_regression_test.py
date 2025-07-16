@@ -22,9 +22,6 @@ class LinearRegressionTest(FederationTestTemplate):
         output = model.predict(x)
         return output
 
-    def get_partitioned_pandas_table(self) -> PartitionedPandasTable:
-        return InsuranceDataset()
-
     def compare(self, federated_output, global_output):
         print(federated_output)
         print(global_output)

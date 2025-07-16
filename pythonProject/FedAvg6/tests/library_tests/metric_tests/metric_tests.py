@@ -36,6 +36,3 @@ class MetricTest(FederationTestTemplate):
         f1 = f1_score(y_true, y_pred)
         auc_score =roc_auc_score(y_true, y_prob)
         return accuracy,precision,recall,f1,auc_score
-
-    def get_partitioned_pandas_table(self):
-        return MetricDataset()

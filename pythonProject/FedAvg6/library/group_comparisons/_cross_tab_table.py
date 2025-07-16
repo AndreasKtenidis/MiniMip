@@ -13,9 +13,6 @@ class CrossTabTable(StatisticalFunction):
         rows = rows_
         columns = columns_
 
-        rows = agg.fed_union(rows)
-        columns = agg.fed_union(columns)
-
         for row in set(rows) - set(rows_):
             new_row = pd.Series(0, index=cross_tab.columns, name=row)
             cross_tab = pd.concat([cross_tab, pd.DataFrame([new_row])])

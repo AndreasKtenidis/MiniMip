@@ -1,12 +1,8 @@
-from library.causal.ipwt import IPWT
-import numpy as np
 import pandas as pd
 
-from tests.help_datasets.titanic import Titanic
-from tests.help_datasets.titanic_as_disease import TitanicAsDisease
+
 from library.templates.partitioned_table import PartitionedPandasTable
 from tests.test_template.test_template import FederationTestTemplate
-from sklearn.linear_model import LogisticRegression
 from scipy.stats import chi2_contingency
 from scipy.stats import fisher_exact
 
@@ -17,8 +13,6 @@ class ChiSquaredAndFisherTest(FederationTestTemplate):
 
     def centralized_computation(self, centralized_dataset):
         def chi_test(df):
-            # Inspect
-            print(df.head())
 
             # Features and target
             # Create a contingency table
@@ -32,20 +26,15 @@ class ChiSquaredAndFisherTest(FederationTestTemplate):
             oddsratio, p_value = fisher_exact(table)
             return oddsratio, p_value
 
-        return chi_test(centralized_dataset), fisher_test(centralized_dataset)
+        chi2, p, dof, expected = chi_test(centralized_dataset)
+        oddsratio, p_value = fisher_test(centralized_dataset)
+        return chi2, p, dof, expected,oddsratio, p_value
 
     def federated_computation(self, local_dataset):
         chi2, p, dof, expected = ChiSquared(self.client).compute(local_dataset, factor='Pclass', outcome='Survived')
-
-        print("\nChi-squared Statistic:", chi2)
-        print("p-value:", p)
-        print("Degrees of Freedom:", dof)
-        print("-------------------------")
         oddsratio, p_value = FisherExact(self.client).compute(local_dataset, factor='Sex', outcome='Survived')
         return chi2, p, dof, expected,oddsratio, p_value
 
-    def get_partitioned_pandas_table(self) -> PartitionedPandasTable:
-        return Titanic()
 
     def compare(self, federated_output, global_output):
         print(federated_output)

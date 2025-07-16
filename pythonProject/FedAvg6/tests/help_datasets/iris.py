@@ -20,3 +20,4 @@ class IrisDataset(PartitionedPandasTable):
         # Filter to only use two classes (0 and 1)
         df = df[df['target'] != 2]
         return df
+

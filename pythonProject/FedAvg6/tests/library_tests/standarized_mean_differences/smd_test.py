@@ -26,9 +26,6 @@ class SmdTest(FederationTestTemplate):
         smd = (mean1 - mean2) / pooled_std
         return smd
 
-    def get_partitioned_pandas_table(self) -> PartitionedPandasTable:
-        return IrisDataset()
-
     def compare(self, federated_output, global_output):
         print('a',federated_output)
         print('b',global_output)
