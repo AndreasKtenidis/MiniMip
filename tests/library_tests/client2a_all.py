@@ -20,17 +20,19 @@ from tests.help_datasets.iris import IrisDataset
 from tests.help_datasets.insuranse import InsuranceDataset
 
 if __name__ == "__main__":
-    # LogisticRegressionTest(1, 2, dataset=IrisDataset(),
-    #                        features=['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)'],
-    #                        target='target', operation_id=3)
+    LogisticRegressionTest(1, 2,
+                           dataset=IrisDataset(),
+                           features=['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)'],
+                           target='target',
+                           operation_id=3)
     # IPWTTest(1, 2, dataset=TitanicAsDiseaseDataset(), treatment='Treatment',
     #          confounders=['pclass', 'age', 'sibsp', 'parch', 'fare'], operation_id=1)
 
-    PropensityScoreTest(1, 2,
-                        dataset=JobTrainingDataset(),
-                        operation_id=9,
-                        confounders=['age', 'educ', 'married', 'nodegree', 're74', 're75', 'black', 'hispan', 'white'],
-                        treatment='treat')
+    # PropensityScoreTest(1, 2,
+    #                     dataset=JobTrainingDataset(),
+    #                     operation_id=9,
+    #                     confounders=['age', 'educ', 'married', 'nodegree', 're74', 're75', 'black', 'hispan', 'white'],
+    #                     treatment='treat')
 
     # ChiSquaredAndFisherTest(1, 2, dataset=TitanicDataset(), operation_id=123)
     # MedianTest(1, 2,JobTrainingDataset(), operation_id=4)
