@@ -28,3 +28,4 @@ library/fd_models/data/MNIST/raw/t10k-labels-idx1-ubyte.gz
 library/fd_models/data/MNIST/raw/t10k-labels-idx1-ubyte
 library/fd_models/data/MNIST/raw/t10k-images-idx3-ubyte.gz
 library/fd_models/data/MNIST/raw/t10k-images-idx3-ubyte
+install_python.sh

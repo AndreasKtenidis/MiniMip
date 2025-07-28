@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["thoubou <thoubou@gmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "system" },  # Add your project folder here
+]
 
 [tool.poetry.dependencies]
 python = "^3.11.9"
@@ -25,6 +28,7 @@ psycopg2-binary = "^2.9.10"
 
 kagglehub = "*"
 pytest = "^7.4.2"
+mord = "^0.7"
 
 
 [build-system]
