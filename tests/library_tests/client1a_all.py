@@ -1,3 +1,5 @@
+import sys
+
 from tests.help_datasets.diabetes import DiabetesDiseaseDataset
 from tests.help_datasets.job_training import JobTrainingDataset
 from tests.help_datasets.metric import MetricDataset
@@ -19,16 +21,24 @@ from tests.library_tests.standarized_mean_differences.smd_test import SmdTest
 from tests.help_datasets.iris import IrisDataset
 from tests.help_datasets.insuranse import InsuranceDataset
 
-if __name__ == "__main__":
+
+def main():
+    aggregation_server= None
+    if len(sys.argv) < 2:
+        aggregation_server="localhost:50051"
+    else:
+        aggregation_server = sys.argv[1]
+        print(aggregation_server)
+
     LogisticRegressionTest(0, 2,
-                           dataset = IrisDataset(),
-                           features=['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)','petal width (cm)'],
+                           dataset=IrisDataset(),
+                           features=['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)'],
                            target='target',
-                           operation_id=3)
+                           operation_id=3,
+                           aggregation_server=aggregation_server)
 
     # IPWTTest(0, 2,dataset= TitanicAsDiseaseDataset(),treatment='Treatment',
     #                                     confounders=['pclass', 'age', 'sibsp', 'parch', 'fare'], operation_id=1)
-
 
     # PropensityScoreTest(0, 2,
     #                     dataset=JobTrainingDataset(),
@@ -45,3 +55,6 @@ if __name__ == "__main__":
 
     # SmdTest(0, 2,IrisDataset(), operation_id=10)
     # LinearRegressionTest(0, 2,InsuranceDataset(), operation_id=2)
+
+if __name__ == "__main__":
+    main()

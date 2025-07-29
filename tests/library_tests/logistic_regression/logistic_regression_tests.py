@@ -11,12 +11,10 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 class LogisticRegressionTest(FederationTestTemplate):
 
-    def __init__(self, client_id, client_count, *, dataset, operation_id=0, features, target):
+    def __init__(self, client_id, client_count, *, dataset, operation_id=0,aggregation_server="localhost:50051", features, target):
         self.features = features
         self.target = target
-        super().__init__(client_id, client_count, dataset=dataset, operation_id=operation_id)
-
-
+        super().__init__(client_id, client_count, dataset=dataset, operation_id=operation_id,aggregation_server=aggregation_server)
 
     def federated_computation(self, local_dataset):
         x = local_dataset[self.features].values
