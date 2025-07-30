@@ -32,4 +32,4 @@ class BlobDataset(AbstractTable):
         return BlobDataset.attributes
 
     attributes = ['x', 'y']
-    records, _ = make_blobs(n_samples=300, centers=3, random_state=42)
+    records, _ = make_blobs(n_samples=500, centers=3, random_state=42)

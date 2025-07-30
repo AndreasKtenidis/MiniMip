@@ -56,6 +56,9 @@ class KMeans(StatisticalFunction):
                 if global_counts[i] > 0:
                     new_centroids[i] = global_sums[i] / global_counts[i]
 
+
+            # TODO the code is wrong since it is based on the local error
+            raise RuntimeError("Fatal error occurred")
             shift = np.linalg.norm(self.centroids - new_centroids)
             self.centroids = new_centroids
 
