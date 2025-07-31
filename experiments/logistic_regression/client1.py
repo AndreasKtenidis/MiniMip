@@ -1,26 +1,4 @@
-from sklearn.datasets import make_classification
-
-from library.stat_models.logistic_regression_saga_solver import FederatedLogisticRegressionClientSaSo
-from mini_mip_system.client.grpc_agg_client import GRPCClient
-from server import available_clients
-import time
-
-
-
-def start_client(*,aggregation_server="localhost:50051",client_id):
-    x, y = make_classification(n_samples=10000, n_features=20, n_informative=15, n_redundant=5, n_classes=2,
-                               random_state=42*client_id)
-    client: GRPCClient = GRPCClient(client_id, available_clients, operation_id=0, aggregation_server=aggregation_server)
-    # Creating the federated and the centralized versions of the same dataset
-    model:FederatedLogisticRegressionClientSaSo = FederatedLogisticRegressionClientSaSo(client)
-    # Timing starts
-    start_time = time.time()
-    model.fit(x, y, num_epochs=200)
-    # Timing ends
-    end_time = time.time()
-    # Calculate elapsed time in milliseconds
-    elapsed_time_ms = (end_time - start_time) * 1000
-    print(elapsed_time_ms)
+from experiments.logistic_regression.client import start_client
 
 if __name__ == "__main__":
     start_client(client_id=0)

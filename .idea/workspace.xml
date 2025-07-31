@@ -5,47 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="67cd7056-33f2-4eb5-90c7-58a233b20f5c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/fed_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/data/fed_table.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiments/k_means/client1.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/k_means/client1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiments/k_means/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/k_means/server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiments/logistic_regression/client1.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/logistic_regression/client1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiments/logistic_regression/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/logistic_regression/server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiments/pearson_correlation/client1.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/pearson_correlation/client1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/experiments/pearson_correlation/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/experiments/pearson_correlation/server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/fd_models/lbfgs_logistic_regression.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/fd_models/lbfgs_logistic_regression.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/fd_models/logistic_regression2.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/fd_models/logistic_regression2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/fd_models/mixed_effect_model/mixed_effect_model_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/fd_models/mixed_effect_model/mixed_effect_model_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/stat_models/fed_glm.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/stat_models/fed_glm.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/stat_models/logistic_regression_saga_solver.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/stat_models/logistic_regression_saga_solver.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/stat_models/ordinal_logistic_regression.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/stat_models/ordinal_logistic_regression.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/stats/k_means.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/stats/k_means.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/stats/k_means_rand.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/stats/k_means_rand.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/partitioned_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/partitioned_table.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/statistical_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/statistical_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/statistical_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/statistical_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/metrics/federated_metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/metrics/federated_metrics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/_grpc/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/_grpc/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/_grpc/aggregator.proto" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/_grpc/aggregator.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/_grpc/aggregator_pb2.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/_grpc/aggregator_pb2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/_grpc/aggregator_pb2_grpc.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/_grpc/aggregator_pb2_grpc.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/client/___federated_aggregation.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/client/___federated_aggregation.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/client/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/client/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/client/_tmp_interface.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/client/_tmp_interface.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/client/aggregation_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/client/aggregation_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/client/client1.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/client/client1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/client/client2.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/client/client2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/client/grpc_agg_client.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/client/grpc_agg_client.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/server/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/server/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/server/aggregation_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/server/aggregation_server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/server/grpc_agg_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/mip_system/server/grpc_agg_server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/help_datasets/blob.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/help_datasets/blob.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/library_tests/multivariable_regression/multivariable_regression_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/library_tests/multivariable_regression/multivariable_regression_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/library_tests/pandas_covariance/pandas_covariance_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/library_tests/pandas_covariance/pandas_covariance_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/library_tests/structure_tests/data_frames/data_frames_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/library_tests/structure_tests/data_frames/data_frames_test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_template/test_template.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_template/test_template.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,13 +55,14 @@
     &quot;Python.client2a_all.executor&quot;: &quot;Run&quot;,
     &quot;Python.client3 (1).executor&quot;: &quot;Run&quot;,
     &quot;Python.client3.executor&quot;: &quot;Run&quot;,
+    &quot;Python.export_datasets.executor&quot;: &quot;Run&quot;,
     &quot;Python.grpc_agg_server.executor&quot;: &quot;Run&quot;,
     &quot;Python.server (1).executor&quot;: &quot;Run&quot;,
     &quot;Python.server.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;ChangingArchitecture3&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Coding/Flower&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;&lt;unknown&gt;&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Coding/MiniMip&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -112,20 +74,20 @@
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Coding\FederatedAggregator\data" />
       <recent name="D:\Coding\FederatedAggregator\experiments\pearson_correlation" />
       <recent name="D:\Coding\FederatedAggregator\experiments\k_means" />
       <recent name="D:\Coding\FederatedAggregator\tests\help_datasets" />
       <recent name="D:\Coding\FederatedAggregator\tests\library_tests" />
-      <recent name="D:\Coding\FederatedAggregator\library\stats" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="D:\Coding\FederatedAggregator\experiments\logistic_regression" />
       <recent name="D:\Coding\FederatedAggregator\tests\library_tests\k_means2" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.client3">
-    <configuration name="client1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="FederatedAggregator" />
+  <component name="RunManager" selected="Python.client3 (1)">
+    <configuration name="client1 (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="MiniMip" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -133,12 +95,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/experiments/k_means" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/experiments/logistic_regression" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/experiments/k_means/client1.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/experiments/logistic_regression/client1.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -147,8 +109,8 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="client2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="FederatedAggregator" />
+    <configuration name="client2 (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="MiniMip" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -156,12 +118,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/experiments/k_means" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/experiments/logistic_regression" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/experiments/k_means/client2.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/experiments/logistic_regression/client2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -171,7 +133,7 @@
       <method v="2" />
     </configuration>
     <configuration name="client3 (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="FederatedAggregator" />
+      <module name="MiniMip" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -179,12 +141,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/experiments/pearson_correlation" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/experiments/logistic_regression" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/experiments/pearson_correlation/client3.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/experiments/logistic_regression/client3.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -193,8 +155,8 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="client3" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="FederatedAggregator" />
+    <configuration name="export_datasets" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="MiniMip" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -202,12 +164,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/experiments/k_means" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/experiments" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/experiments/k_means/client3.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/experiments/export_datasets.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -216,8 +178,8 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="server" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="FederatedAggregator" />
+    <configuration name="server (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="MiniMip" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -225,12 +187,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/experiments/k_means" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/experiments/logistic_regression" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/experiments/k_means/server.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/experiments/logistic_regression/server.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -241,11 +203,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.client3" />
-        <item itemvalue="Python.client2" />
-        <item itemvalue="Python.client1" />
-        <item itemvalue="Python.server" />
         <item itemvalue="Python.client3 (1)" />
+        <item itemvalue="Python.client2 (1)" />
+        <item itemvalue="Python.client1 (1)" />
+        <item itemvalue="Python.server (1)" />
+        <item itemvalue="Python.export_datasets" />
       </list>
     </recent_temporary>
   </component>
@@ -278,7 +240,13 @@
       <workItem from="1753940548592" duration="2396000" />
       <workItem from="1753943837382" duration="58000" />
       <workItem from="1753946459262" duration="1114000" />
-      <workItem from="1753952047319" duration="5186000" />
+      <workItem from="1753952047319" duration="7654000" />
+      <workItem from="1753962232958" duration="445000" />
+      <workItem from="1753962689681" duration="49000" />
+      <workItem from="1753962757490" duration="60000" />
+      <workItem from="1753963451064" duration="565000" />
+      <workItem from="1753964379703" duration="1328000" />
+      <workItem from="1753966065280" duration="447000" />
     </task>
     <servers />
   </component>
@@ -287,8 +255,12 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/FederatedAggregator$aggregation_server.coverage" NAME="aggregation_server Coverage Results" MODIFIED="1753838553905" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/system/server" />
+    <SUITE FILE_PATH="coverage/MiniMip$client2__1_.coverage" NAME="client2 (1) Coverage Results" MODIFIED="1753966161437" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/logistic_regression" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client2a_all.coverage" NAME="client2a_all Coverage Results" MODIFIED="1753942797353" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/library_tests" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client1__1_.coverage" NAME="client1 (1) Coverage Results" MODIFIED="1753956469631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/pearson_correlation" />
+    <SUITE FILE_PATH="coverage/MiniMip$export_datasets.coverage" NAME="export_datasets Coverage Results" MODIFIED="1753965610613" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments" />
+    <SUITE FILE_PATH="coverage/MiniMip$client1__1_.coverage" NAME="client1 (1) Coverage Results" MODIFIED="1753966159055" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/logistic_regression" />
+    <SUITE FILE_PATH="coverage/MiniMip$server__1_.coverage" NAME="server (1) Coverage Results" MODIFIED="1753966154879" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/logistic_regression" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$grpc_agg_server.coverage" NAME="grpc_agg_server Coverage Results" MODIFIED="1753942787558" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/system/server" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client1.coverage" NAME="client1 Coverage Results" MODIFIED="1753956924988" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/k_means" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client1_kmeans.coverage" NAME="client1_kmeans Coverage Results" MODIFIED="1753870315304" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/library_tests/k_means2" />
@@ -299,6 +271,7 @@
     <SUITE FILE_PATH="coverage/FederatedAggregator$server__1_.coverage" NAME="server (1) Coverage Results" MODIFIED="1753956466295" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/pearson_correlation" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client3.coverage" NAME="client3 Coverage Results" MODIFIED="1753956929475" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/k_means" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client2__1_.coverage" NAME="client2 (1) Coverage Results" MODIFIED="1753956471329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/pearson_correlation" />
+    <SUITE FILE_PATH="coverage/MiniMip$client3__1_.coverage" NAME="client3 (1) Coverage Results" MODIFIED="1753966163698" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/logistic_regression" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client3__1_.coverage" NAME="client3 (1) Coverage Results" MODIFIED="1753956473014" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/pearson_correlation" />
   </component>
 </project>

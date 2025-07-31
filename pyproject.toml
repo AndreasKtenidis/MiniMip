@@ -5,7 +5,7 @@ description = ""
 authors = ["thoubou <thoubou@gmail.com>"]
 readme = "README.md"
 packages = [
-    { include = "system" },  # Add your project folder here
+    { include = "mini_mip_system" },  # Add your project folder here
 ]
 
 [tool.poetry.dependencies]
