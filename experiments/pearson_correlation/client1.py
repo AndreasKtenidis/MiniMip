@@ -2,7 +2,7 @@ from sklearn.datasets import make_classification
 
 from library.stat_models.logistic_regression_saga_solver import FederatedLogisticRegressionClientSaSo
 from library.stats.bivariate_statistics import PearsonCorrelation
-from system.client.grpc_agg_client import GRPCClient
+from mini_mip_system.client.grpc_agg_client import GRPCClient
 from server import available_clients
 import time
 

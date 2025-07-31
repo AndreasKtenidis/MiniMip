@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 
 from library.templates.statistical_model import StatisticalModel
-from system.client.grpc_agg_client import AggregationClient
+from mini_mip_system.client.grpc_agg_client import AggregationClient
 
 
 class FederatedLogisticRegressionClientSaSo(StatisticalModel):

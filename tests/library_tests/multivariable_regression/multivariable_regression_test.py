@@ -15,7 +15,7 @@ from sklearn.linear_model import LinearRegression
 from library.stat_models.linear_regression_ols import FedOLS
 
 
-from system.client.grpc_agg_client import GRPCClient
+from mini_mip_system.client.grpc_agg_client import GRPCClient
 
 from tests.help_datasets.diabetes import DiabetesDiseaseDataset
 

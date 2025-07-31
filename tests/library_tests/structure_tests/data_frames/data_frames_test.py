@@ -2,7 +2,7 @@ import pandas as pd
 
 from tests.help_datasets.dummy_dataset import DummyDataset
 from library.templates.partitioned_table import PartitionedPandasTable
-from system.client.aggregation_client import PandasAggClient
+from mini_mip_system.client.aggregation_client import PandasAggClient
 from tests.test_template.test_template import FederationTestTemplate
 
 

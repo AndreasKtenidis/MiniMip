@@ -3,7 +3,7 @@ from sklearn.linear_model import LogisticRegression
 from typing import Optional, Tuple
 from dataclasses import dataclass
 
-from system.client.aggregation_client import AggregationClient, NumpyAggClient
+from mini_mip_system.client.aggregation_client import AggregationClient, NumpyAggClient
 from library.templates.statistical_function import StatisticalFunction
 
 

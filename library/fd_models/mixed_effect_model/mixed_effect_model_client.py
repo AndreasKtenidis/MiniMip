@@ -1,4 +1,4 @@
-from system.client.grpc_agg_client import GRPCClient
+from mini_mip_system.client.grpc_agg_client import GRPCClient
 import pandas as pd
 from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
 from library.fd_models.mixed_effect_model.mixed_effect_model import RandomEffects

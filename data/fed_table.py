@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-from system.client.aggregation_client import AggregationClient
+from mini_mip_system.client.aggregation_client import AggregationClient
 
 
 class FedTable(ABC):

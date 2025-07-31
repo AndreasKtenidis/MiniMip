@@ -44,7 +44,7 @@ import numpy as np
 from sklearn import metrics
 from sklearn.utils.validation import check_X_y
 from library.stat_models.olr_helper._minimize import minimize
-from system.client.aggregation_client import AggregationClient
+from mini_mip_system.client.aggregation_client import AggregationClient
 
 
 class FedOrdinalLogisticRegression(StatisticalModel):

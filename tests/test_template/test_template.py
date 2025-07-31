@@ -1,5 +1,5 @@
 from library.templates.partitioned_table import PartitionedPandasTable
-from system.client.grpc_agg_client import GRPCClient
+from mini_mip_system.client.grpc_agg_client import GRPCClient
 from abc import ABC, abstractmethod
 
 class FederationTestTemplate(ABC):

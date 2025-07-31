@@ -1,8 +1,8 @@
 import numpy as np
 from typing import Tuple
 
-from pythonProject.FedAvg6.system.client.aggregation_client import AggregationClient
-from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
+from mini_mip_system.client.aggregation_client import AggregationClient
+from library.templates.statistical_function import StatisticalFunction
 
 
 class KMeans(StatisticalFunction):

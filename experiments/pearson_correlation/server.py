@@ -1,4 +1,4 @@
-from system.server.grpc_agg_server import serve
+from mini_mip_system.server.grpc_agg_server import serve
 import asyncio
 
 available_clients=3

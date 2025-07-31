@@ -1,8 +1,7 @@
 
 from abc import ABC,abstractmethod
 import pandas as pd
-from system.client.aggregation_client import NumpyAggClient
-import numpy as np
+
 
 class PartitionedPandasTable(ABC):
 

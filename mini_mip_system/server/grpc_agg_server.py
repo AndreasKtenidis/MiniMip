@@ -1,7 +1,7 @@
 import grpc
-import system._grpc.aggregator_pb2 as pb2
-import system._grpc.aggregator_pb2_grpc as pb2_grpc
-from system.server.aggregation_server import NumpyAggregationServer
+import mini_mip_system._grpc.aggregator_pb2 as pb2
+import mini_mip_system._grpc.aggregator_pb2_grpc as pb2_grpc
+from mini_mip_system.server.aggregation_server import NumpyAggregationServer
 from constants import AGG
 import constants
 import asyncio  # Import asyncio to use asyncio.sleep

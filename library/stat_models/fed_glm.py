@@ -1,6 +1,6 @@
 from statsmodels.api import GLM, families
 
-from system.client.aggregation_client import AggregationClient
+from mini_mip_system.client.aggregation_client import AggregationClient
 from library.templates.statistical_model import StatisticalModel
 import numpy as np
 

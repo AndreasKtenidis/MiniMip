@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 from torchvision import datasets
 from torch.utils.data import DataLoader
 
-from system.client.grpc_agg_client import GRPCClient
+from mini_mip_system.client.grpc_agg_client import GRPCClient
 from library.templates.statistical_function import StatisticalFunction
 
 import numpy as np

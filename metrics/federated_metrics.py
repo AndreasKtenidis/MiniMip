@@ -1,5 +1,5 @@
 import numpy as np
-from system.client.aggregation_client import AggregationClient
+from mini_mip_system.client.aggregation_client import AggregationClient
 
 class LogisticRegressionFedMetrics:
 

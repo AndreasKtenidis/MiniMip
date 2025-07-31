@@ -1,7 +1,7 @@
 import numpy as np
 from typing import Tuple
 
-from system.client.aggregation_client import AggregationClient
+from mini_mip_system.client.aggregation_client import AggregationClient
 from library.templates.statistical_function import StatisticalFunction
 
 
@@ -34,8 +34,8 @@ class KMeansRand(StatisticalFunction):
             """Generate random centroids and federate a global initialization."""
             n_features = X.shape[1]
             np.random.seed(42)
-            local_centroids = np.random.uniform(low=-1.0, high=1.0, size=(k, n_features))
-            return local_centroids
+            self.centroids = np.random.uniform(low=-1.0, high=1.0, size=(k, n_features))
+
 
 
     def compute(self, x: np.ndarray, k: int):
@@ -43,7 +43,7 @@ class KMeansRand(StatisticalFunction):
         """Perform federated K-means clustering."""
         max_iters: int = 10
         tol: float = 1e-4
-        self.centroids = self.initialize_centroids(x, k)
+
 
         for _ in range(max_iters):
             assignments = self.assign_clusters(x, self.centroids)

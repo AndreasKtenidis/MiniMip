@@ -1,4 +1,3 @@
-from sklearn.datasets import load_diabetes
 import pandas as pd
 from library.templates.partitioned_table import PartitionedPandasTable
 from sklearn.datasets import make_blobs
