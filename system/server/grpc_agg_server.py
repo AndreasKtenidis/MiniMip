@@ -1,13 +1,14 @@
 import grpc
-import pythonProject.FedAvg6.system._grpc.aggregator_pb2 as pb2
-import pythonProject.FedAvg6.system._grpc.aggregator_pb2_grpc as pb2_grpc
-from pythonProject.FedAvg6.system.server.aggregation_server import NumpyAggregationServer
-from pythonProject.FedAvg6.constants import AGG, client_count
+import system._grpc.aggregator_pb2 as pb2
+import system._grpc.aggregator_pb2_grpc as pb2_grpc
+from system.server.aggregation_server import NumpyAggregationServer
+from constants import AGG
+import constants
 import asyncio  # Import asyncio to use asyncio.sleep
 import traceback
 
 class GRPCServer(pb2_grpc.AggregatorServicer, NumpyAggregationServer):
-    def __init__(self,available_clients:int):
+    def __init__(self,*,available_clients:int):
         self.operations = {}
         self.answers = {}
         self.lock = asyncio.Lock()  # Async lock for thread safety
@@ -109,13 +110,13 @@ class GRPCServer(pb2_grpc.AggregatorServicer, NumpyAggregationServer):
         print(f"Sending response: {response}")
         return response
 
-async def serve():
+async def serve(*,available_clients):
     server = grpc.aio.server()
-    pb2_grpc.add_AggregatorServicer_to_server(GRPCServer(client_count), server)
+    pb2_grpc.add_AggregatorServicer_to_server(GRPCServer(available_clients=available_clients), server)
     server.add_insecure_port("[::]:50051")
     print("gRPC Server running on port 50051...")
     await server.start()
     await server.wait_for_termination()
 
 if __name__ == "__main__":
-    asyncio.run(serve())
+    asyncio.run(serve(available_clients=constants.client_count))

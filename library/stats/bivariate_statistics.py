@@ -17,9 +17,9 @@ class Covariance(StatisticalFunction):
 class PearsonCorrelation(StatisticalFunction):
     def compute(self, x: np.array, y: np.array):
         aggregator = self.get_numpy_aggregator()
-        cov = Covariance(self.client).compute(x, y)
         avg_x = aggregator.global_avg(x)
         avg_y = aggregator.global_avg(y)
+        cov = aggregator.global_avg(((x - avg_x) * (y - avg_y)))
         stddev_x = math.sqrt(aggregator.global_avg(((x - avg_x) ** 2)))
         stddev_y = math.sqrt(aggregator.global_avg(((y - avg_y) ** 2)))
         return cov / (stddev_x * stddev_y) if stddev_x > 0 and stddev_y > 0 else 0

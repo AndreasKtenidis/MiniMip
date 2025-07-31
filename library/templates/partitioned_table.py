@@ -8,12 +8,12 @@ class PartitionedPandasTable(ABC):
 
     output = dict()
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         # Initialize the data only once
-        self.dataset = self.get_dataset()
+        self.dataset = self.get_dataset(*args, **kwargs)
 
     @abstractmethod
-    def get_dataset(self)-> pd.DataFrame:
+    def get_dataset(self, *args, **kwargs) -> pd.DataFrame:
         pass
 
     def get_local_dataset(self,partition_id, num_partitions) -> pd.DataFrame:
