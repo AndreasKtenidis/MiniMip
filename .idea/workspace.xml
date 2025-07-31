@@ -42,36 +42,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.aggregation_server.executor&quot;: &quot;Run&quot;,
-    &quot;Python.client1 (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.client1.executor&quot;: &quot;Run&quot;,
-    &quot;Python.client1_kmeans.executor&quot;: &quot;Run&quot;,
-    &quot;Python.client1a_all.executor&quot;: &quot;Run&quot;,
-    &quot;Python.client2 (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.client2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.client2_kmeans.executor&quot;: &quot;Run&quot;,
-    &quot;Python.client2a_all.executor&quot;: &quot;Run&quot;,
-    &quot;Python.client3 (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.client3.executor&quot;: &quot;Run&quot;,
-    &quot;Python.export_datasets.executor&quot;: &quot;Run&quot;,
-    &quot;Python.grpc_agg_server.executor&quot;: &quot;Run&quot;,
-    &quot;Python.server (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.server.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;&lt;unknown&gt;&quot;,
-    &quot;last_opened_file_path&quot;: &quot;D:/Coding/MiniMip&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.aggregation_server.executor": "Run",
+    "Python.client1 (1).executor": "Run",
+    "Python.client1.executor": "Run",
+    "Python.client1_kmeans.executor": "Run",
+    "Python.client1a_all.executor": "Run",
+    "Python.client2 (1).executor": "Run",
+    "Python.client2.executor": "Run",
+    "Python.client2_kmeans.executor": "Run",
+    "Python.client2a_all.executor": "Run",
+    "Python.client3 (1).executor": "Run",
+    "Python.client3.executor": "Run",
+    "Python.export_datasets.executor": "Run",
+    "Python.grpc_agg_server.executor": "Run",
+    "Python.server (1).executor": "Run",
+    "Python.server.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "ChangingArchitecture3",
+    "last_opened_file_path": "D:/Coding/MiniMip",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Coding\FederatedAggregator\data" />
@@ -246,7 +246,7 @@
       <workItem from="1753962757490" duration="60000" />
       <workItem from="1753963451064" duration="565000" />
       <workItem from="1753964379703" duration="1328000" />
-      <workItem from="1753966065280" duration="447000" />
+      <workItem from="1753966065280" duration="1338000" />
     </task>
     <servers />
   </component>
