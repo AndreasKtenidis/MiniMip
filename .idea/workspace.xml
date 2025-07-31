@@ -4,30 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="67cd7056-33f2-4eb5-90c7-58a233b20f5c" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/experiments/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/k_means/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/k_means/client1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/k_means/client2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/k_means/client3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/k_means/server.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/logistic_regression/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/logistic_regression/client1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/logistic_regression/client2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/logistic_regression/client3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/logistic_regression/server.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/pearson_correlation/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/pearson_correlation/client1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/pearson_correlation/client2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/pearson_correlation/client3.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/experiments/pearson_correlation/server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/experiment_datasets/blobs_dataset.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/stats/bivariate_statistics.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/stats/bivariate_statistics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/library/templates/partitioned_table.py" beforeDir="false" afterPath="$PROJECT_DIR$/library/templates/partitioned_table.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/system/server/grpc_agg_server.py" beforeDir="false" afterPath="$PROJECT_DIR$/system/server/grpc_agg_server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/help_datasets/blob.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/help_datasets/blob.py" afterDir="false" />
-    </list>
+    <list default="true" id="67cd7056-33f2-4eb5-90c7-58a233b20f5c" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -69,9 +46,11 @@
     "Python.client1.executor": "Run",
     "Python.client1_kmeans.executor": "Run",
     "Python.client1a_all.executor": "Run",
+    "Python.client2 (1).executor": "Run",
     "Python.client2.executor": "Run",
     "Python.client2_kmeans.executor": "Run",
     "Python.client2a_all.executor": "Run",
+    "Python.client3 (1).executor": "Run",
     "Python.client3.executor": "Run",
     "Python.grpc_agg_server.executor": "Run",
     "Python.server (1).executor": "Run",
@@ -253,7 +232,7 @@
       <workItem from="1753869771701" duration="3863000" />
       <workItem from="1753880252905" duration="214000" />
       <workItem from="1753938546457" duration="1908000" />
-      <workItem from="1753940548592" duration="2166000" />
+      <workItem from="1753940548592" duration="2396000" />
     </task>
     <servers />
   </component>
@@ -262,16 +241,18 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/FederatedAggregator$aggregation_server.coverage" NAME="aggregation_server Coverage Results" MODIFIED="1753838553905" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/system/server" />
-    <SUITE FILE_PATH="coverage/FederatedAggregator$client2a_all.coverage" NAME="client2a_all Coverage Results" MODIFIED="1753941557177" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/library_tests" />
-    <SUITE FILE_PATH="coverage/FederatedAggregator$client1__1_.coverage" NAME="client1 (1) Coverage Results" MODIFIED="1753942687334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/pearson_correlation" />
-    <SUITE FILE_PATH="coverage/FederatedAggregator$grpc_agg_server.coverage" NAME="grpc_agg_server Coverage Results" MODIFIED="1753941549848" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/system/server" />
+    <SUITE FILE_PATH="coverage/FederatedAggregator$client1__1_.coverage" NAME="client1 (1) Coverage Results" MODIFIED="1753942735992" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/pearson_correlation" />
+    <SUITE FILE_PATH="coverage/FederatedAggregator$client2a_all.coverage" NAME="client2a_all Coverage Results" MODIFIED="1753942797353" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/library_tests" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client1.coverage" NAME="client1 Coverage Results" MODIFIED="1753942110346" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/k_means" />
+    <SUITE FILE_PATH="coverage/FederatedAggregator$grpc_agg_server.coverage" NAME="grpc_agg_server Coverage Results" MODIFIED="1753942787558" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/system/server" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client1_kmeans.coverage" NAME="client1_kmeans Coverage Results" MODIFIED="1753870315304" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/library_tests/k_means2" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client2.coverage" NAME="client2 Coverage Results" MODIFIED="1753942117773" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/k_means" />
-    <SUITE FILE_PATH="coverage/FederatedAggregator$client1a_all.coverage" NAME="client1a_all Coverage Results" MODIFIED="1753941553771" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/library_tests" />
-    <SUITE FILE_PATH="coverage/FederatedAggregator$server.coverage" NAME="server Coverage Results" MODIFIED="1753940365707" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/logistic_regression" />
+    <SUITE FILE_PATH="coverage/FederatedAggregator$client1a_all.coverage" NAME="client1a_all Coverage Results" MODIFIED="1753942794871" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/library_tests" />
+    <SUITE FILE_PATH="coverage/FederatedAggregator$server.coverage" NAME="server Coverage Results" MODIFIED="1753942732215" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/pearson_correlation" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client2_kmeans.coverage" NAME="client2_kmeans Coverage Results" MODIFIED="1753870317045" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests/library_tests/k_means2" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$server__1_.coverage" NAME="server (1) Coverage Results" MODIFIED="1753942104675" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/k_means" />
     <SUITE FILE_PATH="coverage/FederatedAggregator$client3.coverage" NAME="client3 Coverage Results" MODIFIED="1753942120238" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/k_means" />
+    <SUITE FILE_PATH="coverage/FederatedAggregator$client2__1_.coverage" NAME="client2 (1) Coverage Results" MODIFIED="1753942737834" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/pearson_correlation" />
+    <SUITE FILE_PATH="coverage/FederatedAggregator$client3__1_.coverage" NAME="client3 (1) Coverage Results" MODIFIED="1753942739787" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/experiments/pearson_correlation" />
   </component>
 </project>
