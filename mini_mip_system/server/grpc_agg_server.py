@@ -24,7 +24,7 @@ class GRPCServer(pb2_grpc.AggregatorServicer, NumpyAggregationServer):
                 self.operations[triple].extend([list(request.values)])
         # Simulate async processing
         while len(self.operations[triple]) != self.available_clients:
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.005)
 
         # Now compute the sum outside the lock
         try:
@@ -56,7 +56,7 @@ class GRPCServer(pb2_grpc.AggregatorServicer, NumpyAggregationServer):
                 self.operations[triple].extend([list(request.values)])
         # Simulate async processing
         while len(self.operations[triple]) != self.available_clients:
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.005)
 
         # Now compute the sum outside the lock
         try:
@@ -88,7 +88,7 @@ class GRPCServer(pb2_grpc.AggregatorServicer, NumpyAggregationServer):
                 self.operations[triple].extend([list(request.values)])
         # Simulate async processing
         while len(self.operations[triple]) != self.available_clients:
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.005)
 
         # Now compute the sum outside the lock
         try:

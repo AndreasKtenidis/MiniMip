@@ -43,7 +43,7 @@ class KMeansRand(StatisticalFunction):
         """Perform federated K-means clustering."""
         max_iters: int = 10
         tol: float = 1e-4
-
+        self.initialize_centroids(x,k)
 
         for _ in range(max_iters):
             assignments = self.assign_clusters(x, self.centroids)
