@@ -1,5 +1,7 @@
-from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
+
 import numpy as np
+
+from library.templates.statistical_function import StatisticalFunction
 
 
 class Dummy(StatisticalFunction):

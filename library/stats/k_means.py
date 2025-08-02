@@ -74,8 +74,7 @@ import pandas as pd
 import numpy as np
 from typing import Tuple, Union
 
-from pythonProject.FedAvg6.system.client.aggregation_client import AggregationClient
-from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
+
 
 class KMeansPandas(StatisticalFunction):
 

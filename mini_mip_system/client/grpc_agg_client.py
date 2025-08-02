@@ -9,12 +9,13 @@ import mini_mip_system._grpc.aggregator_pb2 as pb2
 import mini_mip_system._grpc.aggregator_pb2_grpc as pb2_grpc
 from data.experiment_datasets.pandas_datasets.titanic_dataset import TitanicPandasDataset
 from library.group_comparisons.fisher_exact import FisherExact
+from library.templates.statistical_function import StatisticalFunction
 from mini_mip_system.client.aggregation_client import AggregationClient
 # from data.experiment_datasets.blobs_dataset import BlobDataset
 # from data.experiment_datasets.calibration_dataset import CalibrationDataset
 # from data.experiment_datasets.pandas_datasets.diabetes_dataset import DiabetesDataset
 # from data.experiment_datasets.pandas_datasets.federated_dataset import FederatedPandasDataset
-from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
+
 
 import random
 import inspect
@@ -23,13 +24,13 @@ import inspect
 
 class GRPCClient(AggregationClient):
 
-    def __init__(self,client_id,client_count2,*,seed=1234,operation_id=0,aggregation_server="localhost:50051"):
+    def __init__(self, client_id, client_count, *, seed=1234, operation_id=0, aggregation_server="localhost:50051"):
         self.channel = grpc.insecure_channel(aggregation_server)
         self.stub = pb2_grpc.AggregatorStub(self.channel)
         self.agg_round = 0
         self.operation_id = operation_id
         self.client_id = client_id
-        self.client_count = client_count2
+        self.client_count = client_count
         self.random = random.Random(seed)
 
 

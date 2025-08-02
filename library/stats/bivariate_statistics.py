@@ -1,8 +1,9 @@
-from pythonProject.FedAvg6 import data
-from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
+
+
 import math
 import numpy as np
 from library.stats.univariate_statistics import StandardDeviation
+from library.templates.statistical_function import StatisticalFunction
 
 
 class Covariance(StatisticalFunction):

@@ -1,5 +1,7 @@
-from pythonProject.FedAvg6.library.templates.statistical_function import StatisticalFunction
+
 import pandas as pd
+
+from library.templates.statistical_function import StatisticalFunction
 
 
 class CrossTabTable(StatisticalFunction):

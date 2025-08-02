@@ -1,6 +1,9 @@
-from pythonProject.FedAvg6.data.abstract_table import AbstractTable
+
 from abc import ABC,abstractmethod
 import pandas as pd
+
+from data.abstract_table import AbstractTable
+
 
 class FederatedPandasDataset(AbstractTable,ABC):
     def __init__(self,partition_id, num_partitions):
