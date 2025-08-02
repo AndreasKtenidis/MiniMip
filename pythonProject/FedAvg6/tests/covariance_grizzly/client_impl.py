@@ -10,12 +10,15 @@ from pythonProject.FedAvg6.system.client.aggregation_client import PandasAggClie
 
 # Grizzly version: returns a Grizzly DataFrame for the client's partition
 import pythonProject.grizzly as grizzly
+from pythonProject.FedAvg6.tests.covariance_grizzly.db_setup import base_dir
 from pythonProject.grizzly.sqlgenerator import SQLGenerator
 from pythonProject.grizzly.relationaldbexecutor import RelationalExecutor
 
 class TmpDataset:
     def __init__(self, partition_id, num_partitions):
-        db_path = os.path.join(os.path.dirname(__file__), f'../../data/grizzly_pandas_test/covariance_client{partition_id+1}.duckdb')
+        db_path = (base_dir /f"covariance_client{partition_id+1}.duckdb").resolve()
+        print("db_path", db_path)
+
         self.con = duckdb.connect(database=db_path, read_only=False)
         gen = SQLGenerator("duckdb")
         executor = RelationalExecutor(self.con, gen)

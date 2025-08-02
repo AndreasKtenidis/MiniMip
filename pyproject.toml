@@ -20,6 +20,9 @@ duckdb = "^1.2.1"
 scikit-learn = "^1.6.1"
 tdigest = "^0.5.2.2"
 crick = "^0.0.8"
+antlr4-python3-runtime = "4.9.3"
+psycopg2-binary = "^2.9.10"
+
 
 
 [build-system]

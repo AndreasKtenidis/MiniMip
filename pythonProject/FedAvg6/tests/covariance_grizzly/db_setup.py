@@ -12,6 +12,14 @@ import duckdb
 import numpy as np
 import pandas as pd
 
+base_dir = (
+        Path(__file__).resolve().parent
+        / ".."
+        / ".."
+        / ".."
+        / "data"
+        / "grizzly_pandas_test"
+    )
 def ensure_dir(path: Path) -> None:
     """Create directory path if it doesn’t exist (including parents)."""
     path.mkdir(parents=True, exist_ok=True)
@@ -72,13 +80,7 @@ def main() -> None:
     args = parser.parse_args()
 
     # Target directory: pythonProject/FedAvg6/data/grizzly_pandas_test
-    base_dir = (
-        Path(__file__).resolve().parent
-        / ".."
-        / ".."
-        / "data"
-        / "grizzly_pandas_test"
-    )
+
     ensure_dir(base_dir)
 
     csv_file = base_dir / "covariance_100mb.csv"
