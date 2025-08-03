@@ -5,7 +5,7 @@ import signal
 
 def launch_server():
     return subprocess.Popen(
-        ["python", "-m", "pythonProject.FedAvg6.system.server.grpc_agg_server"],
+        ["python", "-m", "mini_mip_system.server.grpc_agg_server"],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         preexec_fn=os.setsid  # Use a new session to allow killing the process group
@@ -41,8 +41,8 @@ def main():
     server_proc = launch_server()
     wait_for_port(50051)  # Ensure server is ready before starting clients
     pandas_time = run_clients(
-        "pythonProject.FedAvg6.tests.covariance_pandas.client1",
-        "pythonProject.FedAvg6.tests.covariance_pandas.client2"
+        "tests.pandas_pearson.client1",
+        "tests.pandas_pearson.client2"
     )
     terminate_server(server_proc)
     print(f"Pandas clients finished in {pandas_time:.2f} seconds\n")
@@ -51,8 +51,8 @@ def main():
     server_proc = launch_server()
     wait_for_port(50051)  # Ensure server is ready before starting clients
     grizzly_time = run_clients(
-        "pythonProject.FedAvg6.tests.covariance_grizzly.client1",
-        "pythonProject.FedAvg6.tests.covariance_grizzly.client2"
+        "tests.pandas_pearson.client1",
+        "tests.pandas_pearson.client2"
     )
     terminate_server(server_proc)
     print(f"Grizzly clients finished in {grizzly_time:.2f} seconds\n")

@@ -24,6 +24,9 @@ class PartitionedPandasTable(ABC):
         local_dataset = self.dataset.iloc[start:end].copy()
         return local_dataset
 
+    def get_global_dataset(self):
+        return self.dataset
+
 
 
 

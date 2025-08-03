@@ -8,7 +8,7 @@ class FederationTestTemplate(ABC):
         self.client:GRPCClient = GRPCClient(client_id, client_count, operation_id=operation_id,aggregation_server=aggregation_server)
         # Creating the federated and the centralized versions of the same dataset
         local_dataset = dataset.get_local_dataset(client_id, client_count)
-        global_dataset = dataset.get_dataset()
+        global_dataset = dataset.get_global_dataset()
         # Executing computations in federated and centralized mode
         local_output = self.federated_computation(local_dataset)
         global_output = self.centralized_computation(global_dataset)

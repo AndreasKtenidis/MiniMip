@@ -5,18 +5,18 @@ import signal
 import matplotlib.pyplot as plt
 import numpy as np
 
-DATA_GEN_SCRIPT = "pythonProject/FedAvg6/tests/covariance_grizzly/db_setup.py"
+DATA_GEN_SCRIPT = "/tests/pandas_pearson/db_setup.py"
 PANDAS_CLIENTS = [
-    "pythonProject.FedAvg6.tests.covariance_pandas.client1",
-    "pythonProject.FedAvg6.tests.covariance_pandas.client2"
+    "tests.pandas_pearson.client1",
+    "tests.pandas_pearson.client2"
 ]
 GRIZZLY_CLIENTS = [
-    "pythonProject.FedAvg6.tests.covariance_grizzly.client1",
-    "pythonProject.FedAvg6.tests.covariance_grizzly.client2"
+    "tests.pandas_pearson.client1",
+    "tests.pandas_pearson.client2"
 ]
-SERVER_SCRIPT = "pythonProject.FedAvg6.system.server.grpc_agg_server"
-CSV_PATH = "pythonProject/FedAvg6/data/grizzly_pandas_test/covariance_100mb.csv"
-DUCKDB_PATH = "pythonProject/FedAvg6/data/grizzly_pandas_test/covariance_client1.duckdb"
+SERVER_SCRIPT = "mini_mip_system.server.grpc_agg_server"
+CSV_PATH = "/data/grizzly_pandas_test/covariance_100mb.csv"
+DUCKDB_PATH = "/data/grizzly_pandas_test/covariance_client1.duckdb"
 
 def launch_server():
     return subprocess.Popen(

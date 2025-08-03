@@ -1,4 +1,4 @@
-from mini_mip_system.client.aggregation_client import AggregationClient, NumpyAggClient, PandasAggClient
+from mini_mip_system.client.aggregation_client import AggregationClient, NumpyAggClient, PandasAggClient, GrizzlyAggClient
 from abc import ABC, abstractmethod
 
 

@@ -8,9 +8,9 @@ from library.stats.bivariate_statistics import CovarianceGrizzly, PearsonCorrela
     LeastSquaresRegressionGrizzly
 from mini_mip_system.client.aggregation_client import PandasAggClient
 from mini_mip_system.client.grpc_agg_client import GRPCClient
-from pythonProject.FedAvg6.tests.covariance_grizzly.db_setup import base_dir
 from pythonProject.grizzly.sqlgenerator import SQLGenerator
 from pythonProject.grizzly.relationaldbexecutor import RelationalExecutor
+from tests.library_tests.grizzly_pearson.db_setup import base_dir
 
 
 class TmpDataset:

@@ -79,7 +79,7 @@ def main() -> None:
     parser.add_argument("--size-mb", type=int, default=100, help="Target CSV size in megabytes.")
     args = parser.parse_args()
 
-    # Target directory: pythonProject/FedAvg6/data/grizzly_pandas_test
+    # Target directory: /data/grizzly_pandas_test
 
     ensure_dir(base_dir)
 
