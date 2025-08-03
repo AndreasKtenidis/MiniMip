@@ -28,3 +28,7 @@ class FederationTestTemplate(ABC):
     @abstractmethod
     def compare(self, federated_output, global_output):
         pass
+
+
+
+
