@@ -3,13 +3,13 @@ import duckdb
 
 
 # Grizzly version: returns a Grizzly DataFrame for the client's partition
-import pythonProject.grizzly as grizzly
+import grizzly as grizzly
 from library.stats.bivariate_statistics import CovarianceGrizzly, PearsonCorrelationGrizzly, \
     LeastSquaresRegressionGrizzly
 from mini_mip_system.client.aggregation_client import PandasAggClient
 from mini_mip_system.client.grpc_agg_client import GRPCClient
-from pythonProject.grizzly.sqlgenerator import SQLGenerator
-from pythonProject.grizzly.relationaldbexecutor import RelationalExecutor
+from grizzly.sqlgenerator import SQLGenerator
+from grizzly.relationaldbexecutor import RelationalExecutor
 from tests.library_tests.grizzly_pearson.db_setup import base_dir
 
 

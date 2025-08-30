@@ -1,6 +1,5 @@
 # from grizzly.generator import GrizzlyGenerator
-from unicodedata import decimal
-from pythonProject.grizzly.sqlgenerator import SQLGenerator
+from grizzly.sqlgenerator import SQLGenerator
 # Imports needed for getting the db vendor
 import sqlite3
 # import cx_Oracle

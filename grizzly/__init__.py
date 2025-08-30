@@ -1,4 +1,4 @@
-from pythonProject.grizzly.dataframes.schema import Schema, SchemaError
+from grizzly.dataframes.schema import Schema, SchemaError
 from .dataframes.frame import Table
 from .dataframes.frame import ExternalTable
 from .generator import GrizzlyGenerator

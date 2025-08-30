@@ -4,8 +4,8 @@ from antlr4 import *
 
 
 # Imports for grizzly code evaluation and execution and 
-import pythonProject.grizzly
-from pythonProject.grizzly.udfcompiler.udfcompiler_exceptions import UDFCompilerException
+import grizzly
+from grizzly.udfcompiler.udfcompiler_exceptions import UDFCompilerException
 
 if __name__ is not None and "." in __name__:
     from .Python3d3Parser import Python3d3Parser

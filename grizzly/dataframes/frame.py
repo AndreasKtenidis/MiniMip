@@ -1,11 +1,11 @@
-from pythonProject.grizzly.dataframes.schema import ColType, Schema, SchemaError
-from pythonProject.grizzly.aggregates import AggregateType
+from grizzly.dataframes.schema import ColType, Schema, SchemaError
+from grizzly.aggregates import AggregateType
 import queue
 from typing import List, Tuple, Callable
-from pythonProject.grizzly.expression import AllColumns, ArithmExpr, ArithmeticOperation, BinaryExpression, BoolExpr, Constant, Expr, ColRef, FuncCall, ComputedCol, ExpressionException, ExprTraverser, LogicExpr, BooleanOperation, SetExpr, SetOperation
-from pythonProject.grizzly.generator import GrizzlyGenerator
-from pythonProject.grizzly.expression import ModelUDF,UDF, Param, ModelType
-from pythonProject.grizzly.udfcompiler.udfcompiler_exceptions import UDFCompilerException
+from grizzly.expression import AllColumns, ArithmExpr, ArithmeticOperation, BinaryExpression, BoolExpr, Constant, Expr, ColRef, FuncCall, ComputedCol, ExpressionException, ExprTraverser, LogicExpr, BooleanOperation, SetExpr, SetOperation
+from grizzly.generator import GrizzlyGenerator
+from grizzly.expression import ModelUDF,UDF, Param, ModelType
+from grizzly.udfcompiler.udfcompiler_exceptions import UDFCompilerException
 
 
 import inspect

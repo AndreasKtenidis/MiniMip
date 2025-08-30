@@ -3,14 +3,13 @@ Usage
 -----
 python generate_covariance_data.py --num-clients 4 --size-mb 100
 """
-import pythonProject.grizzly as grizzly
+import grizzly as grizzly
 from pathlib import Path
-from pythonProject.grizzly.sqlgenerator import SQLGenerator
+from grizzly.sqlgenerator import SQLGenerator
 import duckdb
 
 from library.templates.partitioned_table import PartitionedPandasTable
-from tests.help_datasets.blob import BlobDataset
-from pythonProject.grizzly.relationaldbexecutor import RelationalExecutor
+from grizzly.relationaldbexecutor import RelationalExecutor
 
 class GrizzlyFactory:
     def __init__(self, base_dir=None):

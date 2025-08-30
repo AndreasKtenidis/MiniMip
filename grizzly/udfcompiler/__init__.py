@@ -1,10 +1,10 @@
 # Top level compiler call for grizzly connection
 import os
 from antlr4 import *
-from pythonProject.grizzly.udfcompiler.py_parser.Python3d3Lexer import Python3d3Lexer
-from pythonProject.grizzly.udfcompiler.py_parser.Python3d3Parser import Python3d3Parser
-from pythonProject.grizzly.udfcompiler.py_parser.Python3d3Visitor import Python3d3Visitor
-from pythonProject.grizzly.udfcompiler.udfcompiler_exceptions import UDFParseException
+from grizzly.udfcompiler.py_parser.Python3d3Lexer import Python3d3Lexer
+from grizzly.udfcompiler.py_parser.Python3d3Parser import Python3d3Parser
+from grizzly.udfcompiler.py_parser.Python3d3Visitor import Python3d3Visitor
+from grizzly.udfcompiler.udfcompiler_exceptions import UDFParseException
 
 def compile(input, templates, params):
     # Check if passed argument is a file or a string

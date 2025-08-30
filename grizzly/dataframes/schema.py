@@ -1,5 +1,6 @@
 from enum import Enum
-from pythonProject.grizzly.expression import AllColumns, ArithmExpr, BinaryExpression, BoolExpr, ColRef, ComputedCol, Constant, ExprTraverser, FuncCall, LogicExpr, SetExpr
+from grizzly.expression import AllColumns, ArithmExpr, BinaryExpression, BoolExpr, ColRef, ComputedCol, Constant, ExprTraverser, FuncCall, LogicExpr
+
 
 class SchemaError(Exception):
   def __init__(self, *args: object) -> None:
@@ -273,7 +274,7 @@ class Schema(object):
 
   @staticmethod
   def _inferType(col, schema = None):
-    from pythonProject.grizzly.dataframes.frame import DataFrame
+    from grizzly.dataframes.frame import DataFrame
 
     if isinstance(col, ColRef):
       # might happen when inferring type from function call

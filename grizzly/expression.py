@@ -2,6 +2,8 @@ import queue
 
 from enum import Enum
 from typing import List
+
+
 class ModelType(Enum):
   TORCH = 1
   TF    = 2
@@ -46,9 +48,8 @@ class Expr(object):
 
     if not other:
       return None
-
-    import pythonProject.grizzly.dataframes.frame
-    if isinstance(other, Expr) or isinstance(other, pythonProject.grizzly.dataframes.frame.DataFrame):
+    from grizzly.dataframes.frame import DataFrame
+    if isinstance(other, Expr) or isinstance(other, DataFrame):
       return other
 
     return Constant(other)

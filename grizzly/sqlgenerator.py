@@ -1,12 +1,12 @@
-from pythonProject.grizzly.dataframes.schema import ColType
-from pythonProject.grizzly.config import Config
-from pythonProject.grizzly.aggregates import AggregateType
-from pythonProject.grizzly.dataframes.frame import Limit, Ordering, UDF, ModelUDF, Table, ExternalTable, Projection, Filter, Join, Grouping, DataFrame, Union
-from pythonProject.grizzly.expression import AllColumns, ArithmExpr, ArithmeticOperation, BoolExpr, BooleanOperation, ComputedCol, Constant, ExpressionException, FuncCall, ColRef, LogicExpr, LogicOperation, SetExpr, SetOperation
-from pythonProject.grizzly.generator import GrizzlyGenerator
+from grizzly.dataframes.schema import ColType
+from grizzly.config import Config
+from grizzly.aggregates import AggregateType
+from grizzly.dataframes.frame import Limit, Ordering, UDF, ModelUDF, Table, ExternalTable, Projection, Filter, Join, Grouping, DataFrame, Union
+from grizzly.expression import AllColumns, ArithmExpr, ArithmeticOperation, BoolExpr, BooleanOperation, ComputedCol, Constant, ExpressionException, FuncCall, ColRef, LogicExpr, LogicOperation, SetExpr, SetOperation
+from grizzly.generator import GrizzlyGenerator
 
-import pythonProject.grizzly.udfcompiler as udfcompiler
-from pythonProject.grizzly.udfcompiler.udfcompiler_exceptions import UDFCompilerException
+import grizzly.udfcompiler as udfcompiler
+from grizzly.udfcompiler.udfcompiler_exceptions import UDFCompilerException
 
 from typing import List, Set, Tuple
 import re

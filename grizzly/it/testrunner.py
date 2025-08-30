@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 
-from numpy import string_
 import grizzly
 from grizzly.dataframes.frame import DataFrame as GrizzlyDataFrame
 from grizzly.sqlgenerator import SQLGenerator
