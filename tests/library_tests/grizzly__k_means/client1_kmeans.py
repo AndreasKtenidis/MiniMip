@@ -1,8 +1,8 @@
 import sys
 
+from tests.library_tests.grizzly__k_means.k_means import KMeansGrizzlyTest
+from tests.library_tests.k_means_rand.kmeans_test import KMeansTest
 from tests.help_datasets.blob import BlobDataset
-from tests.library_tests.grizzly_pearson2.pearson_test import PearsonTest
-from tests.library_tests.k_means_rand_Pandas.kmeans_test_pandas import KmeansPandasTest
 
 
 def main():
@@ -13,8 +13,7 @@ def main():
         aggregation_server = sys.argv[1]
         print(aggregation_server)
 
-
-    PearsonTest(0, 2,
+    KMeansGrizzlyTest(0, 2,
                            dataset=BlobDataset(),
                            operation_id=0,
                            aggregation_server=aggregation_server)

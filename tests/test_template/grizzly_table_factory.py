@@ -14,9 +14,9 @@ from grizzly.relationaldbexecutor import RelationalExecutor
 class GrizzlyFactory:
     def __init__(self, base_dir=None):
         if base_dir is None:
-            self.base_dir = (GrizzlyFactory.__find_project_root() / "data" / "grizzly_tests")
+            self._base_dir = (GrizzlyFactory.__find_project_root() / "data" / "grizzly_tests")
         else:
-            self.base_dir = base_dir
+            self._base_dir = base_dir
 
     @staticmethod
     def __find_project_root():
@@ -40,18 +40,28 @@ class GrizzlyFactory:
         # Getting naming convenrions
         class_name = type(dataset).__name__
         n_rows, n_cols = local_df.shape
-        db_path = self.base_dir / f"{class_name}"
+        db_path = self._base_dir / f"{class_name}"
         GrizzlyFactory.__ensure_dir(db_path)
         db_path = db_path/f"{n_rows}x{n_cols}_client{client_id}.duckdb"
         # Creating Connection
-        con = duckdb.connect(db_path, read_only=False)
+        conn = duckdb.connect(db_path, read_only=False)
         # Populating the Database
-        con.register("client_data", local_df)
-        con.execute(f"CREATE OR REPLACE TABLE {class_name} AS SELECT * FROM client_data")
+        conn.register("client_data", local_df)
+        conn.execute(f"CREATE OR REPLACE TABLE {class_name} AS SELECT * FROM client_data")
+        # Now alter all columns to FLOAT
+        for col in local_df.columns:
+            try:
+                conn.execute(f"""
+                ALTER TABLE {class_name} 
+                ALTER COLUMN "{col}" TYPE FLOAT
+                """)
+            except Exception as e:
+                print(f"Error converting column '{col}': {e}")
+
         # Creating the Grizzly Object
         gen = SQLGenerator("duckdb")
-        executor = RelationalExecutor(con, gen)
+        executor = RelationalExecutor(conn, gen)
         grizzly.use(executor)
-        return grizzly.read_table(f"{class_name}")
+        return conn,grizzly.read_table(f"{class_name}")
 
 
