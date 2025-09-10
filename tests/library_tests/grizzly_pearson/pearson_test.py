@@ -3,7 +3,7 @@ from mini_mip_system.client.grpc_agg_client import GRPCClient
 from tests.test_template.grizzly_test_template import GrizzlyFederationTestTemplate
 
 class PearsonTest(GrizzlyFederationTestTemplate):
-    def federated_computation(self, local_dataset):
+    def federated_computation(self,conn, local_dataset):
         pearson_value = PearsonCorrelationGrizzly(self.client).compute(local_dataset, x='x', y='y')
         return pearson_value
 
