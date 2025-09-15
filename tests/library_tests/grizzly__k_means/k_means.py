@@ -1,3 +1,5 @@
+from enum import global_str
+
 from library.templates.statistical_function import StatisticalFunction
 from tests.help_datasets.blob import BlobDataset
 from tests.test_template.grizzly_test_template import GrizzlyFederationTestTemplate
@@ -8,11 +10,9 @@ from mini_mip_system.client.aggregation_client import AggregationClient
 import matplotlib.pyplot as plt
 
 
-class KMeansTest(GrizzlyFederationTestTemplate):
+class KMeansGrizzlyTest(GrizzlyFederationTestTemplate):
     def federated_computation(self, conn, local_dataset):
         df = conn.execute("SELECT count(x)  FROM BlobDataset").fetchdf()
-        print(df)
-
 
         cols = 2
         k = 3
@@ -46,6 +46,7 @@ class KMeans(StatisticalFunction):
         self._centroids=None
         self._new_centroids = None
         self._count = None
+        self.aggregator = client.get_numpy_aggregator()
 
     def compute(self,conn, cols,k,*,max_iters=20):
         np.random.seed(42)
@@ -59,13 +60,8 @@ class KMeans(StatisticalFunction):
             self.update(k,cols)
 
     def update_cycle(self, *args):
-        print("Point:",args)
-        print("centroids:",self._centroids)
-
         distances = np.sqrt(((self._centroids - args) ** 2).sum(axis=1))
-        print(distances)
         i = distances.idxmin()
-
         self._new_centroids.iloc[i] = self._new_centroids.iloc[i]+args
         self._count.iloc[i] = self._count.iloc[i]+1
         return i
@@ -73,17 +69,14 @@ class KMeans(StatisticalFunction):
     def update(self,k,cols):
         # Avoid division by zero by replacing 0 with 1 (or handle differently)
         # Divide each row by the corresponding count
-        self._centroids = self._new_centroids.div(self._count[0], axis=0)
+        global_centroids =pd.DataFrame(self.aggregator.fed_sum(self._new_centroids.values), columns=self._new_centroids.columns)
+        global_count = pd.DataFrame(self.aggregator.fed_sum(self._count.values),columns=self._count.columns)
+
+        #
+        self._centroids = global_centroids.div(global_count[0], axis=0)
         self._new_centroids = pd.DataFrame(np.zeros((k, cols)))
         self._count = pd.DataFrame(np.zeros((k, 1)))
 
     def get_centroids(self):
         return self._centroids
 
-
-aggregation_server="localhost:50051"
-
-KMeansTest(0, 2,
-           dataset=BlobDataset(),
-           operation_id=0,
-           aggregation_server=aggregation_server)
