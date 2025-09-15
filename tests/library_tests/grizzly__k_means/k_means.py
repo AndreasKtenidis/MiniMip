@@ -4,16 +4,35 @@ from tests.test_template.grizzly_test_template import GrizzlyFederationTestTempl
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist
+from mini_mip_system.client.aggregation_client import AggregationClient
+import matplotlib.pyplot as plt
 
 
-def map_to_three(x:float,y:float) -> float:
-    return x+y
+class KMeansTest(GrizzlyFederationTestTemplate):
+    def federated_computation(self, conn, local_dataset):
+        df = conn.execute("SELECT count(x)  FROM BlobDataset").fetchdf()
+        print(df)
 
-class PearsonTest2(GrizzlyFederationTestTemplate):
-    def federated_computation(self,conn, local_dataset):
 
-        pearson_value = NoServer(self.client).compute(local_dataset)
-        return pearson_value
+        cols = 2
+        k = 3
+        centroids = KMeans(self.client)
+        conn.create_function('update_closest', centroids.update_cycle, return_type='DOUBLE')
+        centroids.compute(conn,2,3)
+        lala = centroids.get_centroids()
+
+        # Query all points
+        df = conn.execute("SELECT x, y FROM BlobDataset").fetchdf()
+
+        # Plot
+        plt.scatter(df["x"], df["y"], c="blue", marker="o")
+        plt.scatter(lala[0], lala[1], c="red", marker="^", s=100, label="points")
+
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.title("Points from DuckDB")
+        plt.grid(True)
+        plt.show()
 
     def centralized_computation(self, centralized_dataset):
         return None
@@ -21,49 +40,50 @@ class PearsonTest2(GrizzlyFederationTestTemplate):
     def compare(self, federated_output, global_output):
         print("federated_output:", federated_output)
 
-class NoServer(StatisticalFunction):
-    def compute(self, points):
-        print("!!!!!!!!")
-        points['lala'] = points[['x','y']].map(map_to_three)
-        print(points.collect())
+class KMeans(StatisticalFunction):
+    def __init__(self,  client: AggregationClient):
+        super().__init__(client)
+        self._centroids=None
+        self._new_centroids = None
+        self._count = None
 
-
-        # Create the mapped column and apply alias
-        #
-
-        # return points
-        # mapped_result.evaluate()
-        # print(type(mapped_result))
-        # constant_column = mapped_result.alias('constant_value')
-        #
-        # # Add to DataFrame
-        # result_df = points.with_columns(constant_column)
-        # computed_df = result_df.compute()
-
-    def initialize_centroids(self, X: np.ndarray, k: int) -> np.ndarray:
-            """Generate random centroids and federate a global initialization."""
-            n_features = X.shape[0]
-            np.random.seed(42)
-            return  np.random.uniform(low=-1.0, high=1.0, size=(k, n_features))
-
-class CentroidCollection:
-
-    def __init__(self, X: pd.DataFrame, k: int) -> None:
-        """Generate random centroids and federate a global initialization."""
-        n_features = X.shape[0]
+    def compute(self,conn, cols,k,*,max_iters=20):
         np.random.seed(42)
-        self.centroids= np.random.uniform(low=-1.0, high=1.0, size=(k, n_features))
+        self.centroids = np.random.uniform(low=-1.0, high=1.0, size=(k, cols))
 
-    #
-    # def find_closest_centroid(point_row, centroids):
-    #     point = point_row.values[0:centroids.shape[1]].reshape(1, -1)
-    #     distances = cdist(point, centroids.values, metric='euclidean')
-    #     closest_idx = np.argmin(distances)
-    #     return centroids.index[closest_idx]
+        self._centroids = pd.DataFrame([(-5, -5), (-2, 10), (2, 2)])
+        self._new_centroids = pd.DataFrame(np.zeros((k, cols)))
+        self._count = pd.DataFrame(np.zeros((k, 1)))
+        for _ in range(max_iters):
+            conn.execute("SELECT x, y, update_closest(x, y) AS sum_xy FROM BlobDataset").fetchall()
+            self.update(k,cols)
+
+    def update_cycle(self, *args):
+        print("Point:",args)
+        print("centroids:",self._centroids)
+
+        distances = np.sqrt(((self._centroids - args) ** 2).sum(axis=1))
+        print(distances)
+        i = distances.idxmin()
+
+        self._new_centroids.iloc[i] = self._new_centroids.iloc[i]+args
+        self._count.iloc[i] = self._count.iloc[i]+1
+        return i
+
+    def update(self,k,cols):
+        # Avoid division by zero by replacing 0 with 1 (or handle differently)
+        # Divide each row by the corresponding count
+        self._centroids = self._new_centroids.div(self._count[0], axis=0)
+        self._new_centroids = pd.DataFrame(np.zeros((k, cols)))
+        self._count = pd.DataFrame(np.zeros((k, 1)))
+
+    def get_centroids(self):
+        return self._centroids
+
 
 aggregation_server="localhost:50051"
 
-PearsonTest2(0, 2,
-                           dataset=BlobDataset(),
-                           operation_id=0,
-                           aggregation_server=aggregation_server)
+KMeansTest(0, 2,
+           dataset=BlobDataset(),
+           operation_id=0,
+           aggregation_server=aggregation_server)
