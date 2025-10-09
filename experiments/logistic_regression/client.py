@@ -1,6 +1,6 @@
 from sklearn.datasets import make_classification
 
-from library.stat_models.logistic_regression_saga_solver import FederatedLogisticRegressionClientSaSo
+from library.working_in_minimip.stat_models import FederatedLogisticRegressionClientSaSo
 from mini_mip_system.client.grpc_agg_client import GRPCClient
 from server import available_clients
 import time

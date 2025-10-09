@@ -1,8 +1,7 @@
 from library.templates.statistical_function import StatisticalFunction
-import numpy as np
 from pandas.core.series import Series
 
-from library.stats.histogram import StandardHistogram
+from library.working_in_minimip.stats.histogram import StandardHistogram
 
 
 class MedianBasedOnHistogram(StatisticalFunction):

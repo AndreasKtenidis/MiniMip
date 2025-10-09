@@ -1,7 +1,6 @@
 from sklearn.datasets import make_classification
 
-from library.stat_models.logistic_regression_saga_solver import FederatedLogisticRegressionClientSaSo
-from library.stats.bivariate_statistics import PearsonCorrelation
+from library.working_in_minimip.stats import PearsonCorrelation
 from mini_mip_system.client.grpc_agg_client import GRPCClient
 from server import available_clients
 import time

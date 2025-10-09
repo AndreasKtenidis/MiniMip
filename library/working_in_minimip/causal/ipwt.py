@@ -1,5 +1,4 @@
-from library.stat_models.fed_glm import Fed_GLM
-from library.stat_models.logistic_regression_saga_solver import FederatedLogisticRegressionClientSaSo
+from library.working_in_minimip.stat_models.logistic_regression_saga_solver import FederatedLogisticRegressionClientSaSo
 from library.templates.statistical_function import StatisticalFunction
 import pandas as pd
 

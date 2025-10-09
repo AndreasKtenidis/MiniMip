@@ -8,7 +8,7 @@ from constants import AGG,client_count
 import mini_mip_system._grpc.aggregator_pb2 as pb2
 import mini_mip_system._grpc.aggregator_pb2_grpc as pb2_grpc
 from data.experiment_datasets.pandas_datasets.titanic_dataset import TitanicPandasDataset
-from library.group_comparisons.fisher_exact import FisherExact
+from library.exaflow_ready.group_comparisons.fisher_exact import FisherExact
 from library.templates.statistical_function import StatisticalFunction
 from mini_mip_system.client.aggregation_client import AggregationClient
 # from data.experiment_datasets.blobs_dataset import BlobDataset

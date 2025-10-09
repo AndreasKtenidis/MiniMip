@@ -1,8 +1,6 @@
-from library.causal.ipwt import IPWT
+from library.working_in_minimip.causal.ipwt import IPWT
 import numpy as np
 
-from tests.help_datasets.titanic_as_disease import TitanicAsDiseaseDataset
-from library.templates.partitioned_table import PartitionedPandasTable
 from tests.test_template.test_template import FederationTestTemplate
 from sklearn.linear_model import LogisticRegression
 

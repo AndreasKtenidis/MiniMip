@@ -4,7 +4,7 @@ from scipy.stats import chi2
 from statsmodels.tools import add_constant
 
 from library.templates.statistical_function import StatisticalFunction
-from library.stat_models.fed_glm import Fed_GLM
+from library.working_in_minimip.stat_models.fed_glm import Fed_GLM
 
 
 class CalibrationBelt(StatisticalFunction):

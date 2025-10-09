@@ -1,7 +1,5 @@
-from library.stat_models.linear_regression import FederatedLinearRegression
-from library.templates.partitioned_table import PartitionedPandasTable
+from library.working_in_minimip.stat_models import FederatedLinearRegression
 from tests.test_template.test_template import FederationTestTemplate
-from tests.help_datasets.insuranse import InsuranceDataset
 from sklearn.linear_model import LinearRegression
 
 class LinearRegressionTest(FederationTestTemplate):

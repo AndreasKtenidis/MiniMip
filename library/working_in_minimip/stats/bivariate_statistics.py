@@ -2,7 +2,7 @@
 
 import math
 import numpy as np
-from library.stats.univariate_statistics import StandardDeviation
+from library.working_in_minimip.stats.univariate_statistics import StandardDeviation
 from library.templates.statistical_function import StatisticalFunction
 
 

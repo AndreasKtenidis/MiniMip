@@ -1,9 +1,7 @@
-from library.stat_models.logistic_regression_saga_solver import FederatedLogisticRegressionClientSaSo
-from library.templates.partitioned_table import PartitionedPandasTable
+from library.working_in_minimip.stat_models import FederatedLogisticRegressionClientSaSo
 
 from metrics.federated_metrics import LogisticRegressionFedMetrics
 from tests.test_template.test_template import FederationTestTemplate
-from tests.help_datasets.iris import IrisDataset
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 

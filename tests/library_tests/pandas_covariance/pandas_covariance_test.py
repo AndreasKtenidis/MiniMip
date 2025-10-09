@@ -1,14 +1,4 @@
-from mord import LogisticIT
-from sklearn.neighbors import NearestNeighbors
-
-from library.stat_models.ordinal_logistic_regression import FedOrdinalLogisticRegression
-from library.stats.bivariate_statistics import CovariancePandas
-from library.templates.partitioned_table import PartitionedPandasTable
-from mini_mip_system.client.aggregation_client import PandasAggClient
-from tests.help_datasets.iris import IrisDataset
-from tests.help_datasets.job_training import JobTrainingDataset
-from tests.help_datasets.metric import MetricDataset
-from tests.help_datasets.wine_quality import WineQualityDataset
+from library.working_in_minimip.stats import CovariancePandas
 from tests.test_template.test_template import FederationTestTemplate
 
 

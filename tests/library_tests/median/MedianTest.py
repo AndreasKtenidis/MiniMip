@@ -1,7 +1,5 @@
-from library.stats.median import MedianBasedOnHistogram
-from library.templates.partitioned_table import PartitionedPandasTable
+from library.working_in_minimip.stats import MedianBasedOnHistogram
 
-from tests.help_datasets.job_training import JobTrainingDataset
 from tests.test_template.test_template import FederationTestTemplate
 
 class MedianTest(FederationTestTemplate):

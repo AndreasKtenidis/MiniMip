@@ -1,5 +1,4 @@
-from library.stats.bivariate_statistics import PearsonCorrelationGrizzly
-from mini_mip_system.client.grpc_agg_client import GRPCClient
+from library.working_in_minimip.stats import PearsonCorrelationGrizzly
 from tests.test_template.grizzly_test_template import GrizzlyFederationTestTemplate
 
 class PearsonTest(GrizzlyFederationTestTemplate):

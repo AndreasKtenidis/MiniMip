@@ -1,13 +1,10 @@
 import pandas as pd
 
-
-from library.templates.partitioned_table import PartitionedPandasTable
+from library.exaflow_ready.group_comparisons.fisher_exact import FisherExact
 from tests.test_template.test_template import FederationTestTemplate
 from scipy.stats import chi2_contingency
-from scipy.stats import fisher_exact
 
-from library.group_comparisons.chi_squared import ChiSquared
-from library.group_comparisons.fisher_exact import FisherExact
+from library.exaflow_ready.group_comparisons.chi_squared import ChiSquared
 
 class ChiSquaredAndFisherTest(FederationTestTemplate):
 
@@ -21,25 +18,30 @@ class ChiSquaredAndFisherTest(FederationTestTemplate):
             chi2, p, dof, expected = chi2_contingency(contingency_table)
             return chi2, p, dof, expected
 
-        def fisher_test(df):
-            table = pd.crosstab(df['Sex'], df['Survived'])
-            oddsratio, p_value = fisher_exact(table)
-            return oddsratio, p_value
 
         chi2, p, dof, expected = chi_test(centralized_dataset)
-        oddsratio, p_value = fisher_test(centralized_dataset)
-        return chi2, p, dof, expected,oddsratio, p_value
+        return chi2, p, dof, expected
 
     def federated_computation(self, local_dataset):
-        chi2, p, dof, expected = ChiSquared(self.client).compute(local_dataset, factor='Pclass', outcome='Survived')
-        oddsratio, p_value = FisherExact(self.client).compute(local_dataset, factor='Sex', outcome='Survived')
+
+
+        aggr = self.client.get_numpy_aggregator()
+
+        sex_categories = aggr.fed_union(local_dataset['Sex'].values)
+        class_categories = aggr.fed_union(local_dataset['Pclass'].values)
+        outcome_categories = aggr.fed_union(local_dataset['Survived'].values)
+        chi2, p, dof, expected = ChiSquared(self.client).compute(local_dataset,
+                                                                 factor='Pclass',
+                                                                 factor_categories=class_categories,
+                                                                 outcome='Survived',
+                                                                 outcome_categories=outcome_categories)
+        oddsratio, p_value = FisherExact(self.client).compute(local_dataset, factor='Sex',
+                                                              factor_categories=sex_categories,
+                                                              outcome='Survived',
+                                                              outcome_categories=outcome_categories)
         return chi2, p, dof, expected,oddsratio, p_value
 
 
     def compare(self, federated_output, global_output):
         print(federated_output)
         print(global_output)
-
-
-
-

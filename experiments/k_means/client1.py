@@ -1,9 +1,8 @@
-from library.stats.k_means_rand import KMeansRand
+from library.working_in_minimip.stats import KMeansRand
 from mini_mip_system.client.grpc_agg_client import GRPCClient
 from server import available_clients
 from tests.help_datasets.blob import BlobDataset
 import time
-from  pandas import DataFrame
 
 
 def start_client(*,aggregation_server="localhost:50051",client_id):

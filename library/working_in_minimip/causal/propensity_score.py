@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.neighbors import NearestNeighbors
 
-from library.stat_models.logistic_regression_saga_solver import FederatedLogisticRegressionClientSaSo
+from library.working_in_minimip.stat_models.logistic_regression_saga_solver import FederatedLogisticRegressionClientSaSo
 from library.templates.statistical_function import StatisticalFunction
 
 

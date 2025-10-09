@@ -1,13 +1,10 @@
-
-from library.templates.partitioned_table import PartitionedPandasTable
-from tests.help_datasets.iris import IrisDataset
 from tests.test_template.test_template import FederationTestTemplate
 
 import numpy as np
 
 class SmdTest(FederationTestTemplate):
     def federated_computation(self, local_dataset):
-        from library.stats.bivariate_statistics import StandardizedMeanDifferences
+        from library.working_in_minimip.stats import StandardizedMeanDifferences
         smd = StandardizedMeanDifferences(self.client).compute(local_dataset['sepal length (cm)'].values, local_dataset['petal width (cm)'].values)
         return smd
 

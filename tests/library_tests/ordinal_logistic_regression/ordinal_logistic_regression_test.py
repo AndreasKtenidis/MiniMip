@@ -1,6 +1,6 @@
 from mord import LogisticIT
 
-from library.stat_models.ordinal_logistic_regression import FedOrdinalLogisticRegression
+from library.working_in_minimip.stat_models import FedOrdinalLogisticRegression
 from tests.test_template.test_template import FederationTestTemplate
 from sklearn.metrics import classification_report
 

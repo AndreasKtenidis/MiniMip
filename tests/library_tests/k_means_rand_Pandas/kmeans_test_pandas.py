@@ -1,8 +1,5 @@
-from library.stat_models.linear_regression import FederatedLinearRegression
-from library.templates.partitioned_table import PartitionedPandasTable
 from tests.test_template.test_template import FederationTestTemplate
-from tests.help_datasets.insuranse import InsuranceDataset
-from sklearn.linear_model import LinearRegression
+
 
 class KmeansPandasTest(FederationTestTemplate):
 
@@ -11,7 +8,7 @@ class KmeansPandasTest(FederationTestTemplate):
         super().__init__(client_id, client_count, dataset=dataset, operation_id=operation_id,aggregation_server=aggregation_server)
 
     def federated_computation(self, local_dataset):
-        from library.pandas.k_means_pandas import KMeansPandas
+        from library.working_in_minimip.pandas import KMeansPandas
         computer = KMeansPandas(self.client)
         output = computer.compute(local_dataset,3)
         return output
