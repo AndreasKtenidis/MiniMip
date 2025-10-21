@@ -1,4 +1,4 @@
-from library.core.partitioned_table import PartitionedPandasTable
+from tests_and_experiments.core.partitioned_table import PartitionedPandasTable
 import pandas as pd
 from sklearn.datasets import load_iris
 import numpy as np

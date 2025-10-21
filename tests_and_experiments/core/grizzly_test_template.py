@@ -1,4 +1,4 @@
-from library.core.partitioned_table import PartitionedPandasTable
+from tests_and_experiments.core.partitioned_table import PartitionedPandasTable
 from mini_mip_system.client.grpc_agg_client import GRPCClient
 from abc import ABC, abstractmethod
 

@@ -8,7 +8,7 @@ from pathlib import Path
 from grizzly.sqlgenerator import SQLGenerator
 import duckdb
 
-from library.core.partitioned_table import PartitionedPandasTable
+from tests_and_experiments.core.partitioned_table import PartitionedPandasTable
 from grizzly.relationaldbexecutor import RelationalExecutor
 
 class GrizzlyFactory:

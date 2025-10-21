@@ -1,5 +1,5 @@
 import pandas as pd
-from library.core.partitioned_table import PartitionedPandasTable
+from tests_and_experiments.core.partitioned_table import PartitionedPandasTable
 from sklearn.datasets import make_blobs
 
 

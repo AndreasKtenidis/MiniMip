@@ -1,7 +1,6 @@
-from library.core.partitioned_table import PartitionedPandasTable
+from tests_and_experiments.core.partitioned_table import PartitionedPandasTable
 import pandas as pd
-import seaborn as sns
-from sklearn.preprocessing import LabelEncoder
+
 
 class WineQualityDataset(PartitionedPandasTable):
 

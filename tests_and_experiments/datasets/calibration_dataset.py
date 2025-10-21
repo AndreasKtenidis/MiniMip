@@ -1,6 +1,6 @@
 import numpy as np
 
-from library.core.partitioned_table import PartitionedPandasTable
+from tests_and_experiments.core.partitioned_table import PartitionedPandasTable
 import pandas as pd
 
 class CalibrationDataset(PartitionedPandasTable):

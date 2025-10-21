@@ -1,6 +1,5 @@
-from library.core.partitioned_table import PartitionedPandasTable
 import pandas as pd
-from library.core.partitioned_table import PartitionedPandasTable
+from tests_and_experiments.core.partitioned_table import PartitionedPandasTable
 import statsmodels.api as sm
 
 class JobTrainingDataset(PartitionedPandasTable):

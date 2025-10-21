@@ -1,5 +1,5 @@
 from tests_and_experiments.datasets.dummy_dataset import DummyDataset
-from library.core.partitioned_table import PartitionedPandasTable
+from tests_and_experiments.core.partitioned_table import PartitionedPandasTable
 from library.utils.pandas_aggregator import PandasAggClient
 from tests_and_experiments.core.test_template import FederationTestTemplate
 
