@@ -1,0 +1,29 @@
+import sys
+
+from tests_and_experiments.datasets.diabetes import DiabetesDiseaseDataset
+from tests_and_experiments.datasets.job_training import JobTrainingDataset
+from tests_and_experiments.datasets.metric import MetricDataset
+from tests_and_experiments.datasets.titanic import TitanicDataset
+from tests_and_experiments.datasets.titanic_as_disease import TitanicAsDiseaseDataset
+from tests_and_experiments.datasets.wine_quality import WineQualityDataset
+from tests_and_experiments.library_tests.group_comparisons.chisquared_fisher_test import ChiSquaredAndFisherTest
+from tests_and_experiments.library_tests.ipwt.ipwt_test import IPWTTest
+from tests_and_experiments.library_tests.linear_regression.linear_regression_test import LinearRegressionTest
+from tests_and_experiments.library_tests.logistic_regression.logistic_regression_tests import LogisticRegressionTest
+from tests_and_experiments.library_tests.median.MedianTest import MedianTest
+from tests_and_experiments.library_tests.metric_tests.metric_tests import MetricTest
+from tests_and_experiments.library_tests.multivariable_regression.multivariable_regression_test import MultivariableRegressionTest
+from tests_and_experiments.library_tests.ordinal_logistic_regression.ordinal_logistic_regression_test import \
+    OrdinalLogisticRegressionTest
+from tests_and_experiments.library_tests.pandas_covariance.pandas_covariance_test import PandasCovarianceTest
+from tests_and_experiments.library_tests.propensity_score.propensity_score_test import PropensityScoreTest
+from tests_and_experiments.library_tests.standarized_mean_differences.smd_test import SmdTest
+from tests_and_experiments.datasets.iris import IrisDataset
+from tests_and_experiments.datasets.insuranse import InsuranceDataset
+
+
+def main():
+    PandasCovarianceTest(0, 2, dataset=IrisDataset(), operation_id=8)
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,31 @@
+import numpy as np
+
+from library.core.statistical_model import StatisticalModel
+from library.utils.numpy_aggregator import NumpyAggregator
+
+
+class FedOLS(StatisticalModel):
+    """Ordinary Least Squares linear regression."""
+
+    # def compute(self, x:np.ndarray, y:np.ndarray):
+    #     self.fit(x,y)
+    #     for i in range(len(x)):
+    #         out = self.predict(x[i])
+    #         print(y[i],'vs',out)
+
+    def fit(self, x: np.ndarray, y: np.ndarray):
+        # Add intercept column (ones) to x
+        x = np.hstack([np.ones((x.shape[0], 1)), x])
+        xtx = self.aggregator.fed_sum(x.T @ x)
+        xty = self.aggregator.fed_sum(x.T @ y)
+        self.b_dot = np.linalg.inv(xtx) @ xty
+
+    def predict(self, x: np.ndarray):
+        # Add intercept column (ones) to x
+        x = np.hstack([np.ones((x.shape[0], 1)), x])
+        return (x @ self.b_dot).flatten()
+
+    def __init__(self, client):
+        super().__init__(client)
+        self.aggregator = NumpyAggregator(self.client)
+        self.b_dot = None

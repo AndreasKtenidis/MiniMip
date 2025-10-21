@@ -2,8 +2,8 @@ import grpc
 import mini_mip_system._grpc.aggregator_pb2 as pb2
 import mini_mip_system._grpc.aggregator_pb2_grpc as pb2_grpc
 from mini_mip_system.server.aggregation_server import NumpyAggregationServer
-from constants import AGG
-import constants
+from mini_mip_system.constants import AGG
+from mini_mip_system import constants
 import asyncio  # Import asyncio to use asyncio.sleep
 import traceback
 
