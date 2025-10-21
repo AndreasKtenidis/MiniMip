@@ -1,7 +1,7 @@
 import grpc
 import numpy as np
 
-from mini_mip_system.constants import AGG,client_count
+from mini_mip_system.constants import AGG
 import mini_mip_system._grpc.aggregator_pb2 as pb2
 import mini_mip_system._grpc.aggregator_pb2_grpc as pb2_grpc
 from library.utils.aggregation_client import AggregationClientInterface
