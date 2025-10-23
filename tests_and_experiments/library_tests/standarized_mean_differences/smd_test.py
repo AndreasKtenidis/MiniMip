@@ -1,4 +1,5 @@
 from library.under_development.stats.bivariate_statistics import StandardizedMeanDifferences
+from library.under_development.stats.median import MedianBasedOnHistogram
 from tests_and_experiments.core.test_template import FederationTestTemplate
 
 import numpy as np
@@ -7,7 +8,9 @@ class SmdTest(FederationTestTemplate):
     def federated_computation(self, local_dataset):
 
         smd = StandardizedMeanDifferences(self.client).compute(local_dataset['sepal length (cm)'].values, local_dataset['petal width (cm)'].values)
-        return smd
+        median_calc = MedianBasedOnHistogram(self.client)
+        median = median_calc.compute(local_dataset['sepal length (cm)'], num_bins=10)
+        return smd,median
 
     def centralized_computation(self, centralized_dataset):
         attr1 = centralized_dataset['sepal length (cm)']
