@@ -13,18 +13,28 @@ class Dummy(StatisticalFunction):
 
 
 class Variance(StatisticalFunction):
-    def compute(self, x: np.array):
+    def compute(self, x: np.array,*,ddof=0):
+        if not isinstance(x, np.ndarray):
+            raise TypeError("Input must be a numpy array")
         agg = NumpyAggregator(self.client)
-        _count = agg.global_count(x)
-        if _count <= 1:
-            return 0
-        sum_of_squares = agg.global_avg(x ** 2)
-        return sum_of_squares - (agg.global_avg(x) ** 2)
+        n = agg.global_count(x)
+        if n == 0:
+            raise ValueError("Data array cannot be empty")
+        if x.ndim > 1:
+            raise ValueError("Input must be a 1D array")
+        if n <= ddof:
+            raise ValueError(f"Not enough data points for ddof={ddof}. Need at least {ddof + 1} points.")
+
+        mean = agg.global_avg(x)
+        sum_squared_diff = agg.global_sum((x - mean) ** 2)
+        variance = sum_squared_diff / (n - ddof)
+        return variance
 
 
 class StandardDeviation(StatisticalFunction):
-    def compute(self, x: np.array):
-        return np.sqrt(Variance(self.client).compute(x))
+    def compute(self, x: np.array,*,ddof=0):
+        variance = Variance(self.client).compute(x, ddof=ddof)
+        return np.sqrt(variance)
 
 
 class SumOfSquares(StatisticalFunction):
