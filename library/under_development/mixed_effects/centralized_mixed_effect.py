@@ -6,28 +6,27 @@ def compute_SXX_for_center(X_j:np.array,Y_j:np.array, sigma2, sigma_u2):
     n_j = X_j.shape[0]
     I_nj = np.eye(n_j)
     ones = np.ones((n_j, 1))
-
+    #
     alpha_j = sigma_u2 / (sigma2 * (sigma2 + n_j * sigma_u2))
     V_inv = (1 / sigma2) * I_nj - alpha_j * ones @ ones.T
-
+    #
     S_XX = X_j.T @ V_inv @ X_j
     S_YY = Y_j.T @ V_inv @ Y_j
-    print(S_XX)
-    return V_inv, S_XX, S_YY
+    return S_XX,S_YY
+
 
 def mixed_effect(patients,*,covariates,center,outcome) :
     # Group by center and iterate through each center
     centers_grouped = patients.groupby(center)
-    print(centers_grouped)
-    print("=== Method 1: Basic Loop ===")
-    sigma2 = patients[outcome].var()   # Assume variance within the population
+    sigma2 = patients[outcome].values.var()   # Assume variance within the population
     for center_id, center_data in centers_grouped:
-        x_j=center_data[covariates]
-        y_j = center_data[outcome]
-        sigma2_j=center_data[outcome].var()
-        compute_SXX_for_center(x_j.values,y_j.values, sigma2, sigma2_j)
+        sigma2_j = center_data[outcome].values.var()
+        print("center",center_id, sigma2_j)
+        x_j=center_data[covariates].values
+        y_j = center_data[outcome].values
+        S_XX, S_YY = compute_SXX_for_center(x_j,y_j, sigma2, sigma2_j)
+        return S_XX, S_YY
 
-    return 0
 
 if __name__ == "__main__":
     # Set random seed for reproducibility
