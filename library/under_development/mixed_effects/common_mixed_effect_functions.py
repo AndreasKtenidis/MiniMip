@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 from typing import Callable, Iterable, Tuple
-from typing import Iterable, Tuple
 import numpy as np
 
 
@@ -468,4 +467,65 @@ def backtracking_line_search_log2d(
             break
 
     return phi0, False
+
+
+####################### GLMM helpers ##################################
+
+
+
+def logistic_sigmoid(z: np.ndarray) -> np.ndarray:
+    return 1.0 / (1.0 + np.exp(-z))
+
+def glmm_binary_random_intercept_mode(
+    eta_base: np.ndarray,
+    y: np.ndarray,
+    w: np.ndarray,
+    sigma_u2: float,
+    max_iter: int = 25,
+    tol: float = 1e-8,
+) -> tuple[float, float]:
+    """
+    Newton mode for u_j in logistic GLMM with random intercept.
+    Returns (u_star, Huu) with Huu = sum w p(1-p) + 1/sigma_u2 at the mode.
+    """
+    if w is None:
+        w = np.ones_like(y, dtype=float)
+    inv_su2 = 1.0 / sigma_u2
+    u = 0.0
+    for _ in range(max_iter):
+        eta = eta_base + u
+        p = clip_probs(logistic_sigmoid(eta))
+        g = np.sum(w * (y - p)) - u * inv_su2
+        h = -np.sum(w * p * (1.0 - p)) - inv_su2
+        step = g / h
+        u_new = u - step
+        if abs(u_new - u) < tol:
+            u = u_new
+            break
+        u = u_new
+    Huu = -h
+    return float(u), float(Huu)
+
+def glm_logistic_score_hessian_block(
+    Xj: np.ndarray, yj: np.ndarray, pj: np.ndarray, wj: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Score/Hessian block for logistic regression on a subset j with weights wj.
+    Returns (s_beta, H_bb).
+    """
+    rj = (yj - pj) * wj               
+    Vj = (pj * (1.0 - pj)) * wj       
+    s_beta = Xj.T @ rj
+    H_bb = -(Xj.T * Vj) @ Xj
+    return s_beta, H_bb
+
+def glmm_laplace_corrections_beta(
+    Xj: np.ndarray, pj: np.ndarray, wj: np.ndarray, Huu: float
+) -> np.ndarray:
+    """
+    0.5 * Huu^{-1} * sum_i w p(1-p)(1-2p) x_i   (correction to score wrt beta).
+    """
+    dHuu_deta = (pj * (1.0 - pj)) * (1.0 - 2.0 * pj) * wj
+    return 0.5 * (Xj.T @ dHuu_deta) / float(Huu)
+
 

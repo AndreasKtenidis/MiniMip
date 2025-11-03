@@ -2,8 +2,8 @@
 from __future__ import annotations
 import numpy as np
 
-from common_mixed_effect_functions import pack_upper_triangle  
 from common_mixed_effect_functions import (
+    pack_upper_triangle,
     validate_inputs,
     apply_weights,
     extract_clusters,

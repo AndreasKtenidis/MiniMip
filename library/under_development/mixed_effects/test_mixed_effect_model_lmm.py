@@ -2,6 +2,7 @@
 from __future__ import annotations
 import numpy as np
 import pandas as pd
+import statsmodels.formula.api as smf
 
 from lmm_reml_aggregator import LMMRemlAggregator
 from lmm_reml_node import reml_summaries_node
@@ -45,7 +46,7 @@ def synth_lmm_df(
     df = pd.concat(rows, ignore_index=True)
     return df, beta, sigma2, sigma_u2, centers_order
 
-# 2) Centralized 
+# 2A) Centralized 
 
 def run_centralized(df, covs, center_col="center", outcome_col="y",
                     sigma2=1.0, sigma_u2=0.5, beta_hat=None):
@@ -91,7 +92,41 @@ def run_centralized(df, covs, center_col="center", outcome_col="y",
         "improved": improved,
         "agg": agg,
     }
+# 2B) centralized using statmodels library
 
+def fit_lmm_statsmodels(
+    df: pd.DataFrame,
+    covs: list[str],
+    center_col: str = "center",
+    outcome_col: str = "y",
+    *,
+    reml: bool = True,
+    method: str = "lbfgs",
+    maxiter: int = 200,
+):
+    """
+    Runs LMM (random intercept) via statsmodels and returns estimates.
+    - formula: outcome ~ covs (intercept by default)
+    - groups: center_col
+    - re_formula="1" for random intercept only
+    """
+    formula = f"{outcome_col} ~ " + " + ".join(covs) if covs else f"{outcome_col} ~ 1"
+    md = smf.mixedlm(formula, data=df, groups=df[center_col], re_formula="1")
+    # REML - LMM reml=True
+    res = md.fit(reml=reml, method=method, maxiter=maxiter, disp=False)
+
+    
+    beta_sm = res.fe_params.values.astype(float)
+    sigma2_sm = float(res.scale)                # residual variance
+    sigma_u2_sm = float(res.cov_re.iloc[0, 0])  # random intercept variance
+
+    out = {
+        "beta": beta_sm,
+        "sigma2": sigma2_sm,
+        "sigma_u2": sigma_u2_sm,
+        "result": res,  
+    }
+    return out
 # 3) Federated emulation 
 
 def split_df_into_nodes(df, k_nodes=3, seed=123):
@@ -201,22 +236,64 @@ def print_header(title: str):
 
 def arr_str(a):
     return np.array2string(np.asarray(a), precision=6, floatmode="fixed", suppress_small=False)
+# 5) Helpers for round calling lmm centralized & federated
 
-# ---------- 5) Run test with full reporting ----------
+def run_multi_rounds_centralized(df, covs, beta0=None, s2_0=1.0, su2_0=0.5, max_iters=20, tol=1e-6):
+   
+    X, _, _, _ = build_node_arrays_from_df(df, covariate_cols=covs, center_col="center", outcome_col="y", include_intercept=True)
+    p = X.shape[1]
+    beta = np.zeros(p, dtype=float) if beta0 is None else beta0.copy()
+    s2, su2 = float(s2_0), float(su2_0)
+
+    hist = []
+    for it in range(max_iters):
+        C = run_centralized(df, covs, sigma2=s2, sigma_u2=su2, beta_hat=beta)
+        beta_new, s2_new, su2_new = C["beta"], C["sigma2"], C["sigma_u2"]
+        delta = max(
+            float(np.linalg.norm(beta_new - beta) / (1.0 + np.linalg.norm(beta))),
+            abs(s2_new - s2) / (1.0 + s2),
+            abs(su2_new - su2) / (1.0 + su2),
+        )
+        hist.append({"iter": it, "delta": delta})
+        beta, s2, su2 = beta_new, s2_new, su2_new
+        if delta < tol:
+            break
+    return {"beta": beta, "sigma2": s2, "sigma_u2": su2, "history": hist}
+
+def run_multi_rounds_federated(df, covs, k_nodes=3, beta0=None, s2_0=1.0, su2_0=0.5, max_iters=20, tol=1e-6):
+    X, _, _, _ = build_node_arrays_from_df(df, covariate_cols=covs, center_col="center", outcome_col="y", include_intercept=True)
+    p = X.shape[1]
+    beta = np.zeros(p, dtype=float) if beta0 is None else beta0.copy()
+    s2, su2 = float(s2_0), float(su2_0)
+
+    hist = []
+    for it in range(max_iters):
+        F = run_federated_emulated(df, covs, k_nodes=k_nodes, sigma2=s2, sigma_u2=su2, beta_hat=beta)
+        beta_new, s2_new, su2_new = F["beta"], F["sigma2"], F["sigma_u2"]
+        delta = max(
+            float(np.linalg.norm(beta_new - beta) / (1.0 + np.linalg.norm(beta))),
+            abs(s2_new - s2) / (1.0 + s2),
+            abs(su2_new - su2) / (1.0 + su2),
+        )
+        hist.append({"iter": it, "delta": delta})
+        beta, s2, su2 = beta_new, s2_new, su2_new
+        if delta < tol:
+            break
+    return {"beta": beta, "sigma2": s2, "sigma_u2": su2, "history": hist}
+
+# 6) Run test with full reporting ----------
 
 if __name__ == "__main__":
     np.set_printoptions(precision=6, suppress=True, linewidth=160)
 
-   
     n_centers = 8
     n_features = 2
     n_min, n_max = 30, 60
     s2_true, su2_true = 1.2, 0.7
-    beta0 = None  
+    beta0 = None
     s2_0, su2_0 = 1.0, 0.5
     k_nodes = 3
 
-    
     df, beta_true, s2_true, su2_true, centers_info = synth_lmm_df(
         n_centers=n_centers, n_features=n_features,
         n_min=n_min, n_max=n_max,
@@ -230,18 +307,47 @@ if __name__ == "__main__":
     print(f"True variances: sigma2={s2_true:.6f}, sigma_u2={su2_true:.6f}")
     print("Centers & sizes:", centers_info)
 
-    # Centralized
+    # Centralized (single round)
     C = run_centralized(df, covs, sigma2=s2_0, sigma_u2=su2_0, beta_hat=beta0)
-    # Federated emulation
+    # Federated emulation (single round)
     F = run_federated_emulated(df, covs, k_nodes=k_nodes, sigma2=s2_0, sigma_u2=su2_0, beta_hat=beta0)
 
     p = C["p"]
 
-    
     Sxx_c = unpack_upper_triangle(C["payload"]["Sxx_packed"], p)
     Sxx_f = unpack_upper_triangle(F["Sxx_packed_sum"].tolist(), p)
     B_c   = unpack_upper_triangle(C["payload"]["B_v_outer_sum_packed"], p)
     B_f   = unpack_upper_triangle(F["B_packed_sum"].tolist(), p)
+
+
+    import warnings
+    from statsmodels.tools.sm_exceptions import ConvergenceWarning
+    
+    warnings.filterwarnings("ignore", category=UserWarning, module=r".*mixed_linear_model")
+    warnings.filterwarnings("ignore", category=ConvergenceWarning, module=r".*mixed_linear_model")
+
+    print_header("STATSmodels (MixedLM) baseline")
+    SM = fit_lmm_statsmodels(df, covs, center_col="center", outcome_col="y", reml=True)
+    print("statsmodels beta:", arr_str(SM["beta"]))
+    print(f"statsmodels sigma2={SM['sigma2']:.10f}, sigma_u2={SM['sigma_u2']:.10f}")
+
+    # Boundary detection 
+    boundary = SM["sigma_u2"] < 1e-8
+    if boundary:
+        print("(note) statsmodels returned sigma_u2≈0 → boundary case (random-intercept collapsed).")
+
+    print_header("COMPARE our centralized vs statsmodels")
+    
+    if boundary:
+        max_dbeta = float(np.max(np.abs(np.asarray(C["beta"]) - np.asarray(SM["beta"]))))
+        print(f"(boundary) single-round |Δβ|max={max_dbeta:.6f} — skipping asserts here; will compare after multi-rounds.")
+        
+        print(f"(boundary) single-round Δsigma2={C['sigma2'] - SM['sigma2']:.6f}")
+        
+    else:
+        assert_allclose(C["beta"], SM["beta"], rtol=1e-3, atol=1e-4, msg="beta (centralized vs statsmodels)")
+        assert_allclose(C["sigma2"], SM["sigma2"], rtol=5e-2, atol=1e-3, msg="sigma2 (centralized vs statsmodels)")
+        assert_allclose(C["sigma_u2"], SM["sigma_u2"], rtol=5e-2, atol=1e-3, msg="sigma_u2 (centralized vs statsmodels)")
 
     print_header("CENTRALIZED SUMMARY (node-style payload)")
     print(f"p = {p}")
@@ -276,7 +382,7 @@ if __name__ == "__main__":
     print("Δq:   ", arr_str(q_c - F["q_vec_sum"]))
     print("ΔB:\n", arr_str(B_c - B_f))
 
-    # GLS & REML updates
+    # GLS & REML updates (single round)
     print_header("GLS / REML RESULTS")
     print("Centralized:")
     print("  beta_gls:", arr_str(C["beta"]))
@@ -291,13 +397,7 @@ if __name__ == "__main__":
     print(f"Δsigma2: {C['sigma2'] - F['sigma2']:.12f}")
     print(f"Δsigma_u2: {C['sigma_u2'] - F['sigma_u2']:.12f}")
 
-   
-    def assert_allclose(a, b, rtol=1e-8, atol=1e-10, msg=""):
-        if not np.allclose(a, b, rtol=rtol, atol=atol):
-            diff = np.max(np.abs(a - b))
-            raise AssertionError(f"{msg} max|Δ|={diff}  (rtol={rtol}, atol={atol})")
-
-    
+    # Converge Centralized vs Federated (single round)
     assert_allclose(Sxx_c, Sxx_f, msg="Sxx mismatch")
     assert_allclose(np.array(C["payload"]["Sxy"]), np.array(F["Sxy_sum"]), msg="Sxy mismatch")
     assert_allclose(C["payload"]["syy"], F["syy_sum"], msg="syy mismatch")
@@ -306,5 +406,41 @@ if __name__ == "__main__":
     assert_allclose(C["beta"], F["beta"], rtol=1e-10, msg="beta_gls mismatch")
     assert_allclose(C["sigma2"], F["sigma2"], rtol=1e-7, msg="sigma2 update mismatch")
     assert_allclose(C["sigma_u2"], F["sigma_u2"], rtol=1e-7, msg="sigma_u2 update mismatch")
+
+    print_header("MULTI-ROUND: centralized / federated vs statsmodels")
+    Cfin = run_multi_rounds_centralized(df, covs, s2_0=s2_0, su2_0=su2_0, max_iters=20)
+    Ffin = run_multi_rounds_federated(df, covs, k_nodes=k_nodes, s2_0=s2_0, su2_0=su2_0, max_iters=20)
+
+    print("Centralized final:", arr_str(Cfin["beta"]), Cfin["sigma2"], Cfin["sigma_u2"])
+    print("Federated  final:", arr_str(Ffin["beta"]), Ffin["sigma2"], Ffin["sigma_u2"])
+    print("Statsmodels  :", arr_str(SM["beta"]), SM["sigma2"], SM["sigma_u2"])
+
+    # Compare Centralized vs Federated ( multi-rounds)
+    assert_allclose(Cfin["beta"], Ffin["beta"], rtol=1e-9, atol=2e-8, msg="beta (C vs F)")
+    assert_allclose(Cfin["sigma2"], Ffin["sigma2"], rtol=1e-8, atol=1e-12, msg="sigma2 (C vs F)")
+    assert_allclose(Cfin["sigma_u2"], Ffin["sigma_u2"], rtol=1e-8, atol=1e-12, msg="sigma_u2 (C vs F)")
+
+    # compare vs statsmodels 
+    
+    if boundary:
+        beta_c  = np.asarray(Cfin["beta"], dtype=float)
+        beta_sm = np.asarray(SM["beta"],  dtype=float)
+
+        
+        assert_allclose(beta_c[1:], beta_sm[1:], rtol=2e-2, atol=2e-3, msg="slopes (C vs SM, boundary)")
+
+        
+        assert_allclose(beta_c[0], beta_sm[0], rtol=1e-3, atol=3e-2, msg="intercept (C vs SM, boundary)")
+
+       
+        print("(note) Boundary case: statsmodels sigma_u2≈0 → skipping sigma2/sigma_u2 asserts (not comparable component-wise).")
+    else:
+        assert_allclose(Cfin["beta"], SM["beta"], rtol=1e-3, atol=1e-4, msg="beta (C vs SM)")
+        assert_allclose(Cfin["sigma2"], SM["sigma2"], rtol=5e-2, atol=1e-3, msg="sigma2 (C vs SM)")
+        assert_allclose(Cfin["sigma_u2"], SM["sigma_u2"], rtol=5e-2, atol=1e-3, msg="sigma_u2 (C vs SM)")
+
+
+
+    print(f"(check) sum(global_hist) = {int(np.sum(F['global_hist']))}, unique centers = {df['center'].nunique()}")
 
     print_header("  Centralized vs Federated emulation match within tolerances.")
